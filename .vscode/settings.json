@@ -1,0 +1,17 @@
+{
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  // editor settings
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "tailwindcss.documentColors": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
