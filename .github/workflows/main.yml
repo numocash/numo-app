@@ -1,12 +1,56 @@
 name: CI
 
 on:
+  pull_request:
   push:
-    branches:
-      - "**"
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
+  install:
+    name: Install
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+        pnpm-version: [7]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup
+        uses: ./.github/actions/setup
+
   lint:
+    name: Lint
+    needs: install
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+        pnpm-version: [7]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Check types
+        run: pnpm tsc
+      - name: Lint
+        run: pnpm lint:fix
+      - name: Commit
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          git add .
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "no formatting changed"
+            exit 0
+          fi
+          git commit -m "chore: format"
+          git push
+          echo "pushed formatting changes https://github.com/$GITHUB_REPOSITORY/commit/$(git rev-parse HEAD)"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -22,23 +66,20 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint:ci
 
-  tsc:
+  build:
+    name: Build
+    needs: lint
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+        pnpm-version: [7]
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: "recursive"
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm tsc
-
-  build:
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build
+        run: pnpm build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
