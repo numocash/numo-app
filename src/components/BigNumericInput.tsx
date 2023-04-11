@@ -1,6 +1,5 @@
+import { clsx } from "clsx";
 import React from "react";
-
-import { breakpoints } from "@/src/theme/breakpoints";
 
 interface IProps
   extends Omit<
@@ -23,8 +22,18 @@ export const BigNumericInput: React.FC<IProps> = ({
   integerOnly,
   ...rest
 }: IProps) => (
-  <StyledInput
+  <input
     {...rest}
+    className={clsx(
+      "outline-none active:(border-none outline-none) border-none",
+      "overflow-hidden text-ellipsis flex-auto w-100 text-[#8f8f8f]",
+      "placeholder:color-[#888]"
+    )}
+    style={{
+      fontWeight: "400",
+      fontSize: "24px",
+      padding: "0px",
+    }}
     inputMode="decimal"
     autoComplete="off"
     autoCorrect="off"
@@ -52,36 +61,3 @@ export const BigNumericInput: React.FC<IProps> = ({
     }}
   />
 );
-
-// TODO: global css is setting with width to 1px
-const StyledInput = styled.input<{
-  hasBackground?: boolean;
-  disabled?: boolean;
-}>`
-  outline: none;
-  &::active {
-    border: none;
-    outline: none;
-  }
-  border: none;
-  width: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-
-  ${tw` text-[#8f8f8f]`}
-
-  font-weight: 400;
-  font-size: 24px;
-
-  &::placeholder {
-    color: #888;
-  }
-
-  padding: 0px;
-
-  ${breakpoints.mobile} {
-    font-size: 20px;
-  }
-`;

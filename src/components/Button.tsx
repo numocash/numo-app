@@ -1,3 +1,4 @@
+import { clsx } from "clsx";
 import type { DetailedHTMLProps } from "react";
 import React, { useState } from "react";
 
@@ -30,11 +31,21 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   className,
   onClick,
+  variant,
   ...props
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   return (
-    <StyledButton
+    <button
+      className={clsx(
+        className,
+        "flex flex-row items-center justify-center leading-normal",
+        "rounded-lg text-sm font-semibold text-white transistion-transform",
+        "active:scale-98 hover:bg-opacity-90 disabled:(bg-gray-100 text-gray-500  cursor-not-allowed)",
+        variant === "primary" && "bg-black shadow",
+        variant === "inverse" && "text-black bg-white shadow",
+        variant === "danger" && "font-bold shadow bg-red"
+      )}
       {...props}
       onClick={
         onClick
@@ -46,7 +57,6 @@ export const Button: React.FC<ButtonProps> = ({
           : undefined
       }
       disabled={disabled || loading}
-      className={className}
       style={{
         ...props.style,
       }}
@@ -59,24 +69,6 @@ export const Button: React.FC<ButtonProps> = ({
       ) : (
         children
       )}
-    </StyledButton>
+    </button>
   );
 };
-
-export const StyledButton = styled.button<AdditionalButtonProps>(
-  ({ variant = "primary" }) => [
-    tw`flex flex-row items-center justify-center leading-normal`,
-    tw`rounded-lg`,
-    tw`text-sm font-semibold`,
-    tw`text-white active:scale-98 hover:bg-opacity-90`,
-    tw`transition-transform`,
-
-    variant === "primary" && tw`bg-black shadow `,
-
-    variant === "inverse" && tw`text-black bg-white shadow`,
-
-    variant === "danger" && tw`font-bold shadow bg-red`,
-
-    tw`disabled:(bg-gray-100 text-gray-500  cursor-not-allowed)`,
-  ]
-);

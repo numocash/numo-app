@@ -1,3 +1,5 @@
+import { clsx } from "clsx";
+import type { ButtonHTMLAttributes } from "react";
 import React from "react";
 
 interface Props {
@@ -22,10 +24,18 @@ export const Switch: React.FC<Props> = ({ selected, onSelect }) => {
   );
 };
 
-const SwitchButton = styled.button<{ active: boolean; selected: boolean }>(
-  ({ active, selected }) => [
-    tw`flex-1 p-3 font-semibold transition rounded-xl`,
-    active && !selected && tw`bg-white bg-opacity-80`,
-    active && selected && tw`bg-white`,
-  ]
+interface ButtonProps {
+  active: boolean;
+  selected: boolean;
+}
+const SwitchButton: React.FC<
+  ButtonProps & ButtonHTMLAttributes<HTMLButtonElement>
+> = ({ active, selected }: ButtonProps) => (
+  <button
+    className={clsx(
+      "flex-1 p-3 font-semibold transistion rounded-xl",
+      active && !selected && "bg-white bg-opacity-80",
+      active && selected && "bg-white"
+    )}
+  />
 );

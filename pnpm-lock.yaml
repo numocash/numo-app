@@ -19,6 +19,9 @@ dependencies:
   '@numoen/default-token-list':
     specifier: ^0.0.11
     version: 0.0.11
+  '@popperjs/core':
+    specifier: ^2.11.7
+    version: 2.11.7
   '@rainbow-me/rainbowkit':
     specifier: ^0.12.7
     version: 0.12.7(@types/react@18.0.33)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.9)

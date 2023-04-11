@@ -1,5 +1,7 @@
 import type { CurrencyAmount, Percent } from "@uniswap/sdk-core";
 
+import { clsx } from "clsx";
+
 import type { WrappedTokenInfo } from "@/src/lib/types/wrappedTokenInfo";
 import { formatDisplayWithSoftLimit, formatPercent } from "@/src/utils/format";
 
@@ -24,15 +26,9 @@ export const TokenAmountDisplay = <T extends WrappedTokenInfo>({
   suffix = "",
 }: IProps<T>) => {
   return (
-    <TokenAmountWrapper className={className}>
+    <div className={clsx("flex align-center", className)}>
       {showIcon && (
-        <TokenIcon
-          size={20}
-          css={css`
-            margin-right: 4px;
-          `}
-          token={amount.currency}
-        />
+        <TokenIcon size={20} className="mr-1" token={amount.currency} />
       )}
 
       {formatDisplayWithSoftLimit(Number(amount.toFixed(6)), 4, 10)}
@@ -43,17 +39,8 @@ export const TokenAmountDisplay = <T extends WrappedTokenInfo>({
           {amount.currency.symbol}
         </span>
       )}
-      {percent && <PercentFmt>({formatPercent(percent)})</PercentFmt>}
+      {percent && <span className={"ml-1"}>({formatPercent(percent)})</span>}
       {suffix && <span>{suffix}</span>}
-    </TokenAmountWrapper>
+    </div>
   );
 };
-
-const PercentFmt = styled.span`
-  margin-left: 4px;
-`;
-
-const TokenAmountWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;

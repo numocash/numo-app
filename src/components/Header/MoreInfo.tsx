@@ -40,9 +40,8 @@ export const MoreInfo: React.FC<Props> = ({ className }: Props) => {
   );
 };
 
-const InfoItem = styled.div`
-  ${tw`flex items-center gap-2 p-2 duration-300 ease-in-out transform rounded-lg text-white w-full hover:bg-[#4f4f4f] `}
-`;
+const InfoClass =
+  "flex items-center gap-2 p-2 duration-300 ease-in-out transform rounded-lg text-white w-full hover:bg-[#4f4f4f]";
 
 export const MoreInner: React.FC = () => (
   <>
@@ -52,10 +51,10 @@ export const MoreInner: React.FC = () => (
       rel="noreferrer"
       className="w-full"
     >
-      <InfoItem>
+      <div className={InfoClass}>
         <ImBook size={size} className="opacity-80" />
         Documentation
-      </InfoItem>
+      </div>
     </a>
     <a
       href="https://discord.com/invite/6Dtc49Dt4W"
@@ -63,10 +62,10 @@ export const MoreInner: React.FC = () => (
       rel="noreferrer"
       className="w-full"
     >
-      <InfoItem>
+      <div className={InfoClass}>
         <FaDiscord size={size} className="opacity-80" />
         Discord
-      </InfoItem>
+      </div>
     </a>
     <a
       href="https://github.com/Numoen"
@@ -74,10 +73,10 @@ export const MoreInner: React.FC = () => (
       rel="noreferrer"
       className="w-full"
     >
-      <InfoItem>
+      <div className={InfoClass}>
         <ImGithub size={size} className="opacity-80" />
         Github
-      </InfoItem>
+      </div>
     </a>
     <a
       href="https://twitter.com/numoen"
@@ -85,10 +84,10 @@ export const MoreInner: React.FC = () => (
       rel="noreferrer"
       className="w-full"
     >
-      <InfoItem>
+      <div className={InfoClass}>
         <ImTwitter size={size} className="opacity-80" />
         Twitter
-      </InfoItem>
+      </div>
     </a>
   </>
 );

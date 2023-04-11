@@ -1,3 +1,5 @@
+import { clsx } from "clsx";
+
 import type { WrappedTokenInfo } from "@/src/lib/types/wrappedTokenInfo";
 
 import { TokenIcon } from "./TokenIcon";
@@ -18,31 +20,30 @@ export const TokenInfo = <T extends WrappedTokenInfo>({
   showName = true,
 }: IProps<T>) => {
   return (
-    <TokenInfoWrapper className={className}>
+    <div className={clsx("flex items-center space-x-4", className)}>
       <TokenIcon size={iconSize} token={token} />
-      <TokenMeta>
+      <div className={clsx(small ? "space-y-0" : "space-y-1")}>
         <div className="flex items-center">
-          <TokenSymbol small={small}>{token.symbol}</TokenSymbol>
+          <div
+            className={clsx(
+              "text-xl font-semibold leading-none text-default",
+              small && "text-base"
+            )}
+          >
+            {token.symbol}
+          </div>
         </div>
-        {showName && <TokenName small={small}>{token.name}</TokenName>}
-      </TokenMeta>
-    </TokenInfoWrapper>
+        {showName && (
+          <div
+            className={clsx(
+              "text-lg text-secondary",
+              small && "text-sm leading-none"
+            )}
+          >
+            {token.name}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
-
-const TokenInfoWrapper = styled.div(() => [tw`flex items-center space-x-4`]);
-
-const TokenMeta = styled.div<{ small?: boolean }>(({ small }) => [
-  tw`space-y-1`,
-  small && tw`space-y-0`,
-]);
-
-const TokenSymbol = styled.div<{ small?: boolean }>(({ small }) => [
-  tw`text-xl font-semibold leading-none text-default `,
-  small && tw`text-base`,
-]);
-
-const TokenName = styled.div<{ small?: boolean }>(({ small }) => [
-  tw`text-lg text-secondary `,
-  small && tw`text-sm leading-none`,
-]);

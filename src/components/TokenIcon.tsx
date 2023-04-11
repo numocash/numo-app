@@ -18,12 +18,18 @@ export const TokenIcon: React.FC<Props> = ({
   const [invalid, setInvalid] = useState<boolean>(false);
 
   return (
-    <Wrapper
-      className={clsx("flex rounded-[50%] overflow-hidden", className)}
-      size={size}
+    <div
+      className={clsx(
+        "flex rounded-[50%] overflow-hidden",
+        className,
+        `height-[${size}px] width-[${size}px]`
+      )}
     >
       {invalid || !token?.logoURI ? (
-        <Placeholder />
+        <div
+          className="h-full w-full border border-dashed border-[#ccc]"
+          style={{ borderRadius: "100%" }}
+        />
       ) : (
         <Image
           src={token.logoURI}
@@ -33,18 +39,6 @@ export const TokenIcon: React.FC<Props> = ({
           alt={`Icon for token ${token.name ?? ""}`}
         />
       )}
-    </Wrapper>
+    </div>
   );
 };
-
-const Wrapper = styled.div<{ size: number }>`
-  height: ${({ size }) => size}px;
-  width: ${({ size }) => size}px;
-`;
-
-const Placeholder = styled.div`
-  height: 100%;
-  width: 100%;
-  border: 1px dashed #ccc;
-  border-radius: 100%;
-`;

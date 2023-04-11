@@ -16,10 +16,7 @@ export const SearchInput: React.FC<Props> = ({
   return (
     <div className="flex items-stretch focus-within:(ring-black border-black) border border-gray-200 relative bg-white rounded-xl">
       <input
-        css={[
-          tw`bg-transparent border-none flex-grow focus:(outline-none ring-0 border-0) text-default  placeholder-gray-400 text-lg font-medium appearance-none w-full p-4 pr-0 outline-none overflow-hidden`,
-          // showClear && tw`pr-8`,
-        ]}
+        className="bg-transparent border-none flex-grow focus:(outline-none ring-0 border-0) text-default  placeholder-gray-400 text-lg font-medium appearance-none w-full p-4 pr-0 outline-none overflow-hidden"
         autoComplete="off"
         placeholder={"Search name or token address"}
         type={"text"}

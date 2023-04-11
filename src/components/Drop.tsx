@@ -1,17 +1,9 @@
 import type { Placement } from "@popperjs/core";
+import { clsx } from "clsx";
 import React, { useCallback, useRef, useState } from "react";
 import { usePopper } from "react-popper";
 
 import { useOnClickOutside } from "@/src/utils/onClickOutside";
-
-const PopoverContainer = styled.div<{ show: boolean }>(({ show }) => [
-  tw`invisible opacity-0`,
-  show && tw`visible w-auto opacity-100`,
-  css`
-    z-index: 9997;
-    transition: visibility 150ms linear, opacity 150ms linear;
-  `,
-]);
 
 interface Props {
   onDismiss: () => void;
@@ -56,15 +48,19 @@ export const Drop: React.FC<Props> = ({
 
   // one container for positioning
   // one container for enter animation
+
   return (
-    <PopoverContainer
-      className={className}
-      show={show}
+    <div
+      className={clsx(
+        className,
+        "invisible opacity-0 transition-opacity",
+        show && "visible w-auto opacity-100"
+      )}
       ref={setPopperElement}
       style={styles.popper}
       {...attributes.popper}
     >
       {children}
-    </PopoverContainer>
+    </div>
   );
 };

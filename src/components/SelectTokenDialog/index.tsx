@@ -1,3 +1,4 @@
+import { clsx } from "clsx";
 import React from "react";
 
 import type { WrappedTokenInfo } from "@/src/lib/types/wrappedTokenInfo";
@@ -14,6 +15,7 @@ interface SelectTokenDialogProps {
   onDismiss: () => void;
   onSelect?: (value: WrappedTokenInfo) => void;
   selectedToken?: WrappedTokenInfo;
+  className?: string;
 }
 
 const SelectTokenDialog: React.FC<SelectTokenDialogProps> = ({
@@ -21,10 +23,15 @@ const SelectTokenDialog: React.FC<SelectTokenDialogProps> = ({
   isOpen,
   onDismiss,
   onSelect,
+  className,
   selectedToken,
 }) => {
   return (
-    <Modal className="rounded-xl" isOpen={isOpen} onDismiss={onDismiss}>
+    <Modal
+      className={clsx(className, "rounded-xl")}
+      isOpen={isOpen}
+      onDismiss={onDismiss}
+    >
       <TokenSearch
         selectedToken={selectedToken}
         tokens={tokens}

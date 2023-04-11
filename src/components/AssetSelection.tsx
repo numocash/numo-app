@@ -11,33 +11,6 @@ import SelectTokenDialog from "./SelectTokenDialog";
 import { TokenAmountDisplay } from "./TokenAmountDisplay";
 import { TokenIcon } from "./TokenIcon";
 
-export const AssetSelectButton = styled.button(
-  ({ noAsset }: { noAsset?: boolean }) => [
-    tw`relative flex items-center justify-between flex-none px-2 text-left`,
-    tw`text-base appearance-none cursor-pointer`,
-    tw`whitespace-nowrap`,
-    tw`shadow-none`,
-    noAsset && tw`text-white bg-black rounded-lg`,
-  ]
-);
-
-const Accent = styled.span<{ onClick?: () => void }>`
-  margin-left: 0.5em;
-
-  ${({ onClick }) =>
-    onClick !== undefined &&
-    css`
-      cursor: pointer;
-      &:hover {
-        text-decoration: underline;
-      }
-    `}
-`;
-
-const Balance = styled.div(tw`flex items-center`);
-
-const Section = styled.div(tw`flex items-center justify-between`);
-
 // const DEFAULT_TOKEN_DECIMALS = 3;
 
 type Props<T extends WrappedTokenInfo> = {
@@ -83,14 +56,20 @@ export const AssetSelection: React.FC<Props<WrappedTokenInfo>> = ({
   return (
     <div className={clsx(className, "flex flex-col w-full px-2 pt-2")}>
       <>
-        <Section>
+        <div className="flex items-center justify-between">
           <div className="text-xs text-secondary">{label}</div>
           <div className="flex text-xs text-secondary">
             {selectedValue &&
               (currentAmount && !hideInput ? (
-                <Balance>
+                <div className="flex items-center">
                   <span>{currentAmount.label ?? "Balance"}:</span>
-                  <Accent
+                  <span
+                    className={clsx(
+                      "ml-2",
+                      currentAmount.allowSelect &&
+                        inputOnChange &&
+                        "cursor-pointer hover:text-underline"
+                    )}
                     onClick={
                       currentAmount.allowSelect && inputOnChange
                         ? () => {
@@ -118,13 +97,13 @@ export const AssetSelection: React.FC<Props<WrappedTokenInfo>> = ({
                       //   maximumFractionDigits: uiDecimals,
                       // }}
                     />
-                  </Accent>
-                </Balance>
+                  </span>
+                </div>
               ) : (
                 <div />
               ))}
           </div>
-        </Section>
+        </div>
       </>
       <div className="flex items-center w-full gap-3">
         <div>
@@ -141,13 +120,18 @@ export const AssetSelection: React.FC<Props<WrappedTokenInfo>> = ({
           />
           <div className={"flex relative py-0 rounded-xl"}>
             <div>
-              <AssetSelectButton
+              <button
+                className={clsx(
+                  "relative flex items-center justify-between flex-none px-2 text-left",
+                  "text-base appearance-none cursor-pointer",
+                  "shadow-none whitespace-nowrap",
+                  !token && "text-white bg-black rounded-lg"
+                )}
                 onClick={() => {
                   if (onSelect) {
                     setShow(true);
                   }
                 }}
-                noAsset={!token}
               >
                 {!token ? (
                   <div className={"flex p-1.5 space-x-2 items-center"}>
@@ -176,7 +160,7 @@ export const AssetSelection: React.FC<Props<WrappedTokenInfo>> = ({
                       <FontAwesomeIcon fixedWidth icon={faChevronDown} />
                     </div>
                   ))}
-              </AssetSelectButton>
+              </button>
             </div>
           </div>
         </div>

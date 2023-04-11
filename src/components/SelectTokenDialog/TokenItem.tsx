@@ -1,22 +1,11 @@
 import type { CurrencyAmount } from "@uniswap/sdk-core";
+import { clsx } from "clsx";
 import type { CSSProperties } from "react";
 import React from "react";
 
 import type { WrappedTokenInfo } from "@/src/lib/types/wrappedTokenInfo";
 
 import { TokenInfo } from "../TokenInfo";
-
-const Balance = styled.div(() => [tw`text-base text-secondary`]);
-
-const TokenOption = styled.div(() => [
-  tw`flex items-center justify-between w-full`,
-  tw`cursor-pointer`,
-]);
-
-const Wrapper = styled.div<{ disabled?: boolean }>(({ disabled }) => [
-  tw`px-4 flex hover:(bg-white)`,
-  disabled && tw`opacity-50 pointer-events-none`,
-]);
 
 interface Props {
   onClick?: () => void;
@@ -34,14 +23,23 @@ export const TokenItem: React.FC<Props> = ({
   isSelected,
 }) => {
   return (
-    <Wrapper style={style} onClick={onClick} disabled={isSelected || !onClick}>
-      <TokenOption>
+    <div
+      className={clsx(
+        "px-4 flex hover:bg-white",
+        isSelected || (!onClick && "opacity-50 pointer-events-none")
+      )}
+      style={style}
+      onClick={onClick}
+    >
+      <div className="flex items-center justify-between w-full cursor-pointer">
         <TokenInfo iconSize={24} small token={token} />
 
         {!!amount && !amount.equalTo("0") && (
-          <Balance>{amount.toSignificant(4, { groupSeparator: "," })}</Balance>
+          <div className="text-base text-secondary">
+            {amount.toSignificant(4, { groupSeparator: "," })}
+          </div>
         )}
-      </TokenOption>
-    </Wrapper>
+      </div>
+    </div>
   );
 };
