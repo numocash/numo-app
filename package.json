@@ -33,7 +33,7 @@
     "autoprefixer": "10.4.14",
     "clsx": "^1.2.1",
     "eslint": "8.37.0",
-    "eslint-config-next": "13.2.4",
+    "eslint-config-next": "13.3.1",
     "ethers": "5",
     "fuse.js": "^6.6.2",
     "graphql": "^16.6.0",
