@@ -4,7 +4,7 @@ import { ImBook, ImGithub, ImTwitter } from "react-icons/im";
 import { IoIosArrowDown } from "react-icons/io";
 import { SiMedium } from "react-icons/si";
 
-import Popover from "../core/popover";
+import Popover from "../../core/popover";
 
 const size = 20;
 

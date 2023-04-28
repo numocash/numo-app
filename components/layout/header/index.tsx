@@ -2,12 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 import More from "./more";
-import Button from "../core/button";
+import Settings from "./settings";
+import Button from "../../core/button";
 
 export default function Header() {
   return (
     <div className="fixed top-4 z-10 flex w-full justify-center px-8 sm:px-10">
-      <div className="flex w-full max-w-md items-center justify-between rounded-2xl bg-gray-900 p-1">
+      <div className="flex w-full max-w-xl items-center justify-between rounded-2xl bg-gray-900 p-1">
         <NumoenIcon />
         <Link
           className="hidden rounded-xl px-2 py-1 hover:opacity-80 sm:flex"
@@ -22,6 +23,7 @@ export default function Header() {
           <p className="p2 text-white">Positions</p>
         </Link>
         <More />
+        <Settings />
         <div className="flex items-center gap-1 sm:gap-0">
           <Link href="https://app.numoen.com" className="">
             <Button variant="primary" className="bg-gray-800">

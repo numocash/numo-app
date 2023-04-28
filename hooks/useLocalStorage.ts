@@ -1,17 +1,17 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useLocalStorageState<T>(
   key: string,
   defaultState: T
 ): [T, (newState: T) => void] {
-  const [state, setState] = useState<T>((): T => {
-    // NOTE: Not sure if this is ok
+  const [state, setState] = useState<T>(defaultState);
+  useEffect(() => {
     const storedState = localStorage.getItem(key);
     if (storedState) {
-      return JSON.parse(storedState) as T;
+      setState(JSON.parse(storedState) as T);
+      return;
     }
-    return defaultState;
-  });
+  }, [key]);
 
   const setLocalStorageState = useCallback(
     (newState: T) => {
