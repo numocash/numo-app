@@ -12,27 +12,22 @@ export default function Header() {
         <NumoenIcon />
         <Link
           className="hidden rounded-xl px-2 py-1 hover:opacity-80 sm:flex"
-          href="/"
+          href="/earn"
         >
           <p className="p2 text-white">Earn</p>
         </Link>
         <Link
           className="hidden rounded-xl px-2 py-1 hover:opacity-80 sm:flex"
-          href="/"
+          href="/positions"
         >
           <p className="p2 text-white">Positions</p>
         </Link>
         <More />
         <Settings />
-        {/* <div className="flex items-center gap-1 sm:gap-0">
-          <Link href="https://app.numoen.com" className="">
-            <Button variant="primary" className="bg-gray-800">
-              Launch App
-            </Button>
-          </Link>
-          <Menu />
-        </div> */}
-        <ConnectButton />
+        <div className="flex items-center gap-1">
+          {/* <Menu /> */}
+          <ConnectButton />
+        </div>
       </div>
     </div>
   );

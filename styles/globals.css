@@ -15,7 +15,7 @@ body {
 
 @layer base {
   h1 {
-    @apply text-3xl font-bold text-default sm:text-5xl;
+    @apply text-2xl font-bold text-default sm:text-4xl;
   }
   h2 {
     @apply text-xl font-bold text-default sm:text-2xl;
@@ -41,6 +41,10 @@ body {
 
   .p5 {
     @apply text-xs font-medium text-secondary;
+  }
+
+  .top-card {
+    @apply grid w-full max-w-5xl grid-cols-2 items-center gap-4 rounded-xl border-2 border-gray-200 bg-white p-4 pt-24;
   }
 
   .resource-item {

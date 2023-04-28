@@ -47,7 +47,7 @@ export default function ConnectButton() {
               }
 
               return (
-                <div className="flex items-center gap-1">
+                <>
                   <button onClick={openAccountModal}>
                     <div className="flex h-10  flex-col rounded-xl bg-gray-700 px-4">
                       <p className="p2 flex h-full items-center text-white">
@@ -69,7 +69,7 @@ export default function ConnectButton() {
                       />
                     </div>
                   </button>
-                </div>
+                </>
               );
             })()}
           </>

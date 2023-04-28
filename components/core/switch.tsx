@@ -1,10 +1,13 @@
 import { Switch as HeadlessSwitch } from "@headlessui/react";
 import { clsx } from "clsx";
-import { useState } from "react";
 
-export default function Switch() {
-  const [enabled, setEnabled] = useState(false);
-
+export default function Switch({
+  enabled,
+  setEnabled,
+}: {
+  enabled: boolean;
+  setEnabled: (val: boolean) => void;
+}) {
   return (
     <HeadlessSwitch
       checked={enabled}

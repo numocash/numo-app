@@ -12,6 +12,8 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
 import Layout from "@/components/layout";
+import { SettingsProvider } from "@/contexts/settings";
+import { DefaultToasterWrapper } from "@/utils/beet";
 const { chains, provider, webSocketProvider } = configureChains(
   [
     arbitrum,
@@ -30,6 +32,8 @@ const { chains, provider, webSocketProvider } = configureChains(
     publicProvider(),
   ]
 ); // TODO: use websockets provider
+
+export const toaster = new DefaultToasterWrapper();
 
 export { chains };
 
@@ -56,12 +60,13 @@ export default function App({ Component, pageProps }: AppProps) {
     <WagmiConfig client={wagmiClient}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-
         <RainbowKitProvider coolMode chains={chains}>
-          <Layout>
-            <Component {...pageProps} />
-            <Analytics />
-          </Layout>
+          <SettingsProvider>
+            <Layout>
+              <Component {...pageProps} />
+              <Analytics />
+            </Layout>
+          </SettingsProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiConfig>
