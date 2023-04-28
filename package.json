@@ -32,7 +32,7 @@
     "abitype": "^0.7.1",
     "autoprefixer": "10.4.14",
     "clsx": "^1.2.1",
-    "eslint": "8.37.0",
+    "eslint": "8.39.0",
     "eslint-config-next": "13.2.4",
     "ethers": "5",
     "fuse.js": "^6.6.2",
