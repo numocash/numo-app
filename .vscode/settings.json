@@ -13,5 +13,6 @@
     "typescriptreact"
   ],
   "tailwindcss.documentColors": true,
+  "tailwindcss.jsxPropImportChecking": false,
   "typescript.tsdk": "node_modules/typescript/lib"
 }

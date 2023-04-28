@@ -12,3 +12,34 @@ body {
   color: rgb(var(--foreground-rgb));
   background: #f5f5f4;
 }
+
+@layer base {
+  h1 {
+    @apply text-3xl font-bold text-default sm:text-5xl;
+  }
+  h2 {
+    @apply text-xl font-bold text-default sm:text-2xl;
+  }
+}
+
+@layer components {
+  .p1 {
+    @apply text-lg font-medium text-default;
+  }
+
+  .p2 {
+    @apply font-medium text-default;
+  }
+
+  .p3 {
+    @apply font-medium text-gray-500;
+  }
+
+  .p4 {
+    @apply text-xs font-medium text-default;
+  }
+
+  .p5 {
+    @apply text-xs font-medium text-secondary;
+  }
+}
