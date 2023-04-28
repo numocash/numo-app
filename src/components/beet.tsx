@@ -104,8 +104,8 @@ export class DefaultToasterWrapper {
     tx: TxSending | TxSuccess | TxError | TxPending
   ) {
     return (
-      <div className="flex flex-col overflow-hidden w-[290px]">
-        <div className="flex items-center font-semibold justify-beclassNameeen">
+      <div className="flex w-[290px] flex-col overflow-hidden">
+        <div className="justify-beclassNameeen flex items-center font-semibold">
           <span className="flex items-center gap-1">
             {tx.title}
             <span className="flex text-sm text-secondary">{tx.humanCount}</span>

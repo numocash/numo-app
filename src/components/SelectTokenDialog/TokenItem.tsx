@@ -25,13 +25,13 @@ export const TokenItem: React.FC<Props> = ({
   return (
     <div
       className={clsx(
-        "px-4 flex hover:bg-white",
-        isSelected || (!onClick && "opacity-50 pointer-events-none")
+        "flex px-4 hover:bg-white",
+        isSelected || (!onClick && "pointer-events-none opacity-50")
       )}
       style={style}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between w-full cursor-pointer">
+      <div className="flex w-full cursor-pointer items-center justify-between">
         <TokenInfo iconSize={24} small token={token} />
 
         {!!amount && !amount.equalTo("0") && (

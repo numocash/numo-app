@@ -74,7 +74,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "husky": "^8.0.3",
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.7",
+    "prettier-plugin-tailwindcss": "^0.2.7"
   },
   "engines": {
     "node": ">=18",

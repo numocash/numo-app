@@ -20,7 +20,7 @@ export const TokenIcon: React.FC<Props> = ({
   return (
     <div
       className={clsx(
-        "flex rounded-[50%] overflow-hidden",
+        "flex overflow-hidden rounded-[50%]",
         className,
         `height-[${size}px] width-[${size}px]`
       )}

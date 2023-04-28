@@ -11,7 +11,7 @@ export const Module: React.FC<Props> = ({ children, className }: Props) => {
     <div
       className={clsx(
         className,
-        "w-full p-6 overflow-hidden bg-white shadow-2xl rounded-xl"
+        "w-full overflow-hidden rounded-xl bg-white p-6 shadow-2xl"
       )}
     >
       <ErrorBoundary

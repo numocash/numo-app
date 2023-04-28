@@ -27,7 +27,7 @@ export const ConnectButton: React.FC = () => {
                 return (
                   <Button
                     variant="inverse"
-                    className="h-10 px-1 text-lg rounded-xl"
+                    className="h-10 rounded-xl px-1 text-lg"
                     onClick={openConnectModal}
                   >
                     Connect Wallet
@@ -39,7 +39,7 @@ export const ConnectButton: React.FC = () => {
                 return (
                   <Button
                     variant="danger"
-                    className="h-10 px-1 text-lg rounded-xl"
+                    className="h-10 rounded-xl px-1 text-lg"
                     onClick={openChainModal}
                   >
                     Wrong network
@@ -50,14 +50,14 @@ export const ConnectButton: React.FC = () => {
               return (
                 <>
                   <button onClick={openAccountModal}>
-                    <div className="px-4 h-10  rounded-xl flex flex-col bg-[#4f4f4f]">
-                      <p className="flex items-center h-full font-bold text-white">
+                    <div className="flex h-10  flex-col rounded-xl bg-[#4f4f4f] px-4">
+                      <p className="flex h-full items-center font-bold text-white">
                         {account.displayName}
                       </p>
                     </div>
                   </button>
                   <button onClick={openChainModal}>
-                    <div className="p-1.5 rounded-xl bg-[#4f4f4f]">
+                    <div className="rounded-xl bg-[#4f4f4f] p-1.5">
                       <Image
                         alt={chain.name ?? "Chain icon"}
                         src={

@@ -23,7 +23,7 @@ export const More: React.FC = () => {
         placement={"bottom-start"}
         className="w-full px-4"
       >
-        <Module className="px-4 py-2 gap-2 rounded-2xl bg-[#303030] w-full md:hidden flex flex-col">
+        <Module className="flex w-full flex-col gap-2 rounded-2xl bg-[#303030] px-4 py-2 md:hidden">
           <Link
             className="w-full text-white hover:opacity-80"
             href="/trade/"
@@ -31,7 +31,7 @@ export const More: React.FC = () => {
           >
             <p>Trade</p>
           </Link>
-          <div className="border-b border-[#505050] w-full" />
+          <div className="w-full border-b border-[#505050]" />
 
           <Link
             className="w-full text-white hover:opacity-80"
@@ -40,38 +40,38 @@ export const More: React.FC = () => {
           >
             <p>Earn</p>
           </Link>
-          <div className="border-b border-[#505050] w-full" />
+          <div className="w-full border-b border-[#505050]" />
 
-          <div className="flex flex-col w-full gap-2 ">
+          <div className="flex w-full flex-col gap-2 ">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => setShowMore(!showMore)}
             >
               <p className="text-white">More</p>
-              <IoIosArrowDown className="text-white -rotate-90 opacity-80" />
+              <IoIosArrowDown className="-rotate-90 text-white opacity-80" />
             </button>
             {showMore && <MoreInner />}
           </div>
-          <div className="border-b border-[#505050] w-full" />
+          <div className="w-full border-b border-[#505050]" />
 
-          <div className="flex flex-col w-full gap-2 ">
+          <div className="flex w-full flex-col gap-2 ">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => setShowSettings(!showSettings)}
             >
               <p className="text-white">Settings</p>
-              <IoIosArrowDown className="text-white -rotate-90 opacity-80" />
+              <IoIosArrowDown className="-rotate-90 text-white opacity-80" />
             </button>
             {showSettings && <SettingsInner />}
           </div>
         </Module>
       </Drop>
       <button
-        className="p-1.5 bg-[#4f4f4f] rounded-xl text-white  md:hidden"
+        className="rounded-xl bg-[#4f4f4f] p-1.5 text-white  md:hidden"
         ref={setTargetRef}
         onClick={() => setShow(true)}
       >
-        <IoIosMore className="w-[30px] h-[30px]" />
+        <IoIosMore className="h-[30px] w-[30px]" />
       </button>
     </>
   );

@@ -29,7 +29,7 @@ export const Modal: React.FC<ModalProps> = ({
       className={clsx(
         className,
         "flex items-center justify-center overflow-hidden",
-        scrollBehavior === "outside" && "items-start py-8 overflow-y-scroll",
+        scrollBehavior === "outside" && "items-start overflow-y-scroll py-8",
         "data-[reach-dialog-overlay]:(z-50 bg-[rgba(0, 0, 0, 0.7)]"
       )}
       as="div"

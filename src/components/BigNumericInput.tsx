@@ -25,8 +25,8 @@ export const BigNumericInput: React.FC<IProps> = ({
   <input
     {...rest}
     className={clsx(
-      "outline-none active:(border-none outline-none) border-none",
-      "overflow-hidden text-ellipsis flex-auto w-100 text-[#8f8f8f]",
+      "active:(border-none outline-none) border-none outline-none",
+      "w-100 flex-auto overflow-hidden text-ellipsis text-[#8f8f8f]",
       "placeholder:color-[#888]"
     )}
     style={{

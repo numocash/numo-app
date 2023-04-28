@@ -24,7 +24,7 @@ export const MoreInfo: React.FC<Props> = ({ className }: Props) => {
         target={targetRef}
         placement={"bottom-start"}
       >
-        <Module className="p-2 rounded-2xl bg-[#303030]">
+        <Module className="rounded-2xl bg-[#303030] p-2">
           <MoreInner />
         </Module>
       </Drop>

@@ -100,7 +100,7 @@ export const TokenSearch: React.FC<TokenSearchProps> = ({
   }, [isOpen]);
 
   return (
-    <div className={"relative flex flex-col flex-1 p-0"}>
+    <div className={"relative flex flex-1 flex-col p-0"}>
       {/*<div*/}
       {/*  onClick={onDismiss}*/}
       {/*  className="fixed inset-0 bg-black bg-opacity-75"*/}
@@ -123,9 +123,9 @@ export const TokenSearch: React.FC<TokenSearchProps> = ({
         </div>
       </div>
 
-      <div className={"overflow-y-scroll flex-1"}>
+      <div className={"flex-1 overflow-y-scroll"}>
         {(results.length === 0 || !tokens) && (
-          <div className={"p-8 w-full flex items-center justify-center"}>
+          <div className={"flex w-full items-center justify-center p-8"}>
             <LoadingSpinner />
           </div>
         )}
@@ -143,7 +143,7 @@ export const TokenSearch: React.FC<TokenSearchProps> = ({
           />
         )}
       </div>
-      <div className="flex justify-between p-4 py-2 bg-white text-default">
+      <div className="flex justify-between bg-white p-4 py-2 text-default">
         <div className="text-sm">{results.length} Tokens</div>
         <div className="flex items-center space-x-1.5">
           <div className="text-sm font-semibold">Numoen Token Browser</div>

@@ -8,12 +8,12 @@ interface Props {
 
 export const CenterSwitch: React.FC<Props> = ({ onClick, icon }: Props) => {
   return (
-    <div className="w-full flex justify-center items-center ">
+    <div className="flex w-full items-center justify-center ">
       <button
         onClick={onClick}
-        className="flex items-center justify-center self-center absolute bg-background border-stroke  border-2 rounded-lg h-6 w-6"
+        className="bg-background border-stroke absolute flex h-6 w-6 items-center  justify-center self-center rounded-lg border-2"
       >
-        <div className="text-stroke justify-center items-center flex text-sm">
+        <div className="text-stroke flex items-center justify-center text-sm">
           <FontAwesomeIcon
             icon={icon === "arrow" ? faArrowDown : faPlus}
             fixedWidth

@@ -9,8 +9,8 @@ import { Settings } from "@/src/components/Header/Settings";
 
 export const Header: React.FC = () => {
   return (
-    <div className="fixed z-10 flex justify-center w-full px-6 top-4">
-      <div className="justify-between bg-[#303030] rounded-2xl max-w-xl  w-full flex items-center p-1">
+    <div className="fixed top-4 z-10 flex w-full justify-center px-6">
+      <div className="flex w-full max-w-xl items-center  justify-between rounded-2xl bg-[#303030] p-1">
         <NumoenIcon />
         <Link
           className="hidden text-white hover:opacity-80 md:flex"
@@ -38,7 +38,7 @@ export const Header: React.FC = () => {
 
 const NumoenIcon: React.FC = () => {
   return (
-    <div className="p-1.5 bg-white rounded-xl">
+    <div className="rounded-xl bg-white p-1.5">
       <Image src="/numoen.png" alt="Numoen Logo" width={30} height={30} />
     </div>
   );

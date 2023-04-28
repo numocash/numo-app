@@ -40,11 +40,11 @@ export const Button: React.FC<ButtonProps> = ({
       className={clsx(
         className,
         "flex flex-row items-center justify-center leading-normal",
-        "rounded-lg text-sm font-semibold text-white transistion-transform",
-        "active:scale-98 hover:bg-opacity-90 disabled:(bg-gray-100 text-gray-500  cursor-not-allowed)",
+        "transistion-transform rounded-lg text-sm font-semibold text-white",
+        "active:scale-98 disabled:(bg-gray-100 cursor-not-allowed) text-gray-500  hover:bg-opacity-90",
         variant === "primary" && "bg-black shadow",
-        variant === "inverse" && "text-black bg-white shadow",
-        variant === "danger" && "font-bold shadow bg-red"
+        variant === "inverse" && "bg-white text-black shadow",
+        variant === "danger" && "bg-red font-bold shadow"
       )}
       {...props}
       onClick={
@@ -64,7 +64,7 @@ export const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <div className="flex items-center gap-2">
           {children}
-          <LoadingSpinner className="ml-2 mb-0.5" />
+          <LoadingSpinner className="mb-0.5 ml-2" />
         </div>
       ) : (
         children

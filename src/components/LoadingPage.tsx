@@ -17,7 +17,7 @@ export const LoadingPage: React.FC<Props> = ({ className }: Props) => {
       }}
       className={className}
     >
-      <LoadingSpinner className="w-20 h-20" />
+      <LoadingSpinner className="h-20 w-20" />
     </div>
   );
 };

@@ -10,7 +10,7 @@ export const LoadingSpinner: React.FC<Props> = ({ className }: Props) => (
     alt="Loading"
     className={clsx(
       className,
-      "w-4 h-4 duration-1000 transform animate-ping opacity-20"
+      "h-4 w-4 transform animate-ping opacity-20 duration-1000"
     )}
   />
 );

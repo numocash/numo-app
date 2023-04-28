@@ -26,7 +26,7 @@ export const TokenAmountDisplay = <T extends WrappedTokenInfo>({
   suffix = "",
 }: IProps<T>) => {
   return (
-    <div className={clsx("flex align-center", className)}>
+    <div className={clsx("align-center flex", className)}>
       {showIcon && (
         <TokenIcon size={20} className="mr-1" token={amount.currency} />
       )}

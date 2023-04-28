@@ -28,7 +28,7 @@ export const Settings: React.FC<Props> = ({ className }: Props) => {
         target={targetRef}
         placement={"bottom-start"}
       >
-        <Module className="px-4 py-2 rounded-2xl bg-[#303030] gap-2 flex flex-col">
+        <Module className="flex flex-col gap-2 rounded-2xl bg-[#303030] px-4 py-2">
           <SettingsInner />
         </Module>
       </Drop>
@@ -55,11 +55,11 @@ export const SettingsInner: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col w-full gap-2">
-        <div className="flex items-center justify-between w-full">
+      <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full items-center justify-between">
           <p className="pr-8 text-white opacity-80 ">Transaction Deadline</p>
           <div className="flex items-center gap-2">
-            <div className="rounded-xl bg-[#4f4f4f] border-[#505050] border py-1 text-white w-16  flex justify-center">
+            <div className="flex w-16 justify-center rounded-xl border border-[#505050] bg-[#4f4f4f]  py-1 text-white">
               {settings.timeout} Mins
             </div>
             <IoIosArrowDown
@@ -71,7 +71,7 @@ export const SettingsInner: React.FC = () => {
         {showDeadline && (
           <div className="flex items-center gap-2">
             <BigNumericInput
-              className="w-full px-1 text-lg text-right rounded-lg"
+              className="w-full rounded-lg px-1 text-right text-lg"
               placeholder={settings.timeout.toString()}
               inputMode="numeric"
               autoComplete="off"
@@ -86,22 +86,22 @@ export const SettingsInner: React.FC = () => {
                 }
                 setInputDeadline("");
               }}
-              className="bg-[#4f4f4f] border-[#505050] border py-1 text-white rounded-xl px-2"
+              className="rounded-xl border border-[#505050] bg-[#4f4f4f] px-2 py-1 text-white"
             >
               Set
             </button>
           </div>
         )}
       </div>
-      <div className="border-b border-[#505050] w-full" />
-      <div className="flex flex-col w-full gap-2">
-        <div className="flex items-center justify-between w-full gap-1">
+      <div className="w-full border-b border-[#505050]" />
+      <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full items-center justify-between gap-1">
           <div className="flex justify-start text-white opacity-80">
             Allowed Slippage
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="rounded-xl bg-[#4f4f4f] border-[#505050] border px-2 py-1 text-white w-16  flex justify-center">
+            <div className="flex w-16 justify-center rounded-xl border border-[#505050] bg-[#4f4f4f] px-2  py-1 text-white">
               {formatPercent(settings.maxSlippagePercent)}
             </div>
             <IoIosArrowDown
@@ -113,7 +113,7 @@ export const SettingsInner: React.FC = () => {
         {showSlippage && (
           <div className="flex items-center gap-1">
             <BigNumericInput
-              className="w-full px-1 text-lg text-right rounded-lg"
+              className="w-full rounded-lg px-1 text-right text-lg"
               placeholder={settings.maxSlippagePercent.toFixed(2)}
               inputMode="numeric"
               autoComplete="off"
@@ -133,15 +133,15 @@ export const SettingsInner: React.FC = () => {
                 }
                 setInputSlippage("");
               }}
-              className="bg-[#4f4f4f] border-[#505050] border py-1 text-white rounded-xl px-2"
+              className="rounded-xl border border-[#505050] bg-[#4f4f4f] px-2 py-1 text-white"
             >
               Set
             </button>
           </div>
         )}
       </div>
-      <div className="border-b border-[#505050] w-full" />
-      <div className="flex items-center justify-between w-full gap-1">
+      <div className="w-full border-b border-[#505050]" />
+      <div className="flex w-full items-center justify-between gap-1">
         <div className="text-white opacity-80">Infinite Approval</div>
         <div className="">
           <Switch

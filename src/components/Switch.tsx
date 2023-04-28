@@ -9,7 +9,7 @@ interface Props {
 
 export const Switch: React.FC<Props> = ({ selected, onSelect }) => {
   return (
-    <div className="flex rounded-2xl p-1 justify-between items-center bg-[#4f4f4f] border-2 border-stroke">
+    <div className="border-stroke flex items-center justify-between rounded-2xl border-2 bg-[#4f4f4f] p-1">
       <SwitchButton
         onClick={() => onSelect(!selected)}
         active={!selected}
@@ -33,7 +33,7 @@ const SwitchButton: React.FC<
 > = ({ active, selected }: ButtonProps) => (
   <button
     className={clsx(
-      "flex-1 p-3 font-semibold transistion rounded-xl",
+      "transistion flex-1 rounded-xl p-3 font-semibold",
       active && !selected && "bg-white bg-opacity-80",
       active && selected && "bg-white"
     )}

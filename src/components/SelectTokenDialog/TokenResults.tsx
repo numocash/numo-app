@@ -63,7 +63,7 @@ export const TokenResults: React.FC<Props> = ({
   );
 
   return (
-    <div className="w-full h-full overflow-auto" ref={parentRef}>
+    <div className="h-full w-full overflow-auto" ref={parentRef}>
       <div
         style={{
           height: `${rowVirtualizer.totalSize}px`,
