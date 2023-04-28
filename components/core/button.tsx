@@ -47,8 +47,8 @@ export default function Button({
         "p2 flex flex-row items-center justify-center rounded-xl px-4 py-2 leading-normal text-white",
         "transistion-transform active:scale-98 hover:bg-opacity-90",
         variant === "primary" && "bg-black",
-        variant === "inverse" && "bg-white text-default",
-        variant === "danger" && "bg-red",
+        variant === "inverse" && "bg-white text-black",
+        variant === "danger" && "bg-red-500",
         "disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-secondary"
       )}
       style={{

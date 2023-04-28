@@ -11,7 +11,8 @@ const gray = {
 };
 
 const textColor = {
-  default: "#000000",
+  default: "#000",
+  DEFAULT: "000",
   secondary: "#707070",
 };
 
@@ -21,7 +22,6 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
   ],
-  mode: "jit",
   theme: {
     extend: {
       colors: {

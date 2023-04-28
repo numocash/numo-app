@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import ConnectButton from "./connectButton";
 import More from "./more";
 import Settings from "./settings";
-import Button from "../../core/button";
 
 export default function Header() {
   return (
@@ -24,14 +24,15 @@ export default function Header() {
         </Link>
         <More />
         <Settings />
-        <div className="flex items-center gap-1 sm:gap-0">
+        {/* <div className="flex items-center gap-1 sm:gap-0">
           <Link href="https://app.numoen.com" className="">
             <Button variant="primary" className="bg-gray-800">
               Launch App
             </Button>
           </Link>
-          {/* <Menu /> */}
-        </div>
+          <Menu />
+        </div> */}
+        <ConnectButton />
       </div>
     </div>
   );
