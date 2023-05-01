@@ -1,5 +1,5 @@
 import { useProvideLiquidity } from ".";
-import CenterSwitch from "@/components/centerSwitch";
+import CenterSwitch from "@/components/CenterSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
 import { useDepositAmount } from "@/hooks/useAmounts";

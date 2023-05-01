@@ -1,4 +1,4 @@
-import CenterSwitch from "@/components/centerSwitch";
+import CenterSwitch from "@/components/CenterSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
 import Slider from "@/components/slider";
