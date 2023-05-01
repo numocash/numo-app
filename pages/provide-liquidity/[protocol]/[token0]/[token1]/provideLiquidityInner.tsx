@@ -1,7 +1,7 @@
 import { useProvideLiquidity } from ".";
-import Deposit from "./Deposit";
-import Stats from "./Stats";
-import Withdraw from "./Withdraw";
+import Deposit from "./deposit";
+import Stats from "./stats";
+import Withdraw from "./withdraw";
 import Tab from "@/components/core/tabs";
 import TokenIcon from "@/components/tokenIcon";
 import Head from "next/head";

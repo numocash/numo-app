@@ -1,7 +1,7 @@
-import Plus from "@/components/Plus";
 import CenterSwitch from "@/components/centerSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
+import Plus from "@/components/plus";
 import { useEnvironment } from "@/contexts/environment";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
 import { useDepositAmount } from "@/hooks/useAmounts";
