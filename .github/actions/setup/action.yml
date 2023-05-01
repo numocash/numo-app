@@ -28,3 +28,4 @@ runs:
       shell: bash
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: pnpm i --frozen-lockfile
+      run: pnpm graphql-codegen
