@@ -2,6 +2,8 @@ import { clsx } from "clsx";
 import type { DetailedHTMLProps } from "react";
 import { useState } from "react";
 
+import LoadingSpinner from "../loadingSpinner";
+
 type Variant = "danger" | "primary" | "inverse";
 
 interface AdditionalButtonProps {
@@ -43,13 +45,13 @@ export default function Button({
       }
       disabled={disabled || loading}
       className={clsx(
-        className,
-        "p2 flex flex-row items-center justify-center rounded-xl px-4 py-2 leading-normal text-white",
+        "p2 flex flex-row items-center justify-center rounded-xl px-4 py-2 leading-normal",
         "transistion-transform active:scale-98 hover:bg-opacity-90",
-        variant === "primary" && "bg-black",
-        variant === "inverse" && "bg-white text-black",
-        variant === "danger" && "bg-red-500",
-        "disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-secondary"
+        variant === "primary" && "bg-black text-white",
+        variant === "inverse" && "bg-white",
+        variant === "danger" && "bg-red-500 text-white",
+        "disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-secondary",
+        className
       )}
       style={{
         ...props.style,
@@ -58,7 +60,7 @@ export default function Button({
       {loading ? (
         <div className="flex items-center gap-2">
           {children}
-          {/* <LoadingSpinner tw="ml-2 mb-0.5" /> */}
+          <LoadingSpinner tw="ml-2 mb-0.5" />
         </div>
       ) : (
         children

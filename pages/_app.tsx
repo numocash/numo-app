@@ -12,6 +12,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
 import Layout from "@/components/layout";
+import { EnvironmentProvider } from "@/contexts/environment";
 import { SettingsProvider } from "@/contexts/settings";
 import { DefaultToasterWrapper } from "@/utils/beet";
 const { chains, provider, webSocketProvider } = configureChains(
@@ -61,12 +62,14 @@ export default function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
         <RainbowKitProvider coolMode chains={chains}>
-          <SettingsProvider>
-            <Layout>
-              <Component {...pageProps} />
-              <Analytics />
-            </Layout>
-          </SettingsProvider>
+          <EnvironmentProvider>
+            <SettingsProvider>
+              <Layout>
+                <Component {...pageProps} />
+                <Analytics />
+              </Layout>
+            </SettingsProvider>
+          </EnvironmentProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiConfig>
