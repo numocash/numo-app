@@ -38,7 +38,7 @@ const defaultStore: SettingsStore = {
 const useSettingsInternal = (): ISettings => {
   const [store, setStore] = useLocalStorageState(
     "NumoenSettings",
-    defaultStore
+    defaultStore,
   );
 
   return {

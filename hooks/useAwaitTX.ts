@@ -10,20 +10,20 @@ export const useAwaitTX = () => {
   return useCallback(
     async (transaction: SendTransactionResult) =>
       awaitTX(webSocketProvider ?? provider, transaction),
-    [provider, webSocketProvider]
+    [provider, webSocketProvider],
   );
 };
 
 const awaitTX = async (
   provider: Provider,
-  transaction: SendTransactionResult
+  transaction: SendTransactionResult,
 ) =>
   Promise.race([
     new Promise((resolve: (e: ContractReceipt) => void) =>
       provider.once(transaction.hash, (e: ContractReceipt) => {
         resolve(e);
         return e;
-      })
+      }),
     ),
     transaction.wait(),
   ]);

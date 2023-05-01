@@ -72,7 +72,7 @@ export default function SettingsInner() {
               integerOnly={false}
               value={slippageInput}
               placeholder={fractionToFloat(
-                maxSlippagePercent.asFraction.multiply(100)
+                maxSlippagePercent.asFraction.multiply(100),
               ).toLocaleString(undefined, {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
@@ -86,8 +86,8 @@ export default function SettingsInner() {
                   setMaxSlippagePercent(
                     new Percent(
                       (parseFloat(slippageInput) * 100).toFixed(0),
-                      10000
-                    )
+                      10000,
+                    ),
                   );
                 }
                 setSlippageInput("");

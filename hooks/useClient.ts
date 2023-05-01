@@ -15,6 +15,6 @@ export const useClient = () => {
       environment.interface.numoenSubgraph,
       environment.interface.uniswapV2.subgraph,
       environment.interface.uniswapV3.subgraph,
-    ]
+    ],
   );
 };

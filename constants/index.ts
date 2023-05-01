@@ -1,15 +1,15 @@
 import type { NativeCurrency, Percent } from "@uniswap/sdk-core";
 import type { Address } from "wagmi";
 
-import { arbitrumConfig } from "./arbitrum";
-import { celoConfig } from "./celo";
-import { polygonConfig } from "./polygon";
 import type { Lendgine } from "../lib/types/lendgine";
 import type { Market } from "../lib/types/market";
 import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import type { chains } from "../pages/_app";
+import { arbitrumConfig } from "./arbitrum";
+import { celoConfig } from "./celo";
+import { polygonConfig } from "./polygon";
 
-export type SupportedChainIDs = (typeof chains)[number]["id"];
+export type SupportedChainIDs = typeof chains[number]["id"];
 
 export type NumoenBaseConfig = {
   factory: Address;
@@ -17,7 +17,7 @@ export type NumoenBaseConfig = {
   liquidityManager: Address;
 };
 
-export type Config = (typeof config)[keyof typeof config];
+export type Config = typeof config[keyof typeof config];
 
 export type Protocol = keyof Config["procotol"];
 

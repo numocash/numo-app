@@ -19,7 +19,6 @@ export const useInvalidateCall = () => {
           predicate: (query) => {
             const queryKey = query.queryKey;
             if (queryKey.length !== 1) return false;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (!("contracts" in (queryKey[0] as any))) return false;
 
             if (
@@ -31,7 +30,7 @@ export const useInvalidateCall = () => {
                       functionName: string | undefined;
                       address: Address | undefined;
                     }[];
-                  }
+                  },
                 ]
               )[0].contracts.find((c) => {
                 return (
@@ -41,7 +40,7 @@ export const useInvalidateCall = () => {
                   c.args.every((a, i) =>
                     typeof a === "string" && typeof args[i] === "string"
                       ? a.toLowerCase() === (args[i] as string).toLowerCase()
-                      : a === args[i]
+                      : a === args[i],
                   ) &&
                   c.address &&
                   c.address.toLowerCase() === address.toLowerCase()
@@ -54,6 +53,6 @@ export const useInvalidateCall = () => {
           },
         });
     },
-    [queryClient]
+    [queryClient],
   );
 };

@@ -11,7 +11,6 @@ import {
   writeContract,
 } from "wagmi/actions";
 
-import { useBurnAmount } from "./useAmounts";
 import { lendgineRouterABI } from "../abis/lendgineRouter";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -27,6 +26,7 @@ import { getBalanceRead } from "../hooks/useBalance";
 import { isV3, useMostLiquidMarket } from "../hooks/useExternalExchange";
 import { useIsWrappedNative } from "../hooks/useTokens";
 import { ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
+import { useBurnAmount } from "./useAmounts";
 
 import { priceToFraction } from "../lib/price";
 import type { Lendgine } from "../lib/types/lendgine";
@@ -37,7 +37,7 @@ import type { BeetStage, TxToast } from "../utils/beet";
 export const useBurn = <L extends Lendgine>(
   lendgine: HookArg<L>,
   shares: HookArg<CurrencyAmount<L["lendgine"]>>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const { address } = useAccount();
   const environment = useEnvironment();
@@ -51,7 +51,7 @@ export const useBurn = <L extends Lendgine>(
 
   const burnAmounts = useBurnAmount(lendgine, shares, protocol);
   const mostLiquid = useMostLiquidMarket(
-    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
   );
 
   const native = useIsWrappedNative(lendgine?.token1);
@@ -79,8 +79,8 @@ export const useBurn = <L extends Lendgine>(
           getAllowanceRead(
             lendgine.lendgine,
             address ?? constants.AddressZero,
-            protocolConfig.lendgineRouter
-          )
+            protocolConfig.lendgineRouter,
+          ),
         ));
     },
   });
@@ -118,29 +118,29 @@ export const useBurn = <L extends Lendgine>(
           token0Exp: BigNumber.from(lendgine.token0.decimals),
           token1Exp: BigNumber.from(lendgine.token1.decimals),
           upperBound: BigNumber.from(
-            priceToFraction(lendgine.bound).multiply(scale).quotient.toString()
+            priceToFraction(lendgine.bound).multiply(scale).quotient.toString(),
           ),
           shares: BigNumber.from(shares.quotient.toString()),
           collateralMin: BigNumber.from(
             amountOut
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           amount0Min: BigNumber.from(
             amount0
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           amount1Min: BigNumber.from(
             amount1
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           swapType: isV3(mostLiquidPool) ? 1 : 0,
           swapExtraData: isV3(mostLiquidPool)
@@ -150,12 +150,12 @@ export const useBurn = <L extends Lendgine>(
                   {
                     fee: mostLiquidPool.feeTier,
                   },
-                ]
+                ],
               ) as Address)
             : constants.AddressZero,
           recipient: native ? constants.AddressZero : address,
           deadline: BigNumber.from(
-            Math.round(Date.now() / 1000) + settings.timeout * 60
+            Math.round(Date.now() / 1000) + settings.timeout * 60,
           ),
         },
       ] as const;
@@ -164,7 +164,7 @@ export const useBurn = <L extends Lendgine>(
         BigNumber.from(
           amountOut
             .multiply(ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent))
-            .quotient.toString()
+            .quotient.toString(),
         ),
         address,
       ] as const;
@@ -179,11 +179,11 @@ export const useBurn = <L extends Lendgine>(
                 [
                   lendgineRouterContract.interface.encodeFunctionData(
                     "burn",
-                    args
+                    args,
                   ),
                   lendgineRouterContract.interface.encodeFunctionData(
                     "unwrapWETH",
-                    unwrapArgs
+                    unwrapArgs,
                   ),
                 ] as `0x${string}`[],
               ],
@@ -219,8 +219,8 @@ export const useBurn = <L extends Lendgine>(
           getAllowanceRead(
             input.shares.currency,
             input.address,
-            protocolConfig.lendgineRouter
-          )
+            protocolConfig.lendgineRouter,
+          ),
         ),
         invalidate(getBalanceRead(input.amountOut.currency, input.address)),
         invalidate(getBalanceRead(input.shares.currency, input.address)),
@@ -257,7 +257,6 @@ export const useBurn = <L extends Lendgine>(
                     description: approve.title,
                     callback: (toast: TxToast) =>
                       approveMutation.mutateAsync({
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         approveTx: approve.tx!,
                         toast,
                       }),
@@ -279,7 +278,6 @@ export const useBurn = <L extends Lendgine>(
                     amount1: burnAmounts.amount1,
                     amountOut: burnAmounts.collateral,
                     address,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     mostLiquidPool: mostLiquid.data.pool,
                     toast,
                   }),

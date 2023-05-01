@@ -1,8 +1,8 @@
 import { utils } from "ethers";
 
 import type { Config } from ".";
-import { Stable, WrappedNative } from "./tokens";
 import { chainID } from "../lib/constants";
+import { Stable, WrappedNative } from "./tokens";
 
 export const celoConfig = {
   interface: {
@@ -35,10 +35,10 @@ export const celoConfig = {
     pmmp: {
       factory: utils.getAddress("0x8396a792510a402681812ece6ad3ff19261928ba"),
       lendgineRouter: utils.getAddress(
-        "0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0"
+        "0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0",
       ),
       liquidityManager: utils.getAddress(
-        "0x6b0c66824c39766f554F07481B66ca24A54A90E0"
+        "0x6b0c66824c39766f554F07481B66ca24A54A90E0",
       ),
     },
   },

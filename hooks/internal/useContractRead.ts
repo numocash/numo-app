@@ -6,13 +6,13 @@ import * as React from "react";
 import type { ReadContractConfig, ReadContractResult } from "wagmi/actions";
 import { readContract } from "wagmi/actions";
 
-import type { PartialBy, QueryFunctionArgs } from "./types";
 import { useChain } from "../useChain";
+import type { PartialBy, QueryFunctionArgs } from "./types";
 
 export type UseContractReadConfig<
   TAbi extends Abi = Abi,
   TFunctionName extends string = string,
-  TSelectData = ReadContractResult<TAbi, TFunctionName>
+  TSelectData = ReadContractResult<TAbi, TFunctionName>,
 > = PartialBy<
   ReadContractConfig<TAbi, TFunctionName>,
   "abi" | "address" | "args" | "functionName"
@@ -46,7 +46,7 @@ function queryKey({
 
 function queryFn<
   TAbi extends Abi | readonly unknown[],
-  TFunctionName extends string
+  TFunctionName extends string,
 >({ abi }: { abi?: Abi | readonly unknown[] }) {
   return async ({
     queryKey: [
@@ -74,7 +74,7 @@ function queryFn<
 export function useContractRead<
   TAbi extends Abi,
   TFunctionName extends string,
-  TSelectData = ReadContractResult<TAbi, TFunctionName>
+  TSelectData = ReadContractResult<TAbi, TFunctionName>,
 >({
   abi,
   address,
@@ -103,7 +103,7 @@ export function useContractRead<
         functionName,
         overrides,
       } as Omit<ReadContractConfig, "abi">),
-    [address, args, chainId, functionName, overrides]
+    [address, args, chainId, functionName, overrides],
   );
 
   const enabled = React.useMemo(() => {
@@ -122,7 +122,6 @@ export function useContractRead<
     enabled,
     isDataEqual,
     select: (data) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const result =
         abi && functionName
           ? parseContractResult({
@@ -132,7 +131,6 @@ export function useContractRead<
               functionName,
             })
           : data;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
       return select ? select(result) : result;
     },
     staleTime,

@@ -20,7 +20,9 @@ export default function Tab<T extends string>({
                 clsx(
                   "p1 grid h-full w-full items-center rounded-[10px]",
                   "transform duration-300 ease-in-out hover:text-default",
-                  selected.selected ? "bg-white text-default" : "text-secondary"
+                  selected.selected
+                    ? "bg-white text-default"
+                    : "text-secondary",
                 )
               }
             >

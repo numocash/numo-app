@@ -23,7 +23,7 @@ export default function Mint() {
 
   const parsedAmount = useMemo(
     () => tryParseCurrencyAmount(input, staking.lendgine.token1),
-    [input, staking.lendgine.token1]
+    [input, staking.lendgine.token1],
   );
 
   const lendgineInfoQuery = useLendgine(staking.lendgine);
@@ -45,7 +45,7 @@ export default function Mint() {
           !mint.data
         ? "Loading"
         : mintAmounts.liquidity.greaterThan(
-            lendgineInfoQuery.data?.totalLiquidity
+            lendgineInfoQuery.data?.totalLiquidity,
           )
         ? "Insufficient liqudity"
         : null,
@@ -57,7 +57,7 @@ export default function Mint() {
       mintAmounts.liquidity,
       mintAmounts.status,
       parsedAmount,
-    ]
+    ],
   );
 
   return (

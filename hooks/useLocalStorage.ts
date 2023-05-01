@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export function useLocalStorageState<T>(
   key: string,
-  defaultState: T
+  defaultState: T,
 ): [T, (newState: T) => void] {
   const [state, setState] = useState<T>(defaultState);
   useEffect(() => {
@@ -26,7 +26,7 @@ export function useLocalStorageState<T>(
         localStorage.setItem(key, JSON.stringify(newState));
       }
     },
-    [state, key]
+    [state, key],
   );
 
   return [state, setLocalStorageState];

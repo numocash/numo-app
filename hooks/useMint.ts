@@ -11,15 +11,6 @@ import {
   writeContract,
 } from "wagmi/actions";
 
-import type { HookArg } from "./internal/types";
-import { useInvalidateCall } from "./internal/useInvalidateCall";
-import { getAllowanceRead } from "./useAllowance";
-import { useMintAmount } from "./useAmounts";
-import { useApprove } from "./useApprove";
-import { useAwaitTX } from "./useAwaitTX";
-import { getBalanceRead } from "./useBalance";
-import { isV3, useMostLiquidMarket } from "./useExternalExchange";
-import { useIsWrappedNative } from "./useTokens";
 import { lendgineRouterABI } from "../abis/lendgineRouter";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -32,11 +23,20 @@ import type { Lendgine } from "../lib/types/lendgine";
 import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
+import type { HookArg } from "./internal/types";
+import { useInvalidateCall } from "./internal/useInvalidateCall";
+import { getAllowanceRead } from "./useAllowance";
+import { useMintAmount } from "./useAmounts";
+import { useApprove } from "./useApprove";
+import { useAwaitTX } from "./useAwaitTX";
+import { getBalanceRead } from "./useBalance";
+import { isV3, useMostLiquidMarket } from "./useExternalExchange";
+import { useIsWrappedNative } from "./useTokens";
 
 export const useMint = <L extends Lendgine>(
   lendgine: HookArg<L>,
   amountIn: HookArg<CurrencyAmount<L["token0"]>>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const environment = useEnvironment();
   const protocolConfig = environment.procotol[protocol]!;
@@ -49,7 +49,7 @@ export const useMint = <L extends Lendgine>(
 
   const mintAmounts = useMintAmount(lendgine, amountIn, protocol);
   const mostLiquid = useMostLiquidMarket(
-    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
   );
 
   const approve = useApprove(amountIn, protocolConfig.lendgineRouter);
@@ -63,7 +63,7 @@ export const useMint = <L extends Lendgine>(
 
   const title = useMemo(
     () => `Buy ${lendgine?.token1.symbol}+`,
-    [lendgine?.token1.symbol]
+    [lendgine?.token1.symbol],
   );
 
   const approveMutation = useMutation({
@@ -88,8 +88,8 @@ export const useMint = <L extends Lendgine>(
           getAllowanceRead(
             lendgine.token1,
             address ?? constants.AddressZero,
-            protocolConfig.lendgineRouter
-          )
+            protocolConfig.lendgineRouter,
+          ),
         ));
     },
   });
@@ -118,16 +118,16 @@ export const useMint = <L extends Lendgine>(
           token0Exp: BigNumber.from(lendgine.token0.decimals),
           token1Exp: BigNumber.from(lendgine.token1.decimals),
           upperBound: BigNumber.from(
-            priceToFraction(lendgine.bound).multiply(scale).quotient.toString()
+            priceToFraction(lendgine.bound).multiply(scale).quotient.toString(),
           ),
           amountIn: BigNumber.from(amountIn.quotient.toString()),
           amountBorrow: BigNumber.from(borrowAmount.quotient.toString()),
           sharesMin: BigNumber.from(
             shares
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           swapType: isV3(mostLiquidPool) ? 1 : 0,
           swapExtraData: isV3(mostLiquidPool)
@@ -137,12 +137,12 @@ export const useMint = <L extends Lendgine>(
                   {
                     fee: +mostLiquidPool.feeTier,
                   },
-                ]
+                ],
               ) as Address)
             : constants.AddressZero,
           recipient: address,
           deadline: BigNumber.from(
-            Math.round(Date.now() / 1000) + settings.timeout * 60
+            Math.round(Date.now() / 1000) + settings.timeout * 60,
           ),
         },
       ] as const;
@@ -157,10 +157,10 @@ export const useMint = <L extends Lendgine>(
                 [
                   lendgineRouterContract.interface.encodeFunctionData(
                     "mint",
-                    args
+                    args,
                   ),
                   lendgineRouterContract.interface.encodeFunctionData(
-                    "refundETH"
+                    "refundETH",
                   ),
                 ] as `0x${string}`[],
               ],
@@ -195,8 +195,8 @@ export const useMint = <L extends Lendgine>(
           getAllowanceRead(
             input.amountIn.currency,
             input.address,
-            protocolConfig.lendgineRouter
-          )
+            protocolConfig.lendgineRouter,
+          ),
         ),
         invalidate(getBalanceRead(input.amountIn.currency, input.address)),
         invalidate(getBalanceRead(input.shares.currency, input.address)),
@@ -233,7 +233,6 @@ export const useMint = <L extends Lendgine>(
                     description: approve.title,
                     callback: (toast: TxToast) =>
                       approveMutation.mutateAsync({
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         approveTx: approve.tx!,
                         toast,
                       }),
@@ -254,7 +253,6 @@ export const useMint = <L extends Lendgine>(
                     shares: mintAmounts.shares,
                     address,
                     amountIn,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     mostLiquidPool: mostLiquid.data.pool,
                     toast,
                   }),

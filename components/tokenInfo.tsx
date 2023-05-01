@@ -17,7 +17,7 @@ export default function TokenInfo({
     <div
       className={clsx(
         "flex items-center",
-        showName ? "space-x-4" : "space-x-2"
+        showName ? "space-x-4" : "space-x-2",
       )}
     >
       <TokenIcon tokenInfo={token} size={size ?? showName ? 44 : 32} />

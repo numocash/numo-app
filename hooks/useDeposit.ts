@@ -11,7 +11,6 @@ import {
   writeContract,
 } from "wagmi/actions";
 
-import { useDepositAmount } from "./useAmounts";
 import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -30,13 +29,14 @@ import { priceToFraction } from "../lib/price";
 import type { Lendgine, LendgineInfo } from "../lib/types/lendgine";
 import { toaster } from "../pages/_app";
 import type { BeetStage, BeetTx, TxToast } from "../utils/beet";
+import { useDepositAmount } from "./useAmounts";
 
 export const useDeposit = <L extends Lendgine>(
   lendgine: HookArg<L>,
   amount:
     | HookArg<CurrencyAmount<L["token0"]>>
     | HookArg<CurrencyAmount<L["token1"]>>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const environment = useEnvironment();
   const protocolConfig = environment.procotol[protocol]!;
@@ -53,11 +53,11 @@ export const useDeposit = <L extends Lendgine>(
 
   const approve0 = useApprove(
     depositAmount.amount0,
-    protocolConfig.liquidityManager
+    protocolConfig.liquidityManager,
   );
   const approve1 = useApprove(
     depositAmount.amount1,
-    protocolConfig.liquidityManager
+    protocolConfig.liquidityManager,
   );
   const lendgineInfo = useLendgine(lendgine);
 
@@ -92,8 +92,8 @@ export const useDeposit = <L extends Lendgine>(
           getAllowanceRead(
             lendgine.token0,
             address ?? constants.AddressZero,
-            protocolConfig.liquidityManager
-          )
+            protocolConfig.liquidityManager,
+          ),
         ));
     },
   });
@@ -120,8 +120,8 @@ export const useDeposit = <L extends Lendgine>(
           getAllowanceRead(
             lendgine.token1,
             address ?? constants.AddressZero,
-            protocolConfig.liquidityManager
-          )
+            protocolConfig.liquidityManager,
+          ),
         ));
     },
   });
@@ -151,35 +151,35 @@ export const useDeposit = <L extends Lendgine>(
           token0Exp: BigNumber.from(lendgine.token0.decimals),
           token1Exp: BigNumber.from(lendgine.token1.decimals),
           upperBound: BigNumber.from(
-            priceToFraction(lendgine.bound).multiply(scale).quotient.toString()
+            priceToFraction(lendgine.bound).multiply(scale).quotient.toString(),
           ),
           liquidity: BigNumber.from(
-            liquidity.multiply(999990).divide(1000000).quotient.toString()
+            liquidity.multiply(999990).divide(1000000).quotient.toString(),
           ),
           amount0Min: BigNumber.from(
             amount0
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           amount1Min: BigNumber.from(
             amount1
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           sizeMin: BigNumber.from(
             size
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           recipient: address,
           deadline: BigNumber.from(
-            Math.round(Date.now() / 1000) + settings.timeout * 60
+            Math.round(Date.now() / 1000) + settings.timeout * 60,
           ),
         },
       ] as const;
@@ -195,10 +195,10 @@ export const useDeposit = <L extends Lendgine>(
                   [
                     liquidityManagerContract.interface.encodeFunctionData(
                       "addLiquidity",
-                      args
+                      args,
                     ),
                     liquidityManagerContract.interface.encodeFunctionData(
-                      "refundETH"
+                      "refundETH",
                     ),
                   ] as `0x${string}`[],
                 ],
@@ -238,22 +238,22 @@ export const useDeposit = <L extends Lendgine>(
             getLendginePositionRead(
               lendgine,
               input.address,
-              protocolConfig.liquidityManager
-            )
+              protocolConfig.liquidityManager,
+            ),
           ),
           invalidate(
             getAllowanceRead(
               input.amount0.currency,
               input.address,
-              protocolConfig.liquidityManager
-            )
+              protocolConfig.liquidityManager,
+            ),
           ),
           invalidate(
             getAllowanceRead(
               input.amount1.currency,
               input.address,
-              protocolConfig.liquidityManager
-            )
+              protocolConfig.liquidityManager,
+            ),
           ),
           invalidate(getBalanceRead(input.amount0.currency, input.address)),
           invalidate(getBalanceRead(input.amount1.currency, input.address)),
@@ -292,7 +292,6 @@ export const useDeposit = <L extends Lendgine>(
                         description: approve0.title,
                         callback: (toast: TxToast) =>
                           approve0Mutation.mutateAsync({
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             approveTx: approve0.tx!,
                             toast,
                           }),
@@ -304,7 +303,6 @@ export const useDeposit = <L extends Lendgine>(
                         description: approve1.title,
                         callback: (toast: TxToast) =>
                           approve1Mutation.mutateAsync({
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             approveTx: approve1.tx!,
                             toast,
                           }),
@@ -324,7 +322,6 @@ export const useDeposit = <L extends Lendgine>(
                     ...depositAmount,
                     lendgine,
                     address,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     lendgineInfo: lendgineInfo.data!,
                     toast,
                   }),

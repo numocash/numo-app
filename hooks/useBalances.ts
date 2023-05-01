@@ -10,14 +10,14 @@ import { getBalanceRead } from "./useBalance";
 
 export const useBalances = <T extends Token>(
   tokens: HookArg<readonly T[]>,
-  address: HookArg<Address>
+  address: HookArg<Address>,
 ) => {
   const contracts = useMemo(
     () =>
       address && tokens
         ? tokens.map((t) => getBalanceRead(t, address))
         : undefined,
-    [address, tokens]
+    [address, tokens],
   );
 
   return useContractReads({
@@ -28,8 +28,7 @@ export const useBalances = <T extends Token>(
     select: (data) =>
       tokens
         ? data.map((d, i) =>
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            CurrencyAmount.fromRawAmount(tokens[i]!, d.toString())
+            CurrencyAmount.fromRawAmount(tokens[i]!, d.toString()),
           )
         : undefined,
     refetchInterval: userRefectchInterval,

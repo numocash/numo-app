@@ -51,7 +51,7 @@ export default function Button({
         variant === "inverse" && "bg-white",
         variant === "danger" && "bg-red-500 text-white",
         "disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-secondary",
-        className
+        className,
       )}
       style={{
         ...props.style,

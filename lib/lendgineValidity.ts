@@ -9,10 +9,10 @@ import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 export const lendgineToMarket = (
   lendgine: Lendgine,
   wrappedNative: WrappedTokenInfo,
-  specialtyMarkets?: readonly Market[]
+  specialtyMarkets?: readonly Market[],
 ): Market => {
   const specialtyMatches = specialtyMarkets?.find((m) =>
-    isEqualToMarket(lendgine.token0, lendgine.token1, m)
+    isEqualToMarket(lendgine.token0, lendgine.token1, m),
   );
 
   if (specialtyMatches)
@@ -28,32 +28,29 @@ export const lendgineToMarket = (
 
 export const marketToLendgines = (
   market: Market,
-  allLendgines: readonly Lendgine[]
+  allLendgines: readonly Lendgine[],
 ) => allLendgines.filter((l) => isEqualToMarket(l.token0, l.token1, market));
 
 export const isValidLendgine = (
   lendgine: Lendgine,
   wrappedNative: WrappedTokenInfo,
-  specialtyMarkets?: readonly Market[]
+  specialtyMarkets?: readonly Market[],
 ) =>
   isValidMarket(
     lendgineToMarket(lendgine, wrappedNative, specialtyMarkets),
     wrappedNative,
-    specialtyMarkets
+    specialtyMarkets,
   ) && isValidBound(priceToFraction(lendgine.bound));
 
 export const isValidMarket = (
   market: Market,
   wrappedNative: WrappedTokenInfo,
-  specialtyMarkets?: readonly Market[]
+  specialtyMarkets?: readonly Market[],
 ) =>
   !![market.base, market.quote].find((t) => t.equals(wrappedNative)) ||
-  !!(
-    specialtyMarkets &&
-    specialtyMarkets
-      .map((m) => market.base.equals(m.base) && market.quote.equals(m.quote))
-      .includes(true)
-  );
+  !!specialtyMarkets
+    ?.map((m) => market.base.equals(m.base) && market.quote.equals(m.quote))
+    .includes(true);
 
 export const isValidBound = (bound: Fraction) => {
   const quotient = bound.greaterThan(1)
@@ -68,7 +65,7 @@ export const isValidBound = (bound: Fraction) => {
 const isEqualToMarket = (
   token0: WrappedTokenInfo,
   token1: WrappedTokenInfo,
-  market: Market
+  market: Market,
 ) =>
   (market.base.equals(token0) && market.quote.equals(token1)) ||
   (market.base.equals(token1) && market.quote.equals(token0));

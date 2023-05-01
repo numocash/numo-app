@@ -26,9 +26,9 @@ export default function EarnInner() {
             ...acc,
             [key]: value ? value.concat(cur) : [cur],
           };
-        }, {})
+        }, {}),
       ),
-    [lendgines]
+    [lendgines],
   );
 
   const partitionedMarkets = useMemo(
@@ -37,12 +37,12 @@ export default function EarnInner() {
         lendgines.reduce(
           (
             acc: Record<string, { market: Market; lendgines: Lendgine[] }>,
-            cur
+            cur,
           ) => {
             const market = lendgineToMarket(
               cur,
               environment.interface.wrappedNative,
-              environment.interface.specialtyMarkets
+              environment.interface.specialtyMarkets,
             );
             const key = `${market.quote.address}_${market.base.address}`;
             const value = acc[key];
@@ -53,14 +53,14 @@ export default function EarnInner() {
                 : { market, lendgines: [cur] },
             };
           },
-          {}
-        )
+          {},
+        ),
       ),
     [
       environment.interface.specialtyMarkets,
       environment.interface.wrappedNative,
       lendgines,
-    ]
+    ],
   );
 
   return (
@@ -74,14 +74,14 @@ export default function EarnInner() {
       )}
       {partitionedLendgines.map((pl) => (
         <ProvideLiquidity
-          key={"pl" + pl[0]!.address}
+          key={`pl${pl[0]!.address}`}
           lendgines={pl}
           protocol="pmmp"
         />
       ))}
       {partitionedMarkets.map((pm) => (
         <HedgeUniswap
-          key={"pm" + pm.market.quote.address + pm.market.base.address}
+          key={`pm${pm.market.quote.address}${pm.market.base.address}`}
           lendgines={pm.lendgines}
           market={pm.market}
         />

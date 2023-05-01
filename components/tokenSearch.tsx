@@ -30,7 +30,7 @@ export default function TokenSearch({
       new Fuse(tokens ?? [], {
         keys: ["address", "name", "symbol"],
       }),
-    [tokens]
+    [tokens],
   );
 
   const results = useMemo(() => {
@@ -62,7 +62,7 @@ export default function TokenSearch({
                 key={r.address}
                 className={clsx(
                   "flex w-full items-center justify-between rounded-xl p-1 text-left",
-                  selectedToken?.equals(r) ? "opacity-50" : "hover:bg-gray-200"
+                  selectedToken?.equals(r) ? "opacity-50" : "hover:bg-gray-200",
                 )}
                 onClick={() => {
                   onSelect(r);

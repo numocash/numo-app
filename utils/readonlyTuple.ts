@@ -12,7 +12,7 @@ type _TupleOf<T, N extends number, R extends unknown[]> = R["length"] extends N
 
 export const tupleMapInner = <T, U, N extends number>(
   mapFn: (v: T) => U,
-  tuple: Tuple<T, N>
+  tuple: Tuple<T, N>,
 ): Tuple<U, N> => {
   return tuple.map((v) => mapFn(v)) as Tuple<U, N>;
 };

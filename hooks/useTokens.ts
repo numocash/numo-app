@@ -5,11 +5,11 @@ import { utils } from "ethers";
 import { useCallback } from "react";
 import invariant from "tiny-invariant";
 
-import type { HookArg } from "./internal/types";
-import { useChain } from "./useChain";
 import { useEnvironment } from "../contexts/environment";
 import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { dedupe } from "../utils/dedupe";
+import type { HookArg } from "./internal/types";
+import { useChain } from "./useChain";
 
 export type color = `#${string}` | undefined;
 
@@ -32,7 +32,7 @@ export const useTokens = () => {
 
   return dedupe(
     (NumoenTokens.tokens as TokenInfo[]).filter((t) => t.chainId === chain),
-    (t) => `${t.address}_${t.chainId}`
+    (t) => `${t.address}_${t.chainId}`,
   ).map((t) => {
     const token = new WrappedTokenInfo(t);
     if (isWrappedNative(token)) {
@@ -59,11 +59,11 @@ export const useGetAddressToToken = () => {
       if (!address) return null;
       return (
         tokens.find(
-          (t) => utils.getAddress(t.address) === utils.getAddress(address)
+          (t) => utils.getAddress(t.address) === utils.getAddress(address),
         ) ?? null
       );
     },
-    [tokens]
+    [tokens],
   );
 };
 

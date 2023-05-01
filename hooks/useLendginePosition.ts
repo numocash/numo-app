@@ -1,20 +1,20 @@
 import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
 import type { Address } from "wagmi";
 
-import type { HookArg, ReadConfig } from "./internal/types";
-import { useContractRead } from "./internal/useContractRead";
-import { userRefectchInterval } from "./internal/utils";
 import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
 import { scale } from "../lib/constants";
 import { fractionToPrice } from "../lib/price";
 import type { Lendgine } from "../lib/types/lendgine";
+import type { HookArg, ReadConfig } from "./internal/types";
+import { useContractRead } from "./internal/useContractRead";
+import { userRefectchInterval } from "./internal/utils";
 
 export const useLendginePosition = <L extends Lendgine>(
   lendgine: HookArg<L>,
   address: HookArg<Address>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const environment = useEnvironment();
   const protocolConfig = environment.procotol[protocol]!;
@@ -24,7 +24,7 @@ export const useLendginePosition = <L extends Lendgine>(
       ? getLendginePositionRead(
           lendgine,
           address,
-          protocolConfig.liquidityManager
+          protocolConfig.liquidityManager,
         )
       : {
           address: undefined,
@@ -42,16 +42,16 @@ export const useLendginePosition = <L extends Lendgine>(
       return {
         size: CurrencyAmount.fromRawAmount(
           lendgine.lendgine,
-          data.size.toString()
+          data.size.toString(),
         ),
         rewardPerPositionPaid: fractionToPrice(
           new Fraction(data.rewardPerPositionPaid.toString(), scale),
           lendgine.lendgine,
-          lendgine.token1
+          lendgine.token1,
         ),
         tokensOwed: CurrencyAmount.fromRawAmount(
           lendgine.token1,
-          data.tokensOwed.toString()
+          data.tokensOwed.toString(),
         ),
       };
     },
@@ -62,11 +62,11 @@ export const useLendginePosition = <L extends Lendgine>(
 export const getLendginePositionRead = <L extends Lendgine>(
   lendgine: Pick<L, "address">,
   address: Address,
-  liquidityManager: Address
+  liquidityManager: Address,
 ) =>
   ({
     address: liquidityManager,
     args: [address, lendgine.address],
     abi: liquidityManagerABI,
     functionName: "positions",
-  } as const satisfies ReadConfig<typeof liquidityManagerABI, "positions">);
+  }) as const satisfies ReadConfig<typeof liquidityManagerABI, "positions">;

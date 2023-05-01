@@ -5,9 +5,9 @@ import * as React from "react";
 import type { FetchBalanceArgs, FetchBalanceResult } from "wagmi/actions";
 import { fetchBalance } from "wagmi/actions";
 
-import type { QueryFunctionArgs } from "./types";
 import { useEnvironment } from "../../contexts/environment";
 import { useChain } from "../useChain";
+import type { QueryFunctionArgs } from "./types";
 
 export type UseBalanceArgs = Partial<FetchBalanceArgs>;
 
@@ -74,7 +74,12 @@ export function useBalance<TSelectData = FetchBalanceResult>({
         chainId,
         formatUnits,
       }),
-    [address, chainId, environment.interface.wrappedNative.address, formatUnits]
+    [
+      address,
+      chainId,
+      environment.interface.wrappedNative.address,
+      formatUnits,
+    ],
   );
   const balanceQuery = useQuery({
     queryKey: queryKey_,

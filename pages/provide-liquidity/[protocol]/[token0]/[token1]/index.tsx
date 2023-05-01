@@ -57,11 +57,11 @@ export default function ProvideLiquidity() {
       if (
         utils.getAddress(token0 as string) ===
           utils.getAddress(
-            environment.interface.liquidStaking.lendgine.token0.address
+            environment.interface.liquidStaking.lendgine.token0.address,
           ) &&
         utils.getAddress(token1 as string) ===
           utils.getAddress(
-            environment.interface.liquidStaking.lendgine.token1.address
+            environment.interface.liquidStaking.lendgine.token1.address,
           )
       ) {
         return (
@@ -91,7 +91,7 @@ export default function ProvideLiquidity() {
     !isValidMarket(
       market,
       environment.interface.wrappedNative,
-      environment.interface.specialtyMarkets
+      environment.interface.specialtyMarkets,
     )
   )
     throw Error();
@@ -100,7 +100,7 @@ export default function ProvideLiquidity() {
 
   // filter lendgines
   const lendgines = lendginesQuery.lendgines.filter(
-    (l) => quoteToken.equals(l.token0) && baseToken.equals(l.token1)
+    (l) => quoteToken.equals(l.token0) && baseToken.equals(l.token1),
   );
   return lendginesQuery.status !== "success" ? (
     <LoadingPage />

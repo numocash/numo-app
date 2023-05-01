@@ -23,7 +23,7 @@ type SelectTokenProps = Pick<
 export default function CurrencyAmountSelection(
   props:
     | (InputProps & DisplayTokenProps & { type: "display" })
-    | (InputProps & SelectTokenProps & { type: "select" })
+    | (InputProps & SelectTokenProps & { type: "select" }),
 ) {
   const [open, setOpen] = useState(false);
   return (

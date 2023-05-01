@@ -4,16 +4,16 @@ import { utils } from "ethers";
 import type { Address } from "wagmi";
 import { erc20ABI } from "wagmi";
 
+import { useEnvironment } from "../contexts/environment";
 import type { HookArg, ReadConfig } from "./internal/types";
 import { useBalance as useNativeBalance } from "./internal/useBalance";
 import { useContractRead } from "./internal/useContractRead";
 import { userRefectchInterval } from "./internal/utils";
 import { useIsWrappedNative } from "./useTokens";
-import { useEnvironment } from "../contexts/environment";
 
 export const useBalance = <T extends Token>(
   token: HookArg<T>,
-  address: HookArg<Address>
+  address: HookArg<Address>,
 ) => {
   const environment = useEnvironment();
   const native = environment.interface.native;
@@ -25,7 +25,7 @@ export const useBalance = <T extends Token>(
     select: (data) =>
       CurrencyAmount.fromRawAmount(
         environment.interface.wrappedNative,
-        data.value.toString()
+        data.value.toString(),
       ),
   });
 
@@ -43,7 +43,6 @@ export const useBalance = <T extends Token>(
     ...config,
     staleTime: Infinity,
     enabled: !!token && !!address,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     select: (data) => CurrencyAmount.fromRawAmount(token!, data.toString()),
     refetchInterval: userRefectchInterval,
   });
@@ -58,4 +57,4 @@ export const getBalanceRead = <T extends Token>(token: T, address: Address) =>
     args: [address],
     abi: erc20ABI,
     functionName: "balanceOf",
-  } as const satisfies ReadConfig<typeof erc20ABI, "balanceOf">);
+  }) as const satisfies ReadConfig<typeof erc20ABI, "balanceOf">;

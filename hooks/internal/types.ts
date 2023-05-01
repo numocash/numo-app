@@ -14,7 +14,7 @@ export type PartialBy<TType, TKeys extends keyof TType> = Partial<
 export type DeepPartial<
   T,
   MaxDepth extends number,
-  Depth extends ReadonlyArray<number> = []
+  Depth extends readonly number[] = [],
 > = Depth["length"] extends MaxDepth
   ? T
   : T extends object
@@ -27,7 +27,7 @@ export type QueryFunctionArgs<T extends (...args: any) => any> =
 
 export type ReadConfig<
   TAbi extends Abi = Abi,
-  TFunctionName extends string = string
+  TFunctionName extends string = string,
 > = Pick<
   ReadContractConfig<TAbi, TFunctionName>,
   "abi" | "address" | "args" | "functionName"

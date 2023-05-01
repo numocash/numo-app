@@ -11,7 +11,7 @@ import { userRefectchInterval } from "./internal/utils";
 export const useAllowance = <T extends Token>(
   token: HookArg<T>,
   address: HookArg<Address>,
-  spender: HookArg<Address>
+  spender: HookArg<Address>,
 ) => {
   const config =
     !!token && !!address && !!spender
@@ -26,7 +26,6 @@ export const useAllowance = <T extends Token>(
     ...config,
     staleTime: Infinity,
     enabled: !!token && !!address && !!spender,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     select: (data) => CurrencyAmount.fromRawAmount(token!, data.toString()),
     refetchInterval: userRefectchInterval,
   });
@@ -35,11 +34,11 @@ export const useAllowance = <T extends Token>(
 export const getAllowanceRead = <T extends Token>(
   token: T,
   address: Address,
-  spender: Address
+  spender: Address,
 ) =>
   ({
     address: utils.getAddress(token.address),
     args: [address, spender],
     abi: erc20ABI,
     functionName: "allowance",
-  } as const satisfies ReadConfig<typeof erc20ABI, "allowance">);
+  }) as const satisfies ReadConfig<typeof erc20ABI, "allowance">;

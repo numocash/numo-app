@@ -6,13 +6,13 @@ import type { Address } from "wagmi";
 import { erc20ABI, useAccount } from "wagmi";
 import { prepareWriteContract, writeContract } from "wagmi/actions";
 
+import { useSettings } from "../contexts/settings";
 import type { HookArg } from "./internal/types";
 import { useAllowance } from "./useAllowance";
-import { useSettings } from "../contexts/settings";
 
 export const useApprove = <T extends Token>(
   tokenAmount: HookArg<CurrencyAmount<T>>,
-  spender: HookArg<Address>
+  spender: HookArg<Address>,
 ) => {
   const settings = useSettings();
   const { address } = useAccount();

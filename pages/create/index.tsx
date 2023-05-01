@@ -51,7 +51,7 @@ export default function Create() {
   const token1Balance = useBalance(token1, address);
 
   const priceQuery = useMostLiquidMarket(
-    !!token0 && !!token1 ? { quote: token0, base: token1 } : null
+    !!token0 && !!token1 ? { quote: token0, base: token1 } : null,
   );
 
   const lendgine = useMemo(
@@ -67,20 +67,20 @@ export default function Create() {
             lendgine: new Token(chainID, constants.AddressZero, 18),
           }
         : undefined,
-    [bound, chainID, token0, token1]
+    [bound, chainID, token0, token1],
   );
 
   const depositAmount = useDepositAmount(
     lendgine,
     tryParseCurrencyAmount(token0Input, token0) ??
       tryParseCurrencyAmount(token1Input, token1),
-    "pmmp"
+    "pmmp",
   );
   const create = useCreate(
     lendgine,
     tryParseCurrencyAmount(token0Input, token0) ??
       tryParseCurrencyAmount(token1Input, token1),
-    "pmmp"
+    "pmmp",
   );
 
   const onInput = useCallback((value: string, field: "token0" | "token1") => {
@@ -90,12 +90,12 @@ export default function Create() {
 
   const removeToken0 = useMemo(
     () => tokens.filter((t) => t !== token0),
-    [token0, tokens]
+    [token0, tokens],
   );
 
   const removeToken1 = useMemo(
     () => tokens.filter((t) => t !== token1),
-    [token1, tokens]
+    [token1, tokens],
   );
 
   const disableReason = useMemo(
@@ -110,7 +110,7 @@ export default function Create() {
           !isValidLendgine(
             lendgine,
             environment.interface.wrappedNative,
-            environment.interface.specialtyMarkets
+            environment.interface.specialtyMarkets,
           )
         ? "Does not conform to the rules of valid markets"
         : !token0Input && !token1Input
@@ -124,7 +124,7 @@ export default function Create() {
             (l) =>
               l.token0.equals(token0) &&
               l.token1.equals(token1) &&
-              l.bound.equalTo(fractionToPrice(bound, token1, token0))
+              l.bound.equalTo(fractionToPrice(bound, token1, token0)),
           )
         ? " Market already exists"
         : depositAmount.status !== "success" ||
@@ -154,7 +154,7 @@ export default function Create() {
       token1,
       token1Balance.data,
       token1Input,
-    ]
+    ],
   );
 
   return (

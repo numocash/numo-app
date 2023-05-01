@@ -10,11 +10,10 @@ import { useBalance } from "@/hooks/useBalance";
 import { useDeposit } from "@/hooks/useDeposit";
 import { useLendgine } from "@/hooks/useLendgine";
 
+import { useProvideLiquidity } from ".";
 import { Beet } from "@/utils/beet";
 import { formatDisplayWithSoftLimit } from "@/utils/format";
 import tryParseCurrencyAmount from "@/utils/tryParseCurrencyAmount";
-
-import { useProvideLiquidity } from "../../../../hedge-uniswap/[token0]/[token1]";
 
 export default function Deposit() {
   const { address } = useAccount();
@@ -35,13 +34,13 @@ export default function Deposit() {
     selectedLendgine,
     tryParseCurrencyAmount(token0String, token0) ??
       tryParseCurrencyAmount(token1String, token1),
-    protocol
+    protocol,
   );
   const deposit = useDeposit(
     selectedLendgine,
     tryParseCurrencyAmount(token0String, token0) ??
       tryParseCurrencyAmount(token1String, token1),
-    protocol
+    protocol,
   );
 
   const onInput = useCallback(
@@ -54,7 +53,7 @@ export default function Deposit() {
       field === "token0" ? setToken0String(value) : setToken1String(value);
       field === "token0" ? setToken1String("") : setToken0String("");
     },
-    [lendgineInfoQuery.data]
+    [lendgineInfoQuery.data],
   );
 
   const disableReason = useMemo(
@@ -81,7 +80,7 @@ export default function Deposit() {
       token0String,
       token1Query.data,
       token1String,
-    ]
+    ],
   );
 
   return (
@@ -98,7 +97,7 @@ export default function Deposit() {
                 : formatDisplayWithSoftLimit(
                     Number(amount0?.toFixed(6) ?? 0),
                     4,
-                    10
+                    10,
                   )
               : token0String
           }
@@ -119,7 +118,7 @@ export default function Deposit() {
                 : formatDisplayWithSoftLimit(
                     Number(amount1?.toFixed(6) ?? 0),
                     4,
-                    10
+                    10,
                   )
               : token1String
           }

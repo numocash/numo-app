@@ -32,7 +32,7 @@ export default function Liquidity() {
         cur.size.greaterThan(0) || cur.tokensOwed.greaterThan(0)
           ? acc.concat(i)
           : acc,
-      new Array<number>()
+      new Array<number>(),
     );
   }, [positionQuery.data]);
 
@@ -56,7 +56,7 @@ export default function Liquidity() {
       ) : !validLendgines || !lendgineInfoQuery.data ? (
         <div className="mx-6 flex w-full flex-col gap-2">
           {[...Array(5).keys()].map((i) => (
-            <LoadingBox className="h-12 w-full" key={i + "load"} />
+            <LoadingBox className="h-12 w-full" key={`${i}load`} />
           ))}
         </div>
       ) : validLendgines.length === 0 ? (
@@ -74,7 +74,7 @@ export default function Liquidity() {
           <div className="flex w-full flex-col">
             {validLendgines.map((i) => (
               <LiquidityItem
-                key={lendgines[i]!.address + "liq"}
+                key={`${lendgines[i]!.address}liq`}
                 lendgine={lendgines[i]!}
                 protocol={"pmmp"}
                 lendgineInfo={lendgineInfoQuery.data![i]!}

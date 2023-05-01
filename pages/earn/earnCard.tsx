@@ -12,7 +12,7 @@ export default function EarnCard({
       <div
         className={clsx(
           className,
-          "flex h-[320px] w-full transform cursor-pointer flex-col overflow-clip rounded-xl border-2 bg-white duration-300 sm:hover:scale-105"
+          "flex h-[320px] w-full transform cursor-pointer flex-col overflow-clip rounded-xl border-2 bg-white duration-300 sm:hover:scale-105",
         )}
         {...props}
       >

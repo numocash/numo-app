@@ -30,7 +30,7 @@ export default function PowerTokens() {
     if (!balanceQuery.data) return undefined;
     return balanceQuery.data.reduce(
       (acc, cur, i) => (cur.greaterThan(0) ? acc.concat(i) : acc),
-      new Array<number>()
+      new Array<number>(),
     );
   }, [balanceQuery.data]);
 
@@ -54,7 +54,7 @@ export default function PowerTokens() {
       ) : !validLendgines || !lendgineInfoQuery.data ? (
         <div className="mx-6 flex w-full flex-col gap-2">
           {[...Array(5).keys()].map((i) => (
-            <LoadingBox className="h-12 w-full" key={i + "load"} />
+            <LoadingBox className="h-12 w-full" key={`${i}load`} />
           ))}
         </div>
       ) : validLendgines.length === 0 ? (
@@ -72,7 +72,7 @@ export default function PowerTokens() {
           <div className="flex w-full flex-col">
             {validLendgines.map((i) => (
               <PowerTokenItem
-                key={lendgines[i]!.address + "pt"}
+                key={`${lendgines[i]!.address}pt`}
                 lendgine={lendgines[i]!}
                 protocol={"pmmp"}
                 lendgineInfo={lendgineInfoQuery.data![i]!}

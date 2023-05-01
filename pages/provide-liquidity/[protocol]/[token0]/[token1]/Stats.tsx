@@ -14,9 +14,8 @@ import {
 import { calculateAccrual } from "@/lib/amounts";
 import { calculateSupplyRate } from "@/lib/jumprate";
 
+import { useProvideLiquidity } from ".";
 import { formatPercent } from "@/utils/format";
-
-import { useProvideLiquidity } from "../../../../hedge-uniswap/[token0]/[token1]";
 
 export default function Stats() {
   const { selectedLendgine, protocol } = useProvideLiquidity();
@@ -32,7 +31,7 @@ export default function Stats() {
     const accruedInfo = calculateAccrual(
       selectedLendgine,
       lendgineInfoQuery.data,
-      protocol
+      protocol,
     );
     const supplyRate = calculateSupplyRate({
       lendgineInfo: accruedInfo,

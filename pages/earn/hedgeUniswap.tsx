@@ -35,12 +35,12 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
         cur,
         lendginesQuery.data![i]!,
         lendginesQuery.data![i]!.totalSupply,
-        "pmmp"
+        "pmmp",
       );
       const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
         cur,
         lendginesQuery.data![i]!,
-        liquidity
+        liquidity,
       );
 
       // token0 / token1

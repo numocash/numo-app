@@ -7,7 +7,7 @@ import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 
 export const lvrCoef = (
   price: Price<WrappedTokenInfo, WrappedTokenInfo>,
-  lendgine: Lendgine
+  lendgine: Lendgine,
 ) => {
   if (price.greaterThan(lendgine.bound)) return new Fraction(0);
   const numerator = priceToFraction(price).multiply(priceToFraction(price));

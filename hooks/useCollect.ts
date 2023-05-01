@@ -10,13 +10,6 @@ import {
   writeContract,
 } from "wagmi/actions";
 
-import type { HookArg } from "./internal/types";
-import { useInvalidateCall } from "./internal/useInvalidateCall";
-import { useCollectAmount } from "./useAmounts";
-import { useAwaitTX } from "./useAwaitTX";
-import { getBalanceRead } from "./useBalance";
-import { getLendginePositionRead } from "./useLendginePosition";
-import { useIsWrappedNative } from "./useTokens";
 import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -24,11 +17,18 @@ import type { Lendgine, LendginePosition } from "../lib/types/lendgine";
 import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
+import type { HookArg } from "./internal/types";
+import { useInvalidateCall } from "./internal/useInvalidateCall";
+import { useCollectAmount } from "./useAmounts";
+import { useAwaitTX } from "./useAwaitTX";
+import { getBalanceRead } from "./useBalance";
+import { getLendginePositionRead } from "./useLendginePosition";
+import { useIsWrappedNative } from "./useTokens";
 
 export const useCollect = <L extends Lendgine>(
   lendgine: HookArg<L>,
   position: HookArg<LendginePosition<L>>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const environment = useEnvironment();
   const protolConfig = environment.procotol[protocol]!;
@@ -80,11 +80,11 @@ export const useCollect = <L extends Lendgine>(
                 [
                   liquidityManagerContract.interface.encodeFunctionData(
                     "collect",
-                    args
+                    args,
                   ),
                   liquidityManagerContract.interface.encodeFunctionData(
                     "unwrapWETH",
-                    unwrapArgs
+                    unwrapArgs,
                   ),
                 ] as `0x${string}`[],
               ],
@@ -117,8 +117,8 @@ export const useCollect = <L extends Lendgine>(
             getLendginePositionRead(
               lendgine,
               input.address,
-              protolConfig.liquidityManager
-            )
+              protolConfig.liquidityManager,
+            ),
           ),
           invalidate(getBalanceRead(lendgine.token1, input.address)),
         ]));

@@ -31,7 +31,7 @@ const { chains, provider, webSocketProvider } = configureChains(
     alchemyProvider({ apiKey: "UVgzpWCHx6zsVDO7qC8mtcA6jCl0vgV4" }),
     alchemyProvider({ apiKey: "UOYl0nPuXw_tVCxLnPnd6lSYtj4agcDO" }),
     publicProvider(),
-  ]
+  ],
 ); // TODO: use websockets provider
 
 export const toaster = new DefaultToasterWrapper();

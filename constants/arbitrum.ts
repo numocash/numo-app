@@ -2,9 +2,9 @@ import { Ether, Percent, Price, Token } from "@uniswap/sdk-core";
 import { utils } from "ethers";
 
 import type { Config } from ".";
-import { Stable, WrappedNative } from "./tokens";
 import { chainID } from "../lib/constants";
 import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
+import { Stable, WrappedNative } from "./tokens";
 
 const USDT = new WrappedTokenInfo({
   name: "Tether USD",
@@ -70,7 +70,7 @@ export const arbitrumConfig = {
         lendgine: new Token(
           42161,
           "0x327319fdce6fac0eb1751dc2234cBdA7F5B43E2A",
-          18
+          18,
         ),
       },
       color: "#00a3ff",
@@ -91,10 +91,10 @@ export const arbitrumConfig = {
     pmmp: {
       factory: utils.getAddress("0x8396a792510a402681812ece6ad3ff19261928ba"),
       lendgineRouter: utils.getAddress(
-        "0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0"
+        "0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0",
       ),
       liquidityManager: utils.getAddress(
-        "0x6b0c66824c39766f554F07481B66ca24A54A90E0"
+        "0x6b0c66824c39766f554F07481B66ca24A54A90E0",
       ),
     },
     stpmmp: {

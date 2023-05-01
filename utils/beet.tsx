@@ -40,7 +40,7 @@ export const Beet = async (stages: readonly BeetStage[]) => {
   for (const [stageIndex, stage] of stages.entries()) {
     const previousTxs = [...Array(stageIndex).keys()].reduce(
       (acc, i) => acc + (stages[i]?.parallelTxs.length ?? 0),
-      0
+      0,
     );
 
     try {
@@ -52,8 +52,8 @@ export const Beet = async (stages: readonly BeetStage[]) => {
               title: beetTx.title,
               description: beetTx.description,
               humanCount: `${1 + i + previousTxs}/${totaltx}`,
-            })
-        )
+            }),
+        ),
       );
     } catch (err) {
       console.error(err);
@@ -101,7 +101,7 @@ export class DefaultToasterWrapper {
   }
 
   private _buildToastContainer(
-    tx: TxSending | TxSuccess | TxError | TxPending
+    tx: TxSending | TxSuccess | TxError | TxPending,
   ) {
     return (
       <div className="flex w-[290px] flex-col overflow-hidden">
@@ -110,12 +110,12 @@ export class DefaultToasterWrapper {
             {tx.title}
             <span className="flex text-sm text-secondary">{tx.humanCount}</span>
           </span>
-          <span
+          <button
             className="pointer text-xl text-secondary hover:text-black"
             onClick={() => toast.dismiss(tx.id)}
           >
             ×
-          </span>
+          </button>
         </div>
 
         <div className="flex text-secondary">

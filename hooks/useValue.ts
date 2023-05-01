@@ -1,11 +1,6 @@
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
-import type { HookArg } from "./internal/types";
-import { useBalance } from "./useBalance";
-import { useMostLiquidMarket } from "./useExternalExchange";
-import { useLendgine } from "./useLendgine";
-import { useLendginePosition } from "./useLendginePosition";
 import type { Protocol } from "../constants";
 import {
   calculateEstimatedBurnAmount,
@@ -14,10 +9,15 @@ import {
   calculateEstimatedWithdrawAmount,
 } from "../lib/amounts";
 import type { Lendgine } from "../lib/types/lendgine";
+import type { HookArg } from "./internal/types";
+import { useBalance } from "./useBalance";
+import { useMostLiquidMarket } from "./useExternalExchange";
+import { useLendgine } from "./useLendgine";
+import { useLendginePosition } from "./useLendginePosition";
 
 export const useValue = <L extends Lendgine>(
   lendgine: HookArg<L>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const { address } = useAccount();
 
@@ -25,7 +25,7 @@ export const useValue = <L extends Lendgine>(
   const lendgineInfoQuery = useLendgine(lendgine);
 
   const priceQuery = useMostLiquidMarket(
-    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
   );
 
   return useMemo(() => {
@@ -48,12 +48,12 @@ export const useValue = <L extends Lendgine>(
       lendgine,
       lendgineInfoQuery.data,
       balanceQuery.data,
-      protocol
+      protocol,
     );
     const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
       lendgine,
       lendgineInfoQuery.data,
-      liquidity
+      liquidity,
     );
 
     const value = priceQuery.data.price
@@ -75,12 +75,12 @@ export const useValue = <L extends Lendgine>(
 
 export const useTotalValue = <L extends Lendgine>(
   lendgine: HookArg<L>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const lendgineInfoQuery = useLendgine(lendgine);
 
   const priceQuery = useMostLiquidMarket(
-    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
   );
 
   return useMemo(() => {
@@ -94,12 +94,12 @@ export const useTotalValue = <L extends Lendgine>(
       lendgine,
       lendgineInfoQuery.data,
       lendgineInfoQuery.data.totalSupply,
-      protocol
+      protocol,
     );
     const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
       lendgine,
       lendgineInfoQuery.data,
-      liquidity
+      liquidity,
     );
 
     const value = priceQuery.data.price
@@ -119,7 +119,7 @@ export const useTotalValue = <L extends Lendgine>(
 
 export const usePositionValue = <L extends Lendgine>(
   lendgine: HookArg<L>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const { address } = useAccount();
 
@@ -127,7 +127,7 @@ export const usePositionValue = <L extends Lendgine>(
   const lendgineInfoQuery = useLendgine(lendgine);
 
   const priceQuery = useMostLiquidMarket(
-    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
   );
 
   return useMemo(() => {
@@ -150,22 +150,22 @@ export const usePositionValue = <L extends Lendgine>(
       lendgine,
       lendgineInfoQuery.data,
       positionQuery.data,
-      protocol
+      protocol,
     );
     const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
       lendgine,
       lendgineInfoQuery.data,
-      liquidity
+      liquidity,
     );
     const tokensOwed = calculateEstimatedTokensOwed(
       lendgine,
       lendgineInfoQuery.data,
       positionQuery.data,
-      protocol
+      protocol,
     );
 
     const value = amount0.add(
-      priceQuery.data.price.quote(amount1.add(tokensOwed))
+      priceQuery.data.price.quote(amount1.add(tokensOwed)),
     );
 
     return { status: "success", value } as const;
@@ -183,12 +183,12 @@ export const usePositionValue = <L extends Lendgine>(
 
 export const useTotalPositionValue = <L extends Lendgine>(
   lendgine: HookArg<L>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const lendgineInfoQuery = useLendgine(lendgine);
 
   const priceQuery = useMostLiquidMarket(
-    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
   );
 
   return useMemo(() => {
@@ -202,12 +202,12 @@ export const useTotalPositionValue = <L extends Lendgine>(
       lendgine,
       lendgineInfoQuery.data,
       { size: lendgineInfoQuery.data.totalPositionSize },
-      protocol
+      protocol,
     );
     const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
       lendgine,
       lendgineInfoQuery.data,
-      liquidity
+      liquidity,
     );
 
     const value = amount0.add(priceQuery.data.price.quote(amount1));
@@ -225,7 +225,7 @@ export const useTotalPositionValue = <L extends Lendgine>(
 
 export const useTokensOwed = <L extends Lendgine>(
   lendgine: HookArg<L>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const { address } = useAccount();
 
@@ -233,7 +233,7 @@ export const useTokensOwed = <L extends Lendgine>(
   const lendgineInfoQuery = useLendgine(lendgine);
 
   const priceQuery = useMostLiquidMarket(
-    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
   );
 
   return useMemo(() => {
@@ -256,7 +256,7 @@ export const useTokensOwed = <L extends Lendgine>(
       lendgine,
       lendgineInfoQuery.data,
       positionQuery.data,
-      protocol
+      protocol,
     );
 
     return { status: "success", tokensOwed } as const;

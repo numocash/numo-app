@@ -26,7 +26,7 @@ export default function Burn() {
       balanceQuery.data
         ? balanceQuery.data.multiply(withdrawPercent).divide(100)
         : undefined,
-    [balanceQuery.data, withdrawPercent]
+    [balanceQuery.data, withdrawPercent],
   );
   const burnAmount = useBurnAmount(staking.lendgine, shares, "stpmmp");
   const burn = useBurn(staking.lendgine, shares, "stpmmp");
@@ -42,7 +42,7 @@ export default function Burn() {
         : balanceQuery.data.equalTo(0)
         ? "Insufficient balance"
         : null,
-    [balanceQuery.data, burn.status, burnAmount.status, withdrawPercent]
+    [balanceQuery.data, burn.status, burnAmount.status, withdrawPercent],
   );
 
   return (

@@ -1,7 +1,7 @@
 import { Percent } from "@uniswap/sdk-core";
 
-import type { Lendgine, LendgineInfo } from "./types/lendgine";
 import type { Protocol } from "../constants";
+import type { Lendgine, LendgineInfo } from "./types/lendgine";
 
 type JumpRateConfig = {
   kink: Percent;
@@ -34,7 +34,7 @@ const utilizationRate = ({
   lendgineInfo,
 }: Pick<RateConfig, "lendgineInfo">): Percent => {
   const totalLiquiditySupplied = lendgineInfo.totalLiquidity.add(
-    lendgineInfo.totalLiquidityBorrowed
+    lendgineInfo.totalLiquidityBorrowed,
   );
   if (totalLiquiditySupplied.equalTo(0)) return new Percent(0);
   const f = lendgineInfo.totalLiquidityBorrowed.divide(totalLiquiditySupplied);

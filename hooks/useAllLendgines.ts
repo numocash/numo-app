@@ -2,10 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Fraction, Token } from "@uniswap/sdk-core";
 import { useCallback, useMemo } from "react";
 
-import { userRefectchInterval } from "./internal/utils";
-import { useChain } from "./useChain";
-import { useClient } from "./useClient";
-import { useGetAddressToToken } from "./useTokens";
 import { useEnvironment } from "../contexts/environment";
 import { LendginesDocument } from "../gql/numoen/graphql";
 import { parseLendgines } from "../graphql/numoen";
@@ -13,6 +9,10 @@ import { scale } from "../lib/constants";
 import { isValidLendgine } from "../lib/lendgineValidity";
 import { fractionToPrice } from "../lib/price";
 import type { Lendgine } from "../lib/types/lendgine";
+import { userRefectchInterval } from "./internal/utils";
+import { useChain } from "./useChain";
+import { useClient } from "./useClient";
+import { useGetAddressToToken } from "./useTokens";
 
 export const useExistingLendginesQueryKey = () => {
   const chain = useChain();
@@ -69,7 +69,7 @@ export const useAllLendgines = () => {
             bound: fractionToPrice(
               new Fraction(ld.upperBound, scale),
               token1,
-              token0
+              token0,
             ),
             lendgine: new Token(chainID, ld.address, 18),
             address: ld.address,
@@ -79,7 +79,7 @@ export const useAllLendgines = () => {
             !isValidLendgine(
               lendgine,
               environment.interface.wrappedNative,
-              environment.interface.specialtyMarkets
+              environment.interface.specialtyMarkets,
             )
           )
             return undefined;

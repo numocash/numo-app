@@ -50,7 +50,7 @@ export default function Hedge() {
     !isValidMarket(
       market,
       environment.interface.wrappedNative,
-      environment.interface.specialtyMarkets
+      environment.interface.specialtyMarkets,
     )
   )
     throw Error();
@@ -59,7 +59,7 @@ export default function Hedge() {
 
   // filter lendgines
   const lendgines = lendginesQuery.lendgines.filter(
-    (l) => quoteToken.equals(l.token0) && baseToken.equals(l.token1)
+    (l) => quoteToken.equals(l.token0) && baseToken.equals(l.token1),
   );
   return lendginesQuery.status !== "success" ? (
     <LoadingPage />

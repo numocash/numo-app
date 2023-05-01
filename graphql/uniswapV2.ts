@@ -16,27 +16,27 @@ export const parsePriceHelper = (price: number) =>
 
 // returns null if the id used to query was not valid
 export const parsePriceHistoryHourV2 = (
-  priceHistoryHourV2Query: PriceHistoryHourV2Query
+  priceHistoryHourV2Query: PriceHistoryHourV2Query,
 ): readonly PricePoint[] | null =>
   priceHistoryHourV2Query.pair
     ? priceHistoryHourV2Query.pair.hourData.map((d) => ({
         timestamp: d.date,
         price: new Fraction(
           Math.floor(parseFloat(d.reserve0) * 10 ** 9),
-          Math.floor(parseFloat(d.reserve1) * 10 ** 9)
+          Math.floor(parseFloat(d.reserve1) * 10 ** 9),
         ),
       }))
     : null;
 
 export const parsePriceHistoryDayV2 = (
-  priceHistoryDayV2Query: PriceHistoryDayV2Query
+  priceHistoryDayV2Query: PriceHistoryDayV2Query,
 ): readonly PricePoint[] | null =>
   priceHistoryDayV2Query.pair
     ? priceHistoryDayV2Query.pair.dayData.map((d) => ({
         timestamp: d.date,
         price: new Fraction(
           Math.floor(parseFloat(d.reserve0) * 10 ** 9),
-          Math.floor(parseFloat(d.reserve1) * 10 ** 9)
+          Math.floor(parseFloat(d.reserve1) * 10 ** 9),
         ),
       }))
     : null;

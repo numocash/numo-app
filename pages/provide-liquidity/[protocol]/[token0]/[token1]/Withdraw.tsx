@@ -15,9 +15,8 @@ import { useWithdraw } from "@/hooks/useWithdraw";
 
 import { Beet } from "@/utils/beet";
 
+import { useProvideLiquidity } from ".";
 import { formatDisplayWithSoftLimit } from "@/utils/format";
-
-import { useProvideLiquidity } from "../../../../hedge-uniswap/[token0]/[token1]";
 
 export default function Withdraw() {
   const { address } = useAccount();
@@ -29,7 +28,7 @@ export default function Withdraw() {
   const positionQuery = useLendginePosition(
     selectedLendgine,
     address,
-    protocol
+    protocol,
   );
 
   const size = useMemo(
@@ -37,17 +36,17 @@ export default function Withdraw() {
       positionQuery.data
         ? positionQuery.data.size.multiply(withdrawPercent).divide(100)
         : undefined,
-    [positionQuery.data, withdrawPercent]
+    [positionQuery.data, withdrawPercent],
   );
   const withdrawAmount = useWithdrawAmount(
     selectedLendgine,
     size ? { size: size } : undefined,
-    protocol
+    protocol,
   );
   const withdraw = useWithdraw(
     selectedLendgine,
     size ? { size: size } : undefined,
-    protocol
+    protocol,
   );
 
   const disableReason = useMemo(
@@ -65,7 +64,7 @@ export default function Withdraw() {
           !lendgineInfoQuery.data
         ? "Loading"
         : withdrawAmount.liquidity.greaterThan(
-            lendgineInfoQuery.data.totalLiquidity
+            lendgineInfoQuery.data.totalLiquidity,
           )
         ? "Insufficent liquidity"
         : null,
@@ -77,7 +76,7 @@ export default function Withdraw() {
       withdrawAmount.liquidity,
       withdrawAmount.status,
       withdrawPercent,
-    ]
+    ],
   );
 
   return (
@@ -98,7 +97,7 @@ export default function Withdraw() {
               ? formatDisplayWithSoftLimit(
                   Number(withdrawAmount.amount0.toFixed(6)),
                   4,
-                  10
+                  10,
                 )
               : ""
           }
@@ -116,7 +115,7 @@ export default function Withdraw() {
               ? formatDisplayWithSoftLimit(
                   Number(withdrawAmount.amount1.toFixed(6)),
                   4,
-                  10
+                  10,
                 )
               : ""
           }

@@ -30,12 +30,12 @@ export const fractionToFloat = (frac: Fraction): number => {
 export const formatPercent = (percent: Percent): string => {
   return fractionToFloat(percent.asFraction).toLocaleString(
     undefined,
-    FORMAT_PERCENT
+    FORMAT_PERCENT,
   );
 };
 
 export const formatPrice = <TBase extends Token, TQuote extends Token>(
-  price: Price<TBase, TQuote>
+  price: Price<TBase, TQuote>,
 ) => {
   return formatDisplayWithSoftLimit(
     fractionToFloat(priceToFraction(price)),
@@ -44,7 +44,7 @@ export const formatPrice = <TBase extends Token, TQuote extends Token>(
     {
       minimumFractionDigits: 0,
       maximumFractionDigits: 4,
-    }
+    },
   );
 };
 
@@ -76,7 +76,7 @@ export const formatDisplayWithSoftLimit = (
   maxDecimals: number,
   softMaximumSignificantDigits = 7,
   numberFormatOptions?: Intl.NumberFormatOptions,
-  locale?: string
+  locale?: string,
 ): string => {
   if (
     Number.isNaN(softMaximumSignificantDigits) ||
@@ -95,7 +95,7 @@ export const formatDisplayWithSoftLimit = (
       numberFormatOptions,
       {
         maximumFractionDigits: 0,
-      }
+      },
     );
     return Math.floor(float).toLocaleString(locale, wholeNumberFormatOptions);
   }
@@ -113,7 +113,7 @@ export const formatDisplayWithSoftLimit = (
       minimumFractionDigits: digitsOnRight,
       maximumFractionDigits: digitsOnRight,
     },
-    numberFormatOptions
+    numberFormatOptions,
   );
   return flooredToPrecision.toLocaleString(locale, maxFormatOptions);
 };

@@ -21,7 +21,7 @@ export default function NumberInput({
       autoCorrect="off"
       className={clsx(
         className,
-        "p2 w-full rounded-lg px-2 py-1 text-right placeholder:text-secondary"
+        "p2 w-full rounded-lg px-2 py-1 text-right placeholder:text-secondary",
       )}
       placeholder={placeholder ?? "0"}
       type="text"

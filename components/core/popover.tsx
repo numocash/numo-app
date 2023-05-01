@@ -18,7 +18,7 @@ export default function Popover({
   const [referenceElement, setReferenceElement] =
     useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
-    null
+    null,
   );
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement,

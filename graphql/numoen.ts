@@ -4,7 +4,7 @@ import type { Address } from "wagmi";
 import type { LendginesQuery } from "../gql/numoen/graphql";
 
 export const parseLendgines = (
-  lendginesQuery: LendginesQuery
+  lendginesQuery: LendginesQuery,
 ): {
   token0: Address;
   token1: Address;

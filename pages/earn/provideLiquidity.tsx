@@ -41,12 +41,12 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
         cur,
         lendginesQuery.data![i]!,
         { size: lendginesQuery.data![i]!.totalPositionSize },
-        protocol
+        protocol,
       );
       const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
         cur,
         lendginesQuery.data![i]!,
-        liquidity
+        liquidity,
       );
       const value = amount0.add(priceQuery.data.price.quote(amount1));
 
@@ -61,7 +61,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
       const accruedInfo = calculateAccrual(
         cur,
         lendginesQuery.data![i]!,
-        protocol
+        protocol,
       );
       const supplyRate = calculateSupplyRate({
         lendgineInfo: accruedInfo,

@@ -8,13 +8,13 @@ import type { Address } from "wagmi";
 import type { ReadContractsConfig, ReadContractsResult } from "wagmi/actions";
 import { readContracts } from "wagmi/actions";
 
-import type { DeepPartial, QueryFunctionArgs } from "./types";
 import { useChain } from "../useChain";
+import type { DeepPartial, QueryFunctionArgs } from "./types";
 
 export type UseContractReadsConfig<
   TContracts extends Contract[],
   TSelectData = ReadContractsResult<TContracts>,
-  Config = ReadContractsConfig<TContracts>
+  Config = ReadContractsConfig<TContracts>,
 > = {
   [K in keyof Config]?: K extends "contracts"
     ? DeepPartial<Config[K], 2>
@@ -33,7 +33,7 @@ function queryKey<
   TContracts extends {
     abi: TAbi;
     functionName: TFunctionName;
-  }[]
+  }[],
 >({
   allowFailure,
   chainId,
@@ -50,7 +50,7 @@ function queryKey<
           address,
           args,
           functionName,
-        })
+        }),
       ),
       overrides,
     },
@@ -63,7 +63,7 @@ function queryFn<
   TContracts extends {
     abi: TAbi;
     functionName: TFunctionName;
-  }[]
+  }[],
 >({ abis }: { abis: (Abi | readonly unknown[])[] }) {
   return ({
     queryKey: [{ allowFailure, contracts: contracts_, overrides }],
@@ -72,7 +72,7 @@ function queryFn<
       (contract, i) => ({
         ...contract,
         abi: abis[i] as Abi,
-      })
+      }),
     );
     return readContracts({
       allowFailure,
@@ -97,7 +97,7 @@ export function useContractReads<
     abi: TAbi;
     functionName: TFunctionName;
   }[],
-  TSelectData = ReadContractsResult<TContracts>
+  TSelectData = ReadContractsResult<TContracts>,
 >({
   allowFailure = true,
   cacheTime,
@@ -128,21 +128,21 @@ UseQueryResult<TSelectData, Error> {
         contracts: contracts as unknown as ContractConfig[],
         overrides,
       }),
-    [allowFailure, chainId, contracts, overrides]
+    [allowFailure, chainId, contracts, overrides],
   );
 
   const enabled = React.useMemo(() => {
     const enabled = Boolean(
       enabled_ &&
         (contracts as unknown as ContractConfig[])?.every(
-          (x) => x.abi && x.address && x.functionName
-        )
+          (x) => x.abi && x.address && x.functionName,
+        ),
     );
     return enabled;
   }, [contracts, enabled_]);
 
   const abis = ((contracts ?? []) as unknown as ContractConfig[]).map(
-    ({ abi }) => abi
+    ({ abi }) => abi,
   );
 
   return useQuery({
@@ -157,7 +157,6 @@ UseQueryResult<TSelectData, Error> {
     select(data) {
       const result = data.map((data, i) => {
         const { abi, functionName } = (contracts?.[i] ?? {}) as ContractConfig;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return abi && functionName
           ? parseContractResult({ abi, functionName, data })
           : data;

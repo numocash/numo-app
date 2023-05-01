@@ -10,13 +10,6 @@ import {
   writeContract,
 } from "wagmi/actions";
 
-import type { HookArg } from "./internal/types";
-import { useInvalidateCall } from "./internal/useInvalidateCall";
-import { useWithdrawAmount } from "./useAmounts";
-import { useAwaitTX } from "./useAwaitTX";
-import { getBalanceRead } from "./useBalance";
-import { getLendginePositionRead } from "./useLendginePosition";
-import { useIsWrappedNative } from "./useTokens";
 import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -26,11 +19,18 @@ import { priceToFraction } from "../lib/price";
 import type { Lendgine, LendginePosition } from "../lib/types/lendgine";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
+import type { HookArg } from "./internal/types";
+import { useInvalidateCall } from "./internal/useInvalidateCall";
+import { useWithdrawAmount } from "./useAmounts";
+import { useAwaitTX } from "./useAwaitTX";
+import { getBalanceRead } from "./useBalance";
+import { getLendginePositionRead } from "./useLendginePosition";
+import { useIsWrappedNative } from "./useTokens";
 
 export const useWithdraw = <L extends Lendgine>(
   lendgine: HookArg<L>,
   position: HookArg<Pick<LendginePosition<L>, "size">>,
-  protocol: Protocol
+  protocol: Protocol,
 ) => {
   const settings = useSettings();
   const environment = useEnvironment();
@@ -71,27 +71,27 @@ export const useWithdraw = <L extends Lendgine>(
           token0Exp: BigNumber.from(lendgine.token0.decimals),
           token1Exp: BigNumber.from(lendgine.token1.decimals),
           upperBound: BigNumber.from(
-            priceToFraction(lendgine.bound).multiply(scale).quotient.toString()
+            priceToFraction(lendgine.bound).multiply(scale).quotient.toString(),
           ),
           amount0Min: BigNumber.from(
             amount0
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           amount1Min: BigNumber.from(
             amount1
               .multiply(
-                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent)
+                ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
-              .quotient.toString()
+              .quotient.toString(),
           ),
           size: BigNumber.from(size.quotient.toString()),
 
           recipient: native0 || native1 ? constants.AddressZero : address,
           deadline: BigNumber.from(
-            Math.round(Date.now() / 1000) + settings.timeout * 60
+            Math.round(Date.now() / 1000) + settings.timeout * 60,
           ),
         },
       ] as const;
@@ -118,15 +118,15 @@ export const useWithdraw = <L extends Lendgine>(
                   [
                     liquidityManagerContract.interface.encodeFunctionData(
                       "removeLiquidity",
-                      args
+                      args,
                     ),
                     liquidityManagerContract.interface.encodeFunctionData(
                       "unwrapWETH",
-                      unwrapArgs
+                      unwrapArgs,
                     ),
                     liquidityManagerContract.interface.encodeFunctionData(
                       "sweepToken",
-                      sweepArgs
+                      sweepArgs,
                     ),
                   ] as `0x${string}`[],
                 ],
@@ -163,8 +163,8 @@ export const useWithdraw = <L extends Lendgine>(
             getLendginePositionRead(
               lendgine,
               input.address,
-              protocolConfig.liquidityManager
-            )
+              protocolConfig.liquidityManager,
+            ),
           ),
           invalidate(getBalanceRead(input.amount0.currency, input.address)),
           invalidate(getBalanceRead(input.amount1.currency, input.address)),

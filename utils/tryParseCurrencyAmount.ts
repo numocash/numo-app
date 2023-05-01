@@ -10,7 +10,7 @@ import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
  */
 export default function tryParseCurrencyAmount<T extends WrappedTokenInfo>(
   value?: string,
-  currency?: T
+  currency?: T,
 ): CurrencyAmount<T> | undefined {
   if (!value || !currency) {
     return undefined;
@@ -22,7 +22,7 @@ export default function tryParseCurrencyAmount<T extends WrappedTokenInfo>(
     if (typedValueParsed !== "0") {
       return CurrencyAmount.fromRawAmount(
         currency,
-        JSBI.BigInt(typedValueParsed)
+        JSBI.BigInt(typedValueParsed),
       );
     }
   } catch (error) {
