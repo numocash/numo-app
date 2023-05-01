@@ -37,19 +37,4 @@ jobs:
       - name: Check types
         run: pnpm tsc
       - name: Lint
-        run: pnpm lint:fix
-
-  build:
-    name: Build
-    needs: install
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18]
-        pnpm-version: [8]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup
-        uses: ./.github/actions/setup
-      - name: Build
-        run: pnpm build
+        run: pnpm lint --apply

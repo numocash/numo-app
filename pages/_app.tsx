@@ -1,16 +1,18 @@
+import Layout from "@/components/layout";
+import { EnvironmentProvider } from "@/contexts/environment";
+import { SettingsProvider } from "@/contexts/settings";
 import "@/styles/globals.css";
+import { DefaultToasterWrapper } from "@/utils/beet";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Analytics } from "@vercel/analytics/react";
 import type { AppProps } from "next/app";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { arbitrum, celo, polygon } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-
-import { DefaultToasterWrapper } from "@/src/components/beet";
-import { SettingsProvider } from "@/src/contexts/settings";
-import { EnvironmentProvider } from "@/src/contexts/useEnvironment";
 
 const { chains, provider, webSocketProvider } = configureChains(
   [
@@ -28,12 +30,12 @@ const { chains, provider, webSocketProvider } = configureChains(
     alchemyProvider({ apiKey: "UVgzpWCHx6zsVDO7qC8mtcA6jCl0vgV4" }),
     alchemyProvider({ apiKey: "UOYl0nPuXw_tVCxLnPnd6lSYtj4agcDO" }),
     publicProvider(),
-  ]
+  ],
 );
 
-export { chains };
-
 export const toaster = new DefaultToasterWrapper();
+
+export { chains };
 
 const { connectors } = getDefaultWallets({
   appName: "Numoen",
@@ -58,11 +60,13 @@ export default function App({ Component, pageProps }: AppProps) {
     <WagmiConfig client={wagmiClient}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-
         <RainbowKitProvider coolMode chains={chains}>
           <EnvironmentProvider>
             <SettingsProvider>
-              <Component {...pageProps} />
+              <Layout>
+                <Component {...pageProps} />
+                <Analytics />
+              </Layout>
             </SettingsProvider>
           </EnvironmentProvider>
         </RainbowKitProvider>

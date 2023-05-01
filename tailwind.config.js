@@ -6,10 +6,13 @@ const gray = {
   300: "#cfcfcf",
   500: "#8f8f8f",
   700: "#505050",
+  800: "#4f4f4f",
+  900: "#303030",
 };
 
 const textColor = {
-  default: "#000000",
+  default: "#000",
+  DEFAULT: "000",
   secondary: "#707070",
 };
 
@@ -19,14 +22,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
   ],
-  mode: "jit",
   theme: {
-    screens: {
-      sm: "480px",
-      md: "768px",
-      lg: "976px",
-      xl: "1320px",
-    },
     extend: {
       colors: {
         gray,
@@ -34,5 +30,5 @@ module.exports = {
       textColor,
     },
   },
-  plugins: [],
+  plugins: [require("@headlessui/tailwindcss")],
 };
