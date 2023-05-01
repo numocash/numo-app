@@ -64,7 +64,7 @@ export default function EarnInner() {
   );
 
   return (
-    <div className="grid w-full max-w-5xl grid-cols-1 gap-4 pt-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid w-full max-w-5xl grid-cols-1 gap-4 pt-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
       {environment.interface.liquidStaking && <LiquidStaking />}
       {environment.interface.liquidStaking && (
         <ProvideLiquidity

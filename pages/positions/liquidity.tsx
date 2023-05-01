@@ -1,0 +1,137 @@
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
+import { useMemo } from "react";
+import { useAccount } from "wagmi";
+
+import Button from "@/components/core/button";
+import LoadingBox from "@/components/loadingBox";
+import TokenAmountDisplay from "@/components/tokenAmountDisplay";
+import TokenIcon from "@/components/tokenIcon";
+import type { Protocol } from "@/constants";
+import { useLendgines } from "@/hooks/useLendgines";
+import { useLendginesPositions } from "@/hooks/useLendginesPositions";
+import { usePositionValue } from "@/hooks/useValue";
+import { calculateSupplyRate } from "@/lib/jumprate";
+import type { Lendgine, LendgineInfo } from "@/lib/types/lendgine";
+import { formatPercent } from "@/utils/format";
+
+import { usePosition } from ".";
+
+export default function Liquidity() {
+  const { isConnected, address } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const { lendgines } = usePosition();
+  const lendgineInfoQuery = useLendgines(lendgines);
+
+  const positionQuery = useLendginesPositions(lendgines, address);
+
+  const validLendgines = useMemo(() => {
+    if (!positionQuery.data) return undefined;
+    return positionQuery.data.reduce(
+      (acc, cur, i) =>
+        cur.size.greaterThan(0) || cur.tokensOwed.greaterThan(0)
+          ? acc.concat(i)
+          : acc,
+      new Array<number>()
+    );
+  }, [positionQuery.data]);
+
+  return (
+    <div className="flex w-full flex-col gap-4 rounded-xl border-2 border-gray-200 bg-white py-6">
+      <div className="lg:(flex-row justify-between) flex flex-col gap-4 px-6">
+        <h2 className="">Liquidity Positions</h2>
+        <p className="p3">
+          Provide liquidity to an AMM and earn from lending the position out.
+        </p>
+      </div>
+
+      {!isConnected ? (
+        <Button
+          variant="primary"
+          className="p2 mx-6 h-12"
+          onClick={openConnectModal}
+        >
+          Connect Wallet
+        </Button>
+      ) : !validLendgines || !lendgineInfoQuery.data ? (
+        <div className="mx-6 flex w-full flex-col gap-2">
+          {[...Array(5).keys()].map((i) => (
+            <LoadingBox className="h-12 w-full" key={i + "load"} />
+          ))}
+        </div>
+      ) : validLendgines.length === 0 ? (
+        <div className="p2 mx-6 flex h-12 items-center justify-center rounded-xl bg-gray-200">
+          No positions
+        </div>
+      ) : (
+        <>
+          <div className="mt-6 grid w-full grid-cols-4 px-6">
+            <p className="p5">Pair</p>
+            <p className="p5 justify-self-end">Reward APR</p>
+            <p className="p5 justify-self-end">Value</p>
+            <p className="p5 justify-self-end">Action</p>
+          </div>
+          <div className="flex w-full flex-col">
+            {validLendgines.map((i) => (
+              <LiquidityItem
+                key={lendgines[i]!.address + "liq"}
+                lendgine={lendgines[i]!}
+                protocol={"pmmp"}
+                lendgineInfo={lendgineInfoQuery.data![i]!}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+type LiquidityProps<L extends Lendgine = Lendgine> = {
+  lendgine: L;
+  protocol: Protocol;
+  lendgineInfo: LendgineInfo<L>;
+};
+
+const LiquidityItem: React.FC<LiquidityProps> = ({
+  lendgine,
+  protocol,
+  lendgineInfo,
+}: LiquidityProps) => {
+  const valueQuery = usePositionValue(lendgine, protocol);
+
+  return (
+    <div className="grid h-[72px] w-full transform grid-cols-4 items-center px-6 duration-300 ease-in-out hover:bg-gray-200">
+      <div className="flex items-center">
+        <TokenIcon tokenInfo={lendgine.token0} size={32} />
+        <TokenIcon tokenInfo={lendgine.token1} size={32} />
+
+        <p className="p1 ml-2">
+          {lendgine.token0.symbol} + {lendgine.token1.symbol}
+        </p>
+      </div>
+      <p className="p2 justify-self-end">
+        {formatPercent(calculateSupplyRate({ lendgineInfo, protocol }))}
+      </p>
+      <p className="p2 justify-self-end">
+        {valueQuery.status === "success" ? (
+          <TokenAmountDisplay
+            amount={valueQuery.value}
+            showSymbol={true}
+            className="p2"
+          />
+        ) : (
+          <LoadingBox />
+        )}
+      </p>
+      <Link
+        className="justify-self-end"
+        href={`/earn/provide-liquidity/${protocol}/${lendgine.token0.address}/${lendgine.token1.address}`}
+      >
+        <Button variant="primary" className="p2 px-2 py-1">
+          View
+        </Button>
+      </Link>
+    </div>
+  );
+};

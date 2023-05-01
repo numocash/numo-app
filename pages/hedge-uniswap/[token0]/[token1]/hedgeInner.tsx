@@ -20,7 +20,7 @@ export default function HedgeInner() {
       <div className="w-full max-w-5xl overflow-clip rounded-xl border-2 border-gray-200 bg-white">
         <div className="flex h-36 w-full flex-col justify-end bg-gradient-to-tr from-[#fff] to-[#ff007a] p-4">
           <div className="flex w-full items-end justify-between">
-            <p className="mb-8 h-fit w-fit rounded-lg bg-white bg-opacity-50 p-2 font-medium">
+            <p className="p2 mb-8 h-fit w-fit rounded-lg bg-white bg-opacity-50 p-2">
               Hedge Uniswap V3
             </p>
             <Image
@@ -38,15 +38,15 @@ export default function HedgeInner() {
         </div>
 
         <div className="-mt-8 flex flex-col gap-4 p-6 lg:flex-row lg:justify-between">
-          <p className="text-2xl font-bold sm:text-4xl">
+          <h2 className="">
             {token0.symbol} + {token1.symbol}
-          </p>
+          </h2>
           <div className="grid gap-2">
-            <p className="max-w-md text-[#8f8f8f] sm:text-lg">
+            <p className="p3 max-w-md">
               Provide liquidity to an AMM and earn from lending the position
               out.
             </p>
-            <p className="text-sm font-normal underline ">View details</p>
+            <p className="p4 underline">View details</p>
           </div>
         </div>
       </div>

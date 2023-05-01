@@ -38,10 +38,7 @@ export default function Earn() {
       </Head>
       <div className="top-card">
         <h1>Earn on your assets</h1>
-        <div
-          className="grid gap-2
-        "
-        >
+        <div className="grid gap-2">
           <p className="p3">
             Numoen has created several strategies using our underlying PMMP. All
             strategies maintain maximum trustlessness and decentralization.
