@@ -31,7 +31,7 @@ export default function Header() {
         </Link>
         <More />
         <Settings />
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-0">
           <ConnectButton />
           <Menu />
         </div>
