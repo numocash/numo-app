@@ -102,7 +102,7 @@ export default function Deposit() {
               : token0String
           }
           onChange={(val) => onInput(val, "token0")}
-          // currentAmount={{ allowSelect: true, amount: token0Query.data }}
+          amount={token0Query.data}
         />
         <div className=" w-full border-b-2 border-gray-200" />
 
@@ -123,7 +123,7 @@ export default function Deposit() {
               : token1String
           }
           onChange={(val) => onInput(val, "token1")}
-          // currentAmount={{ allowSelect: true, amount: token1Query.data }}
+          amount={token1Query.data}
         />
       </div>
       <AsyncButton

@@ -54,7 +54,7 @@ export default function ConnectButton() {
                       </p>
                     </div>
                   </button>
-                  <button onClick={openChainModal}>
+                  <button onClick={openChainModal} className="pl-1">
                     <div className="flex h-10 flex-col items-center justify-center rounded-xl bg-gray-700 px-1.5">
                       <Image
                         alt={chain.name ?? "Chain icon"}

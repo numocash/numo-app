@@ -188,10 +188,8 @@ export default function Create() {
               onInput(value, "token1");
             }}
             type="select"
-            // currentAmount={{
-            //   amount: token1Balance.data,
-            //   allowSelect: true,
-            // }}
+            amount={token1Balance.data}
+            label="Long"
           />
           <div className=" w-full border-b-2 border-gray-200" />
           <CenterSwitch icon="plus" />
@@ -210,10 +208,8 @@ export default function Create() {
               onInput(value, "token0");
             }}
             type="select"
-            // currentAmount={{
-            //   amount: token0Balance.data,
-            //   allowSelect: true,
-            // }}
+            label="Short"
+            amount={token0Balance.data}
           />
         </div>
 

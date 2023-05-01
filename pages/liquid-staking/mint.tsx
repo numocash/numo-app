@@ -69,7 +69,7 @@ export default function Mint() {
           selectedToken={staking.lendgine.token1}
           value={input}
           onChange={setInput}
-          // currentAmount={{ allowSelect: true, amount: balanceQuery.data }}
+          amount={balanceQuery.data}
         />
       </div>
 
