@@ -174,11 +174,9 @@ export default function Create() {
       <div className="flex w-full max-w-lg flex-col gap-2 pt-12">
         <div className="rounded-xl border-2 border-gray-200 bg-white">
           <CurrencyAmountSelection
-            // className="p-2"
             onSelect={setToken1}
             tokens={removeToken0}
             selectedToken={token1}
-            // label="Long"
             value={
               token1Input === ""
                 ? formatDisplayWithSoftLimit(
@@ -198,11 +196,9 @@ export default function Create() {
           <div className=" w-full border-b-2 border-gray-200" />
           <CenterSwitch icon="plus" />
           <CurrencyAmountSelection
-            // className="p-2"
             onSelect={setToken0}
             tokens={removeToken1}
             selectedToken={token0}
-            // label="Short"
             value={
               token0Input === ""
                 ? formatDisplayWithSoftLimit(

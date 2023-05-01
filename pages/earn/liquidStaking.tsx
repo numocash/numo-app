@@ -1,14 +1,14 @@
-import { useLongReturns } from "../liquid-staking/useReturns";
 import EarnCard from "./earnCard";
 import LoadingSpinner from "@/components/loadingSpinner";
 import TokenIcon from "@/components/tokenIcon";
 import { useEnvironment } from "@/contexts/environment";
+import { useLiquidStakingReturns } from "@/hooks/useLiquidStakingReturns";
 import { formatPercent } from "@/utils/format";
 import { BsLightningChargeFill } from "react-icons/bs";
 
 export default function LiquidStaking() {
   const environment = useEnvironment();
-  const longAPRQuery = useLongReturns();
+  const longAPRQuery = useLiquidStakingReturns();
 
   return (
     <EarnCard

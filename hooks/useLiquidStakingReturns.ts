@@ -4,7 +4,7 @@ import { useEnvironment } from "@/contexts/environment";
 import { useLendgine } from "@/hooks/useLendgine";
 import { calculateBorrowRate } from "@/lib/jumprate";
 
-export const useLongReturns = () => {
+export const useLiquidStakingReturns = () => {
   const environment = useEnvironment();
   const staking = environment.interface.liquidStaking!;
 

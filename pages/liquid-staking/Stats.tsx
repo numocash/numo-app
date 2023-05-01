@@ -2,11 +2,10 @@ import LoadingBox from "@/components/loadingBox";
 import MainStats from "@/components/mainStats";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import { useEnvironment } from "@/contexts/environment";
+import { useLiquidStakingReturns } from "@/hooks/useLiquidStakingReturns";
 import { useTotalValue, useValue } from "@/hooks/useValue";
 
 import { formatPercent } from "@/utils/format";
-
-import { useLongReturns } from "./useReturns";
 
 export default function Stats() {
   const environment = useEnvironment();
@@ -15,7 +14,7 @@ export default function Stats() {
   const userValueQuery = useValue(staking.lendgine, "stpmmp");
   const totalValueQuery = useTotalValue(staking.lendgine, "stpmmp");
 
-  const longAPRQuery = useLongReturns();
+  const longAPRQuery = useLiquidStakingReturns();
 
   return (
     <MainStats

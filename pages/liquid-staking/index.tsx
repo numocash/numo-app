@@ -2,9 +2,9 @@ import Head from "next/head";
 
 import Tab from "@/components/core/tabs";
 
-import Stats from "./Stats";
 import Burn from "./burn";
 import Mint from "./mint";
+import Stats from "./stats";
 
 export default function LiquidStaking() {
   const tabs = {

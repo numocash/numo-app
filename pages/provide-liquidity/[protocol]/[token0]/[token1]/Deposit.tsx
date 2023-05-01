@@ -1,7 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
-import invariant from "tiny-invariant";
-import { useAccount } from "wagmi";
-
+import { useProvideLiquidity } from ".";
 import CenterSwitch from "@/components/centerSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
@@ -9,11 +6,12 @@ import { useDepositAmount } from "@/hooks/useAmounts";
 import { useBalance } from "@/hooks/useBalance";
 import { useDeposit } from "@/hooks/useDeposit";
 import { useLendgine } from "@/hooks/useLendgine";
-
-import { useProvideLiquidity } from ".";
 import { Beet } from "@/utils/beet";
 import { formatDisplayWithSoftLimit } from "@/utils/format";
 import tryParseCurrencyAmount from "@/utils/tryParseCurrencyAmount";
+import { useCallback, useMemo, useState } from "react";
+import invariant from "tiny-invariant";
+import { useAccount } from "wagmi";
 
 export default function Deposit() {
   const { address } = useAccount();
