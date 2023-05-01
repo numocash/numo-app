@@ -1,5 +1,3 @@
-import { CurrencyAmount } from "@uniswap/sdk-core";
-
 import type { Protocol } from "../constants";
 import { calculateBorrowRate } from "./jumprate";
 import { fractionToPrice, priceToFraction, tokenToFraction } from "./price";
@@ -8,6 +6,7 @@ import type {
   LendgineInfo,
   LendginePosition,
 } from "./types/lendgine";
+import { CurrencyAmount } from "@uniswap/sdk-core";
 
 export const calculateAccrual = <L extends Lendgine>(
   lendgine: L,

@@ -1,8 +1,7 @@
+import type { ReadConfig } from "./types";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Abi, Address } from "abitype";
 import { useCallback } from "react";
-
-import type { ReadConfig } from "./types";
 
 export const useInvalidateCall = () => {
   const queryClient = useQueryClient();

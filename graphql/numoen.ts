@@ -1,7 +1,6 @@
+import type { LendginesQuery } from "../gql/numoen/graphql";
 import { utils } from "ethers";
 import type { Address } from "wagmi";
-
-import type { LendginesQuery } from "../gql/numoen/graphql";
 
 export const parseLendgines = (
   lendginesQuery: LendginesQuery,

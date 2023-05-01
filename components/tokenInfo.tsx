@@ -1,8 +1,6 @@
-import { clsx } from "clsx";
-
-import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
-
 import TokenIcon from "./tokenIcon";
+import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import { clsx } from "clsx";
 
 export default function TokenInfo({
   token,

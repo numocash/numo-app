@@ -1,13 +1,12 @@
-import { Percent } from "@uniswap/sdk-core";
-import { useState } from "react";
-import { IoIosArrowDown } from "react-icons/io";
-
 import Button from "@/components/core/button";
 import Disclosure from "@/components/core/disclosure";
 import NumberInput from "@/components/core/numberInput";
 import Switch from "@/components/core/switch";
 import { useSettings } from "@/contexts/settings";
 import { fractionToFloat } from "@/utils/format";
+import { Percent } from "@uniswap/sdk-core";
+import { useState } from "react";
+import { IoIosArrowDown } from "react-icons/io";
 
 export default function SettingsInner() {
   const [deadlineInput, setDeadlineInput] = useState("");

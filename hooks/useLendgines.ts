@@ -1,9 +1,3 @@
-import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
-import type { BigNumber } from "ethers";
-import { chunk } from "lodash";
-import { useMemo } from "react";
-import invariant from "tiny-invariant";
-
 import { scale } from "../lib/constants";
 import { fractionToPrice } from "../lib/price";
 import type { Lendgine } from "../lib/types/lendgine";
@@ -12,6 +6,11 @@ import type { HookArg } from "./internal/types";
 import { useContractReads } from "./internal/useContractReads";
 import { externalRefetchInterval } from "./internal/utils";
 import { getLendgineRead } from "./useLendgine";
+import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
+import type { BigNumber } from "ethers";
+import { chunk } from "lodash";
+import { useMemo } from "react";
+import invariant from "tiny-invariant";
 
 export const useLendgines = <L extends Lendgine>(
   lendgines: HookArg<readonly L[]>,

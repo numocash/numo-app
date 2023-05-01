@@ -1,13 +1,20 @@
+import ConnectButton from "./connectButton";
+import Menu from "./menu";
+import More from "./more";
+import Settings from "./settings";
+import { Inter } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 
-import ConnectButton from "./connectButton";
-import More from "./more";
-import Settings from "./settings";
+const inter = Inter({
+  subsets: ["greek"],
+});
 
 export default function Header() {
   return (
-    <div className="fixed top-4 z-10 flex w-full justify-center px-8 sm:px-10">
+    <div
+      className={`${inter.className} fixed top-4 z-10 flex w-full justify-center px-8 sm:px-10`}
+    >
       <div className="flex w-full max-w-xl items-center justify-between rounded-2xl bg-gray-900 p-1">
         <NumoenIcon />
         <Link
@@ -25,8 +32,8 @@ export default function Header() {
         <More />
         <Settings />
         <div className="flex items-center gap-1">
-          {/* <Menu /> */}
           <ConnectButton />
+          <Menu />
         </div>
       </div>
     </div>

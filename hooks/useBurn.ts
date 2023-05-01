@@ -1,16 +1,3 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CurrencyAmount } from "@uniswap/sdk-core";
-import { BigNumber, constants, utils } from "ethers";
-import { useMemo } from "react";
-import type { Address } from "wagmi";
-import { useAccount } from "wagmi";
-import type { SendTransactionResult } from "wagmi/actions";
-import {
-  getContract,
-  prepareWriteContract,
-  writeContract,
-} from "wagmi/actions";
-
 import { lendgineRouterABI } from "../abis/lendgineRouter";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -26,13 +13,24 @@ import { getBalanceRead } from "../hooks/useBalance";
 import { isV3, useMostLiquidMarket } from "../hooks/useExternalExchange";
 import { useIsWrappedNative } from "../hooks/useTokens";
 import { ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
-import { useBurnAmount } from "./useAmounts";
-
 import { priceToFraction } from "../lib/price";
 import type { Lendgine } from "../lib/types/lendgine";
 import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
+import { useBurnAmount } from "./useAmounts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { CurrencyAmount } from "@uniswap/sdk-core";
+import { BigNumber, constants, utils } from "ethers";
+import { useMemo } from "react";
+import type { Address } from "wagmi";
+import { useAccount } from "wagmi";
+import type { SendTransactionResult } from "wagmi/actions";
+import {
+  getContract,
+  prepareWriteContract,
+  writeContract,
+} from "wagmi/actions";
 
 export const useBurn = <L extends Lendgine>(
   lendgine: HookArg<L>,

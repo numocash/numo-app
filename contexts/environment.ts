@@ -1,7 +1,6 @@
-import { createContainer } from "unstated-next";
-
 import { config } from "../constants";
 import { useChain } from "../hooks/useChain";
+import { createContainer } from "unstated-next";
 
 const useEnvironmentInternal = () => {
   const chain = useChain();

@@ -1,6 +1,3 @@
-import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
-import type { Address } from "wagmi";
-
 import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -10,6 +7,8 @@ import type { Lendgine } from "../lib/types/lendgine";
 import type { HookArg, ReadConfig } from "./internal/types";
 import { useContractRead } from "./internal/useContractRead";
 import { userRefectchInterval } from "./internal/utils";
+import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
+import type { Address } from "wagmi";
 
 export const useLendginePosition = <L extends Lendgine>(
   lendgine: HookArg<L>,

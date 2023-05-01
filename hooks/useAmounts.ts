@@ -1,7 +1,3 @@
-import type { CurrencyAmount } from "@uniswap/sdk-core";
-import { Percent } from "@uniswap/sdk-core";
-import { useMemo } from "react";
-
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
 import { useSettings } from "../contexts/settings";
@@ -20,6 +16,9 @@ import type { Lendgine, LendginePosition } from "../lib/types/lendgine";
 import type { HookArg } from "./internal/types";
 import { isV3, useMostLiquidMarket } from "./useExternalExchange";
 import { useLendgine } from "./useLendgine";
+import type { CurrencyAmount } from "@uniswap/sdk-core";
+import { Percent } from "@uniswap/sdk-core";
+import { useMemo } from "react";
 
 export const useMintAmount = <L extends Lendgine>(
   lendgine: HookArg<L>,

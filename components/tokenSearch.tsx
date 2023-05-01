@@ -1,13 +1,11 @@
+import Dialog from "./core/dialog";
+import TokenInfo from "./tokenInfo";
+import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
 import { clsx } from "clsx";
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { FiCheck, FiSearch } from "react-icons/fi";
 import { useDebounce } from "use-debounce";
-
-import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
-
-import Dialog from "./core/dialog";
-import TokenInfo from "./tokenInfo";
 
 export default function TokenSearch({
   tokens,

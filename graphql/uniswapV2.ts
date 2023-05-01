@@ -1,9 +1,8 @@
-import { Fraction } from "@uniswap/sdk-core";
-
 import type {
   PriceHistoryDayV2Query,
   PriceHistoryHourV2Query,
 } from "../gql/uniswapV2/graphql";
+import { Fraction } from "@uniswap/sdk-core";
 
 export type UniswapV2Pool = {
   version: "V2";

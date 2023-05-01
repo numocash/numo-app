@@ -1,7 +1,6 @@
-import { Percent } from "@uniswap/sdk-core";
-
 import type { Protocol } from "../constants";
 import type { Lendgine, LendgineInfo } from "./types/lendgine";
+import { Percent } from "@uniswap/sdk-core";
 
 type JumpRateConfig = {
   kink: Percent;

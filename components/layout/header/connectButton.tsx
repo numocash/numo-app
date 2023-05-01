@@ -1,7 +1,6 @@
+import Button from "@/components/core/button";
 import { ConnectButton as ConnectButtonRainbow } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
-
-import Button from "@/components/core/button";
 
 export default function ConnectButton() {
   return (

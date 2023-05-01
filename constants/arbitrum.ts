@@ -1,10 +1,9 @@
-import { Ether, Percent, Price, Token } from "@uniswap/sdk-core";
-import { utils } from "ethers";
-
 import type { Config } from ".";
 import { chainID } from "../lib/constants";
 import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { Stable, WrappedNative } from "./tokens";
+import { Ether, Percent, Price, Token } from "@uniswap/sdk-core";
+import { utils } from "ethers";
 
 const USDT = new WrappedTokenInfo({
   name: "Tether USD",

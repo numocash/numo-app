@@ -1,16 +1,12 @@
-import { useMemo } from "react";
-
-import { useEnvironment } from "@/contexts/environment";
-
-import { lendgineToMarket } from "@/lib/lendgineValidity";
-import type { Lendgine } from "@/lib/types/lendgine";
-
-import type { Market } from "@/lib/types/market";
-
 import { useEarn } from ".";
 import HedgeUniswap from "./hedgeUniswap";
 import LiquidStaking from "./liquidStaking";
 import ProvideLiquidity from "./provideLiquidity";
+import { useEnvironment } from "@/contexts/environment";
+import { lendgineToMarket } from "@/lib/lendgineValidity";
+import type { Lendgine } from "@/lib/types/lendgine";
+import type { Market } from "@/lib/types/market";
+import { useMemo } from "react";
 
 export default function EarnInner() {
   const environment = useEnvironment();

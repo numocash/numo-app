@@ -1,10 +1,9 @@
+import Popover from "../../core/popover";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import { ImBook, ImGithub, ImTwitter } from "react-icons/im";
 import { IoIosArrowDown } from "react-icons/io";
 import { SiMedium } from "react-icons/si";
-
-import Popover from "../../core/popover";
 
 const size = 20;
 

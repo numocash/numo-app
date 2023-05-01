@@ -1,7 +1,6 @@
+import { useEnvironment } from "../contexts/environment";
 import { GraphQLClient } from "graphql-request";
 import { useMemo } from "react";
-
-import { useEnvironment } from "../contexts/environment";
 
 export const useClient = () => {
   const environment = useEnvironment();

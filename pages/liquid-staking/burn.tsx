@@ -1,16 +1,16 @@
-import { useMemo, useState } from "react";
-import invariant from "tiny-invariant";
-import { useAccount } from "wagmi";
-
-import CenterSwitch from "@/components/CenterSwitch";
+import CenterSwitch from "@/components/centerSwitch";
 import AsyncButton from "@/components/core/asyncButton";
-import CurrencyAmountSelection from "@/components/currencyAmountSelection";
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
 import Slider from "@/components/slider";
 import { useEnvironment } from "@/contexts/environment";
 import { useBurnAmount } from "@/hooks/useAmounts";
 import { useBalance } from "@/hooks/useBalance";
 import { useBurn } from "@/hooks/useBurn";
 import { Beet } from "@/utils/beet";
+import { CurrencyAmount } from "@uniswap/sdk-core";
+import { useMemo, useState } from "react";
+import invariant from "tiny-invariant";
+import { useAccount } from "wagmi";
 
 export default function Burn() {
   const { address } = useAccount();
@@ -56,17 +56,11 @@ export default function Burn() {
         </div>
         <div className=" w-full border-b-2 border-gray-200" />
         <CenterSwitch icon="arrow" />
-        <CurrencyAmountSelection
-          // className="justify-center"
-          type="display"
-          onChange={() => {
-            return;
-          }}
-          selectedToken={staking.lendgine.token1}
-          value={burnAmount.collateral?.toSignificant(6, {
-            groupSeparator: ",",
-          })}
-          // inputDisabled={true}
+        <CurrencyAmountDisplay
+          amount={
+            burnAmount.collateral ??
+            CurrencyAmount.fromRawAmount(staking.lendgine.token1, 0)
+          }
         />
       </div>
       <AsyncButton

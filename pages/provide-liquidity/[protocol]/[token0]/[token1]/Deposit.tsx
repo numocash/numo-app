@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 import { useAccount } from "wagmi";
 
-import CenterSwitch from "@/components/CenterSwitch";
+import CenterSwitch from "@/components/centerSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
 import { useDepositAmount } from "@/hooks/useAmounts";

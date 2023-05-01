@@ -1,21 +1,17 @@
-import { useMemo } from "react";
-
+import { useProvideLiquidity } from ".";
 import LoadingBox from "@/components/loadingBox";
 import MainStats from "@/components/mainStats";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import { useLendgine } from "@/hooks/useLendgine";
-
 import {
   usePositionValue,
   useTokensOwed,
   useTotalPositionValue,
 } from "@/hooks/useValue";
-
 import { calculateAccrual } from "@/lib/amounts";
 import { calculateSupplyRate } from "@/lib/jumprate";
-
-import { useProvideLiquidity } from ".";
 import { formatPercent } from "@/utils/format";
+import { useMemo } from "react";
 
 export default function Stats() {
   const { selectedLendgine, protocol } = useProvideLiquidity();

@@ -1,11 +1,10 @@
-import type { Price } from "@uniswap/sdk-core";
-import type { Address } from "abitype";
-import { utils } from "ethers";
-
 import type { UniswapV3Pool } from "../graphql/uniswapV3";
 import { fractionToPrice, priceToFraction } from "./price";
 import type { Market } from "./types/market";
 import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
+import type { Price } from "@uniswap/sdk-core";
+import type { Address } from "abitype";
+import { utils } from "ethers";
 
 export const sortTokens = (
   tokens: readonly [WrappedTokenInfo, WrappedTokenInfo],

@@ -1,11 +1,9 @@
-import { useState } from "react";
-
-import { FaChevronDown } from "react-icons/fa";
-
 import Button from "./core/button";
 import NumberInput from "./core/numberInput";
 import TokenInfo from "./tokenInfo";
 import TokenSearch from "./tokenSearch";
+import { useState } from "react";
+import { FaChevronDown } from "react-icons/fa";
 
 type InputProps = Pick<
   React.ComponentProps<typeof NumberInput>,

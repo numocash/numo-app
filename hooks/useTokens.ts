@@ -1,15 +1,14 @@
+import { useEnvironment } from "../contexts/environment";
+import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
+import { dedupe } from "../utils/dedupe";
+import type { HookArg } from "./internal/types";
+import { useChain } from "./useChain";
 import NumoenTokens from "@numoen/default-token-list";
 import type { Token } from "@uniswap/sdk-core";
 import type { TokenInfo as UniswapTokenInfo } from "@uniswap/token-lists";
 import { utils } from "ethers";
 import { useCallback } from "react";
 import invariant from "tiny-invariant";
-
-import { useEnvironment } from "../contexts/environment";
-import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
-import { dedupe } from "../utils/dedupe";
-import type { HookArg } from "./internal/types";
-import { useChain } from "./useChain";
 
 export type color = `#${string}` | undefined;
 

@@ -1,9 +1,8 @@
+import type { Lendgine, LendgineInfo } from "./types/lendgine";
+import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 import type { CurrencyAmount, Fraction, Token } from "@uniswap/sdk-core";
 import { Price } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
-
-import type { Lendgine, LendgineInfo } from "./types/lendgine";
-import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 
 // returns price in token0 / token1
 export const numoenPrice = <L extends Lendgine>(

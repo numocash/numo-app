@@ -1,8 +1,7 @@
+import type { TokenInfo, color } from "../../hooks/useTokens";
 import type { Currency, Token } from "@uniswap/sdk-core";
 import type { TokenList } from "@uniswap/token-lists";
 import { utils } from "ethers";
-
-import type { TokenInfo, color } from "../../hooks/useTokens";
 
 /**
  * Token instances created from token info on a token list.

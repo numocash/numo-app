@@ -1,8 +1,3 @@
-import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
-import { useMemo } from "react";
-import invariant from "tiny-invariant";
-import type { Address } from "wagmi";
-
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
 import { scale } from "../lib/constants";
@@ -12,6 +7,10 @@ import type { HookArg } from "./internal/types";
 import { useContractReads } from "./internal/useContractReads";
 import { userRefectchInterval } from "./internal/utils";
 import { getLendginePositionRead } from "./useLendginePosition";
+import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
+import { useMemo } from "react";
+import invariant from "tiny-invariant";
+import type { Address } from "wagmi";
 
 export const useLendginesPositions = <L extends Lendgine>(
   lendgines: HookArg<readonly L[]>,

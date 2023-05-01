@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import Image from "next/image";
 
 export default function TokenIcon({
   tokenInfo,

@@ -1,11 +1,10 @@
-import { Fraction } from "@uniswap/sdk-core";
-import JSBI from "jsbi";
-
 import type {
   PriceHistoryDayV3Query,
   PriceHistoryHourV3Query,
 } from "../gql/uniswapV3/graphql";
 import type { PricePoint } from "./uniswapV2";
+import { Fraction } from "@uniswap/sdk-core";
+import JSBI from "jsbi";
 
 export const feeTiers = {
   100: "100",

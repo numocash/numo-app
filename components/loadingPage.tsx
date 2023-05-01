@@ -1,6 +1,5 @@
-import { clsx } from "clsx";
-
 import LoadingSpinner from "./loadingSpinner";
+import { clsx } from "clsx";
 
 export default function LoadingPage({ className }: { className?: string }) {
   return (

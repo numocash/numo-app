@@ -1,6 +1,3 @@
-import { useMemo } from "react";
-import { useAccount } from "wagmi";
-
 import type { Protocol } from "../constants";
 import {
   calculateEstimatedBurnAmount,
@@ -14,6 +11,8 @@ import { useBalance } from "./useBalance";
 import { useMostLiquidMarket } from "./useExternalExchange";
 import { useLendgine } from "./useLendgine";
 import { useLendginePosition } from "./useLendginePosition";
+import { useMemo } from "react";
+import { useAccount } from "wagmi";
 
 export const useValue = <L extends Lendgine>(
   lendgine: HookArg<L>,

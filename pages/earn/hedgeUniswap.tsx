@@ -1,7 +1,4 @@
-import { CurrencyAmount, Percent } from "@uniswap/sdk-core";
-import Image from "next/image";
-import { useMemo } from "react";
-
+import EarnCard from "./earnCard";
 import LoadingBox from "@/components/loadingBox";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import TokenIcon from "@/components/tokenIcon";
@@ -15,8 +12,9 @@ import { invert } from "@/lib/price";
 import type { Lendgine } from "@/lib/types/lendgine";
 import type { Market } from "@/lib/types/market";
 import { formatPercent } from "@/utils/format";
-
-import EarnCard from "./earnCard";
+import { CurrencyAmount, Percent } from "@uniswap/sdk-core";
+import Image from "next/image";
+import { useMemo } from "react";
 
 interface Props {
   lendgines: readonly Lendgine[];

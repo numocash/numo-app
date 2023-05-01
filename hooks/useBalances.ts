@@ -1,12 +1,11 @@
-import type { Token } from "@uniswap/sdk-core";
-import { CurrencyAmount } from "@uniswap/sdk-core";
-import { useMemo } from "react";
-import type { Address } from "wagmi";
-
 import type { HookArg } from "./internal/types";
 import { useContractReads } from "./internal/useContractReads";
 import { userRefectchInterval } from "./internal/utils";
 import { getBalanceRead } from "./useBalance";
+import type { Token } from "@uniswap/sdk-core";
+import { CurrencyAmount } from "@uniswap/sdk-core";
+import { useMemo } from "react";
+import type { Address } from "wagmi";
 
 export const useBalances = <T extends Token>(
   tokens: HookArg<readonly T[]>,

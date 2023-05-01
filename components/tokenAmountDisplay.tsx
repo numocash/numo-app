@@ -1,8 +1,6 @@
-import type { CurrencyAmount, Token } from "@uniswap/sdk-core";
-
-import { clsx } from "clsx";
-
 import { formatDisplayWithSoftLimit } from "@/utils/format";
+import type { CurrencyAmount, Token } from "@uniswap/sdk-core";
+import { clsx } from "clsx";
 
 export default function TokenAmountDisplay({
   amount,

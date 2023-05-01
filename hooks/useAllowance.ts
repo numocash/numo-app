@@ -1,12 +1,11 @@
+import type { HookArg, ReadConfig } from "./internal/types";
+import { useContractRead } from "./internal/useContractRead";
+import { userRefectchInterval } from "./internal/utils";
 import type { Token } from "@uniswap/sdk-core";
 import { CurrencyAmount } from "@uniswap/sdk-core";
 import { utils } from "ethers";
 import type { Address } from "wagmi";
 import { erc20ABI } from "wagmi";
-
-import type { HookArg, ReadConfig } from "./internal/types";
-import { useContractRead } from "./internal/useContractRead";
-import { userRefectchInterval } from "./internal/utils";
 
 export const useAllowance = <T extends Token>(
   token: HookArg<T>,

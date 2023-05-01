@@ -1,7 +1,6 @@
+import { useLocalStorageState } from "@/hooks/useLocalStorage";
 import { Percent } from "@uniswap/sdk-core";
 import { createContainer } from "unstated-next";
-
-import { useLocalStorageState } from "@/hooks/useLocalStorage";
 
 export interface ISettings {
   /**

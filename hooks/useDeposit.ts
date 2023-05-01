@@ -1,16 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
-import type { CurrencyAmount } from "@uniswap/sdk-core";
-import { BigNumber, constants, utils } from "ethers";
-import { useMemo } from "react";
-import type { Address } from "wagmi";
-import { useAccount } from "wagmi";
-import type { SendTransactionResult } from "wagmi/actions";
-import {
-  getContract,
-  prepareWriteContract,
-  writeContract,
-} from "wagmi/actions";
-
 import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
@@ -30,6 +17,18 @@ import type { Lendgine, LendgineInfo } from "../lib/types/lendgine";
 import { toaster } from "../pages/_app";
 import type { BeetStage, BeetTx, TxToast } from "../utils/beet";
 import { useDepositAmount } from "./useAmounts";
+import { useMutation } from "@tanstack/react-query";
+import type { CurrencyAmount } from "@uniswap/sdk-core";
+import { BigNumber, constants, utils } from "ethers";
+import { useMemo } from "react";
+import type { Address } from "wagmi";
+import { useAccount } from "wagmi";
+import type { SendTransactionResult } from "wagmi/actions";
+import {
+  getContract,
+  prepareWriteContract,
+  writeContract,
+} from "wagmi/actions";
 
 export const useDeposit = <L extends Lendgine>(
   lendgine: HookArg<L>,

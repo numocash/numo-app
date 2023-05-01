@@ -1,3 +1,5 @@
+import { useChain } from "../useChain";
+import type { PartialBy, QueryFunctionArgs } from "./types";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { parseContractResult } from "@wagmi/core";
@@ -5,9 +7,6 @@ import type { Abi } from "abitype";
 import * as React from "react";
 import type { ReadContractConfig, ReadContractResult } from "wagmi/actions";
 import { readContract } from "wagmi/actions";
-
-import { useChain } from "../useChain";
-import type { PartialBy, QueryFunctionArgs } from "./types";
 
 export type UseContractReadConfig<
   TAbi extends Abi = Abi,

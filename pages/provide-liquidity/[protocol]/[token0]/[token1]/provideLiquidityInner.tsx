@@ -1,13 +1,10 @@
-import Head from "next/head";
-
-import Tab from "@/components/core/tabs";
-
-import TokenIcon from "@/components/tokenIcon";
-
 import { useProvideLiquidity } from ".";
 import Deposit from "./Deposit";
 import Stats from "./Stats";
 import Withdraw from "./Withdraw";
+import Tab from "@/components/core/tabs";
+import TokenIcon from "@/components/tokenIcon";
+import Head from "next/head";
 
 export default function ProvideLiquidityInner() {
   const { selectedLendgine } = useProvideLiquidity();

@@ -1,13 +1,12 @@
+import { useEnvironment } from "../../contexts/environment";
+import { useChain } from "../useChain";
+import type { QueryFunctionArgs } from "./types";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { utils } from "ethers";
 import * as React from "react";
 import type { FetchBalanceArgs, FetchBalanceResult } from "wagmi/actions";
 import { fetchBalance } from "wagmi/actions";
-
-import { useEnvironment } from "../../contexts/environment";
-import { useChain } from "../useChain";
-import type { QueryFunctionArgs } from "./types";
 
 export type UseBalanceArgs = Partial<FetchBalanceArgs>;
 

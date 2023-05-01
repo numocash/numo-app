@@ -1,8 +1,6 @@
-import { IoIosArrowDown } from "react-icons/io";
-
-import Popover from "@/components/core/popover";
-
 import SettingsInner from "./settingsInner";
+import Popover from "@/components/core/popover";
+import { IoIosArrowDown } from "react-icons/io";
 
 export default function Settings() {
   return (
@@ -16,7 +14,7 @@ export default function Settings() {
         </div>
       }
       contents={
-        <div className="flex w-[250px] flex-col gap-2 rounded-xl bg-gray-900 p-1">
+        <div className="flex w-[250px] flex-col rounded-xl bg-gray-900 p-1">
           <SettingsInner />
         </div>
       }

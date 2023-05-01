@@ -1,16 +1,5 @@
-import { Fraction, Token } from "@uniswap/sdk-core";
-import { constants } from "ethers";
-import Head from "next/head";
-import Link from "next/link";
-
-import { useCallback, useMemo, useState } from "react";
-
-import invariant from "tiny-invariant";
-import type { Address } from "wagmi";
-import { useAccount } from "wagmi";
-
-import CenterSwitch from "@/components/CenterSwitch";
 import Plus from "@/components/Plus";
+import CenterSwitch from "@/components/centerSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
 import { useEnvironment } from "@/contexts/environment";
@@ -31,6 +20,14 @@ import {
   fractionToFloat,
 } from "@/utils/format";
 import tryParseCurrencyAmount from "@/utils/tryParseCurrencyAmount";
+import { Fraction, Token } from "@uniswap/sdk-core";
+import { constants } from "ethers";
+import Head from "next/head";
+import Link from "next/link";
+import { useCallback, useMemo, useState } from "react";
+import invariant from "tiny-invariant";
+import type { Address } from "wagmi";
+import { useAccount } from "wagmi";
 
 export default function Create() {
   const environment = useEnvironment();

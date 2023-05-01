@@ -1,9 +1,8 @@
-import type { Price } from "@uniswap/sdk-core";
-import { Fraction } from "@uniswap/sdk-core";
-
 import { priceToFraction } from "./price";
 import type { Lendgine } from "./types/lendgine";
 import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
+import type { Price } from "@uniswap/sdk-core";
+import { Fraction } from "@uniswap/sdk-core";
 
 export const lvrCoef = (
   price: Price<WrappedTokenInfo, WrappedTokenInfo>,

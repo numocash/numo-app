@@ -1,7 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { Fraction, Token } from "@uniswap/sdk-core";
-import { useCallback, useMemo } from "react";
-
 import { useEnvironment } from "../contexts/environment";
 import { LendginesDocument } from "../gql/numoen/graphql";
 import { parseLendgines } from "../graphql/numoen";
@@ -13,6 +9,9 @@ import { userRefectchInterval } from "./internal/utils";
 import { useChain } from "./useChain";
 import { useClient } from "./useClient";
 import { useGetAddressToToken } from "./useTokens";
+import { useQuery } from "@tanstack/react-query";
+import { Fraction, Token } from "@uniswap/sdk-core";
+import { useCallback, useMemo } from "react";
 
 export const useExistingLendginesQueryKey = () => {
   const chain = useChain();

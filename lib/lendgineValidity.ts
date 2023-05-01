@@ -1,10 +1,9 @@
-import type { Fraction } from "@uniswap/sdk-core";
-import JSBI from "jsbi";
-
 import { priceToFraction } from "./price";
 import type { Lendgine } from "./types/lendgine";
 import type { Market } from "./types/market";
 import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
+import type { Fraction } from "@uniswap/sdk-core";
+import JSBI from "jsbi";
 
 export const lendgineToMarket = (
   lendgine: Lendgine,

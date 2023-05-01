@@ -1,22 +1,17 @@
-import { useMemo, useState } from "react";
-import invariant from "tiny-invariant";
-import { useAccount } from "wagmi";
-
-import CenterSwitch from "@/components/CenterSwitch";
+import { useProvideLiquidity } from ".";
+import CenterSwitch from "@/components/centerSwitch";
 import AsyncButton from "@/components/core/asyncButton";
-import CurrencyAmountSelection from "@/components/currencyAmountSelection";
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
 import Slider from "@/components/slider";
 import { useWithdrawAmount } from "@/hooks/useAmounts";
 import { useLendgine } from "@/hooks/useLendgine";
-
 import { useLendginePosition } from "@/hooks/useLendginePosition";
-
 import { useWithdraw } from "@/hooks/useWithdraw";
-
 import { Beet } from "@/utils/beet";
-
-import { useProvideLiquidity } from ".";
-import { formatDisplayWithSoftLimit } from "@/utils/format";
+import { CurrencyAmount } from "@uniswap/sdk-core";
+import { useMemo, useState } from "react";
+import invariant from "tiny-invariant";
+import { useAccount } from "wagmi";
 
 export default function Withdraw() {
   const { address } = useAccount();
@@ -87,37 +82,22 @@ export default function Withdraw() {
         </div>
         <div className=" w-full border-b-2 border-gray-200" />
         <CenterSwitch icon="arrow" />
-        <CurrencyAmountSelection
+        <CurrencyAmountDisplay
           // className="justify-center"
-          selectedToken={selectedLendgine.token0}
-          type="display"
-          value={
-            withdrawAmount.status === "success" &&
-            withdrawAmount.amount0.greaterThan(0)
-              ? formatDisplayWithSoftLimit(
-                  Number(withdrawAmount.amount0.toFixed(6)),
-                  4,
-                  10,
-                )
-              : ""
+          amount={
+            withdrawAmount.status === "success"
+              ? withdrawAmount.amount0
+              : CurrencyAmount.fromRawAmount(selectedLendgine.token0, 0)
           }
-          // inputDisabled={true}
         />
         <div className=" w-full border-b-2 border-gray-200" />
         <CenterSwitch icon="plus" />
-        <CurrencyAmountSelection
+        <CurrencyAmountDisplay
           // className="justify-center"
-          selectedToken={selectedLendgine.token1}
-          type="display"
-          value={
-            withdrawAmount.status === "success" &&
-            withdrawAmount.amount1.greaterThan(0)
-              ? formatDisplayWithSoftLimit(
-                  Number(withdrawAmount.amount1.toFixed(6)),
-                  4,
-                  10,
-                )
-              : ""
+          amount={
+            withdrawAmount.status === "success"
+              ? withdrawAmount.amount1
+              : CurrencyAmount.fromRawAmount(selectedLendgine.token1, 0)
           }
           // inputDisabled={true}
         />

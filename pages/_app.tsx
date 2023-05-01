@@ -1,7 +1,10 @@
+import Layout from "@/components/layout";
+import { EnvironmentProvider } from "@/contexts/environment";
+import { SettingsProvider } from "@/contexts/settings";
 import "@/styles/globals.css";
-import "@rainbow-me/rainbowkit/styles.css";
-
+import { DefaultToasterWrapper } from "@/utils/beet";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/react";
@@ -11,10 +14,6 @@ import { arbitrum, celo, polygon } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-import Layout from "@/components/layout";
-import { EnvironmentProvider } from "@/contexts/environment";
-import { SettingsProvider } from "@/contexts/settings";
-import { DefaultToasterWrapper } from "@/utils/beet";
 const { chains, provider, webSocketProvider } = configureChains(
   [
     arbitrum,

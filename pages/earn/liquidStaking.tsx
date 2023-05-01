@@ -1,12 +1,10 @@
-import { BsLightningChargeFill } from "react-icons/bs";
-
+import { useLongReturns } from "../liquid-staking/useReturns";
+import EarnCard from "./earnCard";
 import LoadingSpinner from "@/components/loadingSpinner";
 import TokenIcon from "@/components/tokenIcon";
 import { useEnvironment } from "@/contexts/environment";
 import { formatPercent } from "@/utils/format";
-
-import { useLongReturns } from "../liquid-staking/useReturns";
-import EarnCard from "./earnCard";
+import { BsLightningChargeFill } from "react-icons/bs";
 
 export default function LiquidStaking() {
   const environment = useEnvironment();

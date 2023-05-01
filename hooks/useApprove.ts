@@ -1,3 +1,6 @@
+import { useSettings } from "../contexts/settings";
+import type { HookArg } from "./internal/types";
+import { useAllowance } from "./useAllowance";
 import type { CurrencyAmount, Token } from "@uniswap/sdk-core";
 import { MaxUint256 } from "@uniswap/sdk-core";
 import { BigNumber, utils } from "ethers";
@@ -5,10 +8,6 @@ import { useMemo } from "react";
 import type { Address } from "wagmi";
 import { erc20ABI, useAccount } from "wagmi";
 import { prepareWriteContract, writeContract } from "wagmi/actions";
-
-import { useSettings } from "../contexts/settings";
-import type { HookArg } from "./internal/types";
-import { useAllowance } from "./useAllowance";
 
 export const useApprove = <T extends Token>(
   tokenAmount: HookArg<CurrencyAmount<T>>,

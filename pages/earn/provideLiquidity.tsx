@@ -1,7 +1,4 @@
-import { CurrencyAmount, Percent } from "@uniswap/sdk-core";
-import { clsx } from "clsx";
-import { useMemo } from "react";
-
+import EarnCard from "./earnCard";
 import LoadingBox from "@/components/loadingBox";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import TokenIcon from "@/components/tokenIcon";
@@ -16,8 +13,9 @@ import {
 import { calculateSupplyRate } from "@/lib/jumprate";
 import type { Lendgine } from "@/lib/types/lendgine";
 import { formatPercent } from "@/utils/format";
-
-import EarnCard from "./earnCard";
+import { CurrencyAmount, Percent } from "@uniswap/sdk-core";
+import { clsx } from "clsx";
+import { useMemo } from "react";
 
 interface Props {
   lendgines: readonly Lendgine[];

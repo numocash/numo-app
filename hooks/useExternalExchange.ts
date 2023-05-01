@@ -1,11 +1,3 @@
-import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
-import JSBI from "jsbi";
-import { chunk } from "lodash";
-import { useMemo } from "react";
-import invariant from "tiny-invariant";
-import { objectKeys } from "ts-extras";
-import type { Address } from "wagmi";
-
 import { uniswapV2PairABI } from "../abis/uniswapV2Pair";
 import { uniswapV3PoolABI } from "../abis/uniswapV3Pool";
 import { useEnvironment } from "../contexts/environment";
@@ -24,6 +16,13 @@ import { useContractRead } from "./internal/useContractRead";
 import { useContractReads } from "./internal/useContractReads";
 import { externalRefetchInterval } from "./internal/utils";
 import { getBalanceRead } from "./useBalance";
+import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
+import JSBI from "jsbi";
+import { chunk } from "lodash";
+import { useMemo } from "react";
+import invariant from "tiny-invariant";
+import { objectKeys } from "ts-extras";
+import type { Address } from "wagmi";
 
 export const isV3 = (t: UniswapV2Pool | UniswapV3Pool): t is UniswapV3Pool =>
   t.version === "V3";

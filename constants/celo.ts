@@ -1,8 +1,7 @@
-import { utils } from "ethers";
-
 import type { Config } from ".";
 import { chainID } from "../lib/constants";
 import { Stable, WrappedNative } from "./tokens";
+import { utils } from "ethers";
 
 export const celoConfig = {
   interface: {

@@ -1,3 +1,5 @@
+import { useChain } from "../useChain";
+import type { DeepPartial, QueryFunctionArgs } from "./types";
 import type { UseQueryOptions, UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { parseContractResult } from "@wagmi/core";
@@ -7,9 +9,6 @@ import * as React from "react";
 import type { Address } from "wagmi";
 import type { ReadContractsConfig, ReadContractsResult } from "wagmi/actions";
 import { readContracts } from "wagmi/actions";
-
-import { useChain } from "../useChain";
-import type { DeepPartial, QueryFunctionArgs } from "./types";
 
 export type UseContractReadsConfig<
   TContracts extends Contract[],

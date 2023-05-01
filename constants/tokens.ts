@@ -1,7 +1,6 @@
-import { utils } from "ethers";
-
 import { chainID } from "../lib/constants";
 import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
+import { utils } from "ethers";
 
 export const Stable = {
   1: new WrappedTokenInfo({
