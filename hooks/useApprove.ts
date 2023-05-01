@@ -1,6 +1,7 @@
 import { useSettings } from "../contexts/settings";
 import type { HookArg } from "./internal/types";
 import { useAllowance } from "./useAllowance";
+import { formatDisplayWithSoftLimit } from "@/utils/format";
 import type { CurrencyAmount, Token } from "@uniswap/sdk-core";
 import { MaxUint256 } from "@uniswap/sdk-core";
 import { BigNumber, utils } from "ethers";
@@ -43,7 +44,7 @@ export const useApprove = <T extends Token>(
     const title = `Approve  ${
       settings.infiniteApprove
         ? "∞"
-        : tokenAmount.toSignificant(5, { groupSeparator: "," })
+        : formatDisplayWithSoftLimit(Number(tokenAmount.toFixed(6)), 4, 10)
     } ${tokenAmount.currency.symbol ?? "tokens"}`;
 
     return {

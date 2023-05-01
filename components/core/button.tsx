@@ -60,7 +60,7 @@ export default function Button({
       {loading ? (
         <div className="flex items-center gap-2">
           {children}
-          <LoadingSpinner tw="ml-2 mb-0.5" />
+          <LoadingSpinner className="ml-2 mb-0.5" />
         </div>
       ) : (
         children

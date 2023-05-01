@@ -48,7 +48,7 @@ export default function CurrencyAmountSelection(
           selectedToken={props.selectedToken}
         />
       )}
-      <div className="w-full flex flex-col gap-0 items-center h-20 justify-center">
+      <div className="w-full flex flex-col gap-0.5 items-center h-20 justify-center">
         <div className="flex w-full justify-between items-center px-4">
           <p className="p5">{props.label ?? ""}</p>
           {props.amount && (

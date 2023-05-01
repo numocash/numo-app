@@ -181,7 +181,11 @@ export default function Create() {
             // label="Long"
             value={
               token1Input === ""
-                ? depositAmount.amount1?.toSignificant(5) ?? "" // TODO: use smart currency formatter
+                ? formatDisplayWithSoftLimit(
+                    Number(depositAmount.amount1?.toFixed(6) ?? 0),
+                    4,
+                    10,
+                  ) ?? ""
                 : token1Input
             }
             onChange={(value) => {
@@ -201,7 +205,11 @@ export default function Create() {
             // label="Short"
             value={
               token0Input === ""
-                ? depositAmount.amount0?.toSignificant(5) ?? ""
+                ? formatDisplayWithSoftLimit(
+                    Number(depositAmount.amount0?.toFixed(6) ?? 0),
+                    4,
+                    10,
+                  ) ?? ""
                 : token0Input
             }
             onChange={(value) => {
