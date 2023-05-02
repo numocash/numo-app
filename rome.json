@@ -33,6 +33,9 @@
       "suspicious": {
         "noArrayIndexKey": "off",
         "noExplicitAny": "off"
+      },
+      "nursery": {
+        "useExhaustiveDependencies": "error"
       }
     }
   }

@@ -3,6 +3,7 @@ import MainStats from "@/components/mainStats";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import { useLendgine } from "@/hooks/useLendgine";
 import {
+  useInterestPremium,
   usePositionValue,
   useTokensOwed,
   useTotalPositionValue,
@@ -20,9 +21,11 @@ export default function Stats() {
   const userValueQuery = usePositionValue(selectedLendgine, protocol);
   const totalValueQuery = useTotalPositionValue(selectedLendgine, protocol);
   const tokensOwedQuery = useTokensOwed(selectedLendgine, protocol);
+  const interestPremium = useInterestPremium(selectedLendgine);
 
   const apr = useMemo(() => {
-    if (!lendgineInfoQuery.data) return undefined;
+    if (!lendgineInfoQuery.data || interestPremium.status !== "success")
+      return undefined;
 
     const accruedInfo = calculateAccrual(
       selectedLendgine,
@@ -33,8 +36,7 @@ export default function Stats() {
       lendgineInfo: accruedInfo,
       protocol,
     });
-    // TODO: compute the interest premium
-    return supplyRate;
+    return supplyRate.multiply(interestPremium.value);
   }, [lendgineInfoQuery.data, selectedLendgine, protocol]);
 
   return (

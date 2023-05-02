@@ -11,6 +11,9 @@ import { useBalance } from "./useBalance";
 import { useMostLiquidMarket } from "./useExternalExchange";
 import { useLendgine } from "./useLendgine";
 import { useLendginePosition } from "./useLendginePosition";
+import { scale } from "@/lib/constants";
+import { fractionToPrice, priceToFraction } from "@/lib/price";
+import { CurrencyAmount, Fraction, Percent } from "@uniswap/sdk-core";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
@@ -268,5 +271,57 @@ export const useTokensOwed = <L extends Lendgine>(
     priceQuery.data,
     priceQuery.status,
     protocol,
+  ]);
+};
+
+export const useInterestPremium = <L extends Lendgine>(
+  lendgine: HookArg<L>,
+) => {
+  const lendgineInfoQuery = useLendgine(lendgine);
+  const priceQuery = useMostLiquidMarket(
+    lendgine ? { quote: lendgine.token0, base: lendgine.token1 } : undefined,
+  );
+
+  return useMemo(() => {
+    if (
+      priceQuery.status === "loading" ||
+      lendgineInfoQuery.status === "loading"
+    )
+      return { status: "loading" } as const;
+
+    if (!priceQuery.data || !lendgine || !lendgineInfoQuery.data)
+      return { status: "error" } as const;
+
+    const liquidity = CurrencyAmount.fromRawAmount(lendgine.lendgine, scale);
+    const collateral = fractionToPrice(
+      priceToFraction(lendgine.bound).multiply(2),
+      lendgine.lendgine,
+      lendgine.token1,
+    ).quote(liquidity);
+
+    const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
+      lendgine,
+      lendgineInfoQuery.data,
+      liquidity,
+    );
+
+    const ptValue = priceQuery.data.price
+      .quote(collateral)
+      .subtract(amount0.add(priceQuery.data.price.quote(amount1)));
+
+    const lpValue = amount0.add(priceQuery.data.price.quote(amount1));
+
+    const f = lpValue.equalTo(0) ? new Fraction(1) : ptValue.divide(lpValue);
+
+    return {
+      status: "success",
+      value: new Percent(f.numerator, f.denominator),
+    } as const;
+  }, [
+    lendgine,
+    lendgineInfoQuery.status,
+    lendgineInfoQuery.data,
+    priceQuery.status,
+    priceQuery.data,
   ]);
 };
