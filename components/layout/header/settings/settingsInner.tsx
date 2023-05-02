@@ -24,7 +24,7 @@ export default function SettingsInner() {
     <>
       <Disclosure
         as="div"
-        className={"grid gap-2 p-1"}
+        className={"grid gap-2 p-2"}
         button={
           <div className="flex w-full items-center justify-between gap-2 rounded-xl hover:opacity-80">
             <p className="p2 text-white">Tx deadline</p>
@@ -57,7 +57,7 @@ export default function SettingsInner() {
       <div className="mx-2 border-b border-gray-700" />
       <Disclosure
         as="div"
-        className={"grid gap-2 p-1"}
+        className={"grid gap-2 p-2"}
         button={
           <div className="flex w-full items-center justify-between gap-2 rounded-xl hover:opacity-80">
             <p className="p2 text-white">Max slippage</p>
@@ -98,7 +98,7 @@ export default function SettingsInner() {
         }
       />
       <div className="mx-2 border-b border-gray-700" />
-      <div className="flex w-full items-center justify-between p-2 py-2">
+      <div className="flex w-full items-center justify-between p-2">
         <p className="p2 text-white">Infinite approval</p>
         <Switch enabled={infiniteApprove} setEnabled={setInfiniteApprove} />
       </div>

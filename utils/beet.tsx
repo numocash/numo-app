@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import type { ContractReceipt } from "ethers";
+import Link from "next/link";
 import React from "react";
 import { toast } from "react-hot-toast";
 import type { Address } from "wagmi";
@@ -147,7 +148,7 @@ export const AddressLink: React.FC<{
 }> = ({ address, className, data }) => {
   const { chain } = useNetwork();
   return (
-    <a
+    <Link
       href={`${
         chain?.blockExplorers?.default.url ?? "https://arbiscan.io"
       }/${data}/${address}`}
@@ -156,6 +157,6 @@ export const AddressLink: React.FC<{
       className={clsx(className, "underline")}
     >
       {address.slice(0, 6)}...{address.slice(address.length - 4)}
-    </a>
+    </Link>
   );
 };

@@ -1,3 +1,4 @@
+import ContractAddress from "@/components/contractAddress";
 import Tab from "@/components/core/tabs";
 import LoadingPage from "@/components/loadingPage";
 import Deposit from "@/components/provide-liquidity/Deposit";
@@ -185,6 +186,7 @@ function ProvideLiquidityInner() {
         <div className="flex w-full max-w-lg flex-col gap-2">
           <Tab tabs={tabs} />
         </div>
+        <ContractAddress address={selectedLendgine.address} />
       </div>
     </>
   );

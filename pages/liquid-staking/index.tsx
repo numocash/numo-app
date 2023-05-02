@@ -1,10 +1,14 @@
+import ContractAddress from "@/components/contractAddress";
 import Tab from "@/components/core/tabs";
 import Stats from "@/components/liquid-staking/Stats";
 import Burn from "@/components/liquid-staking/burn";
 import Mint from "@/components/liquid-staking/mint";
+import { useEnvironment } from "@/contexts/environment";
 import Head from "next/head";
 
 export default function LiquidStaking() {
+  const environment = useEnvironment();
+
   const tabs = {
     deposit: { tab: "Deposit", panel: <Mint /> },
     withdraw: { tab: "Withdraw", panel: <Burn /> },
@@ -29,6 +33,9 @@ export default function LiquidStaking() {
         <div className="flex w-full max-w-lg flex-col gap-2">
           <Tab tabs={tabs} />
         </div>
+        <ContractAddress
+          address={environment.interface.liquidStaking!.lendgine.address}
+        />
       </div>
     </>
   );

@@ -20,6 +20,21 @@ const nextConfig = {
         destination: "/earn",
         permanent: true,
       },
+      {
+        source: "/trade",
+        destination: "/earn",
+        permanent: false,
+      },
+      {
+        source: "/trade/details",
+        destination: "/earn",
+        permanent: false,
+      },
+      {
+        source: "/earn/details",
+        destination: "/earn",
+        permanent: false,
+      },
     ];
   },
 };
