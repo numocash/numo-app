@@ -1,5 +1,6 @@
 import CenterSwitch from "@/components/CenterSwitch";
 import Plus from "@/components/Plus";
+import ContractAddress from "@/components/contractAddress";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
 import { useEnvironment } from "@/contexts/environment";
@@ -259,6 +260,9 @@ export default function Create() {
         >
           {disableReason ?? "Create new market"}
         </AsyncButton>
+        <div className="w-full flex justify-center pt-12">
+          <ContractAddress address={environment.procotol.pmmp.factory} />
+        </div>
       </div>
     </>
   );

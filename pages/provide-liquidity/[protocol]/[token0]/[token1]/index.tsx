@@ -177,7 +177,7 @@ function ProvideLiquidityInner() {
               Provide liquidity to an AMM and earn from lending the position
               out.
             </p>
-            <p className="text-sm font-normal underline ">View details</p>
+            {/* <p className="text-sm font-normal underline ">View details</p> */}
           </div>
         </div>
       </div>
