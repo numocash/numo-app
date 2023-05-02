@@ -1,5 +1,7 @@
 import ContractAddress from "@/components/contractAddress";
+import Popover from "@/components/core/popover";
 import Tab from "@/components/core/tabs";
+import Toggle from "@/components/core/toggle";
 import LoadingPage from "@/components/loadingPage";
 import Deposit from "@/components/provide-liquidity/Deposit";
 import Stats from "@/components/provide-liquidity/Stats";
@@ -8,19 +10,31 @@ import TokenIcon from "@/components/tokenIcon";
 import type { Protocol } from "@/constants";
 import { useEnvironment } from "@/contexts/environment";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
+import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
 import { useAddressToToken } from "@/hooks/useTokens";
 import { isValidMarket } from "@/lib/lendgineValidity";
+import {
+  fractionToPrice,
+  nextHighestLendgine,
+  nextLowestLendgine,
+  priceMultiple,
+  priceToFraction,
+} from "@/lib/price";
 import type { Lendgine } from "@/lib/types/lendgine";
+import { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import { Fraction, Price } from "@uniswap/sdk-core";
 import { utils } from "ethers";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useState } from "react";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 import invariant from "tiny-invariant";
 import { createContainer } from "unstated-next";
 
 interface IProvideLiquidity {
   lendgines: readonly Lendgine[];
   protocol: Protocol;
+  price: Price<WrappedTokenInfo, WrappedTokenInfo>;
 
   selectedLendgine: Lendgine;
   setSelectedLendgine: (val: Lendgine) => void;
@@ -29,15 +43,35 @@ interface IProvideLiquidity {
 const useProvideLiquidityInternal = ({
   protocol,
   lendgines,
+  price,
 }: {
   protocol?: Protocol;
-  lendgines?: readonly Lendgine[] | undefined;
+  lendgines?: Lendgine[] | undefined;
+  price?: Price<WrappedTokenInfo, WrappedTokenInfo>;
 } = {}): IProvideLiquidity => {
-  invariant(lendgines && protocol);
+  invariant(lendgines && protocol && price);
 
-  const [selectedLendgine, setSelectedLendgine] = useState(lendgines[0]!);
+  const lh = nextHighestLendgine({
+    price: fractionToPrice(
+      priceToFraction(price).multiply(3).divide(2),
+      price.baseCurrency,
+      price.quoteCurrency,
+    ),
+    lendgines,
+  });
+  const l = nextHighestLendgine({
+    price,
+    lendgines,
+  });
+  const ll = nextLowestLendgine({
+    price,
+    lendgines,
+  });
+  const [selectedLendgine, setSelectedLendgine] = useState(
+    lh ?? l ?? ll ?? lendgines[0]!,
+  );
 
-  return { lendgines, protocol, selectedLendgine, setSelectedLendgine };
+  return { lendgines, protocol, selectedLendgine, setSelectedLendgine, price };
 };
 
 export const {
@@ -71,6 +105,12 @@ export default function ProvideLiquidity({
   const quoteToken = useAddressToToken(token0);
   const baseToken = useAddressToToken(token1);
 
+  const priceQuery = useMostLiquidMarket(
+    quoteToken && baseToken
+      ? { quote: quoteToken, base: baseToken }
+      : undefined,
+  );
+
   if (protocol === "stpmmp") {
     if (environment.interface.liquidStaking) {
       if (
@@ -86,9 +126,7 @@ export default function ProvideLiquidity({
         return (
           <ProvideLiquidityProvider
             initialState={{
-              lendgines: [
-                environment.interface.liquidStaking.lendgine,
-              ] as const,
+              lendgines: [environment.interface.liquidStaking.lendgine],
               protocol: "stpmmp",
             }}
           >
@@ -121,13 +159,15 @@ export default function ProvideLiquidity({
   const lendgines = lendginesQuery.lendgines.filter(
     (l) => quoteToken.equals(l.token0) && baseToken.equals(l.token1),
   );
-  return lendginesQuery.status !== "success" ? (
+  return lendginesQuery.status !== "success" ||
+    priceQuery.status !== "success" ? (
     <LoadingPage />
   ) : (
     <ProvideLiquidityProvider
       initialState={{
         lendgines,
         protocol: protocol as Protocol,
+        price: priceQuery.data.price,
       }}
     >
       <ProvideLiquidityInner />
@@ -136,14 +176,25 @@ export default function ProvideLiquidity({
 }
 
 function ProvideLiquidityInner() {
-  const { selectedLendgine } = useProvideLiquidity();
+  const { selectedLendgine, lendgines, price } = useProvideLiquidity();
   const token0 = selectedLendgine.token0;
   const token1 = selectedLendgine.token1;
+
+  const mults = lendgines.map((l) => {
+    return { multiple: priceMultiple(l, price), lendgine: l };
+  });
 
   const tabs = {
     deposit: { tab: "Deposit", panel: <Deposit /> },
     withdraw: { tab: "Withdraw", panel: <Withdraw /> },
-  };
+  } as const;
+
+  const items = {
+    "2x": "2x",
+    "4x": "4x",
+  } as const;
+
+  const [toggle, setToggle] = useState<keyof typeof items>("2x");
 
   return (
     <>
@@ -159,9 +210,29 @@ function ProvideLiquidityInner() {
             }, ${token1.color?.vibrant ?? "#dfdfdf"})`,
           }}
         >
-          <p className="mb-8 w-fit rounded-lg bg-white bg-opacity-50 p-2 font-medium">
-            Provide liquidity
-          </p>
+          <div className="mb-8 flex gap-2 items-center">
+            <p className="w-fit rounded-lg bg-white bg-opacity-50 p-2 p2">
+              Provide liquidity
+            </p>
+            <Toggle
+              items={items}
+              value={toggle}
+              onChange={setToggle}
+              className="bg-white bg-opacity-50 rounded-xl w-fit overflow-clip p-0.5 p2 flex items-center justify-center"
+            />
+            <Popover
+              className="flex"
+              button={
+                <IoIosInformationCircleOutline className="fill-white text-white h-6 w-6" />
+              }
+              contents={
+                <div className="flex p-2 bg-white rounded-xl border-2 border-gray-200 w-64">
+                  Price movement until liquidity is out of range
+                </div>
+              }
+              placement="auto"
+            />
+          </div>
         </div>
         <div className="relative left-[16px] top-[-32px] flex w-fit items-center rounded-lg bg-white p-2">
           <TokenIcon tokenInfo={token0} size={48} />

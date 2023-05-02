@@ -26,6 +26,17 @@ export const numoenPrice = <L extends Lendgine>(
   return fractionToPrice(priceFraction, lendgine.token1, lendgine.token0);
 };
 
+export const priceMultiple = <L extends Lendgine>(
+  lendgine: L,
+  price: Price<L["token0"], L["token1"]>,
+) => {
+  const multiple = lendgine.bound.divide(price);
+  const m = multiple.greaterThan(1) ? multiple : multiple.invert();
+  const x = 2 ** Math.ceil(Math.log2(+m.quotient.toString()));
+
+  return multiple.greaterThan(1) ? x : 1 / x;
+};
+
 export const nextHighestLendgine = <L extends Lendgine>(
   props: (
     | {
