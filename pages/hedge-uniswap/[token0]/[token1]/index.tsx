@@ -9,9 +9,9 @@ import { useAddressToToken } from "@/hooks/useTokens";
 import { isValidMarket } from "@/lib/lendgineValidity";
 import type { Lendgine } from "@/lib/types/lendgine";
 import { Market } from "@/lib/types/market";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import invariant from "tiny-invariant";
 import { createContainer } from "unstated-next";
 
@@ -36,13 +36,25 @@ const useHedgeInternal = ({
 export const { Provider: HedgeProvider, useContainer: useHedge } =
   createContainer(useHedgeInternal);
 
-export default function Hedge() {
-  const router = useRouter();
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { token0, token1 } = ctx.query;
+
+  if (
+    !token0 ||
+    !token1 ||
+    typeof token0 !== "string" ||
+    typeof token1 !== "string"
+  )
+    return { notFound: true };
+  return { props: { token0, token1 } };
+};
+
+export default function Hedge({
+  token0,
+  token1,
+}: { token0: string; token1: string }) {
   const environment = useEnvironment();
   const lendginesQuery = useAllLendgines();
-
-  const { token0, token1 } = router.query;
-  invariant(token0 && token1);
 
   const quoteToken = useAddressToToken(token0 as string);
   const baseToken = useAddressToToken(token1 as string);

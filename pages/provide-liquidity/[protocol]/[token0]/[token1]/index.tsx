@@ -11,8 +11,8 @@ import { useAddressToToken } from "@/hooks/useTokens";
 import { isValidMarket } from "@/lib/lendgineValidity";
 import type { Lendgine } from "@/lib/types/lendgine";
 import { utils } from "ethers";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 import { createContainer } from "unstated-next";
@@ -44,16 +44,31 @@ export const {
   useContainer: useProvideLiquidity,
 } = createContainer(useProvideLiquidityInternal);
 
-export default function ProvideLiquidity() {
-  const router = useRouter();
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { protocol, token0, token1 } = ctx.query;
+
+  if (
+    !protocol ||
+    !token0 ||
+    !token1 ||
+    typeof protocol !== "string" ||
+    typeof token0 !== "string" ||
+    typeof token1 !== "string"
+  )
+    return { notFound: true };
+  return { props: { protocol, token0, token1 } };
+};
+
+export default function ProvideLiquidity({
+  protocol,
+  token0,
+  token1,
+}: { protocol: string; token0: string; token1: string }) {
   const environment = useEnvironment();
   const lendginesQuery = useAllLendgines();
 
-  const { protocol, token0, token1 } = router.query;
-  invariant(token0 && token1 && protocol);
-
-  const quoteToken = useAddressToToken(token0 as string);
-  const baseToken = useAddressToToken(token1 as string);
+  const quoteToken = useAddressToToken(token0);
+  const baseToken = useAddressToToken(token1);
 
   if (protocol === "stpmmp") {
     if (environment.interface.liquidStaking) {
