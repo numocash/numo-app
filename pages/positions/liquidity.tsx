@@ -38,7 +38,7 @@ export default function Liquidity() {
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-xl border-2 border-gray-200 bg-white py-6">
-      <div className="lg:(flex-row justify-between) flex flex-col gap-4 px-6">
+      <div className="lg:(flex-row justify-between) flex flex-col gap-4 px-2 sm:px-6">
         <h2 className="">Liquidity Positions</h2>
         <p className="p3">
           Provide liquidity to an AMM and earn from lending the position out.
@@ -48,26 +48,26 @@ export default function Liquidity() {
       {!isConnected ? (
         <Button
           variant="primary"
-          className="p2 mx-6 h-12"
+          className="p2 mx-2 sm:mx-6 h-12"
           onClick={openConnectModal}
         >
           Connect Wallet
         </Button>
       ) : !validLendgines || !lendgineInfoQuery.data ? (
-        <div className="mx-6 flex w-full flex-col gap-2">
+        <div className="mx-2 sm:mx-6 flex w-full flex-col gap-2">
           {[...Array(5).keys()].map((i) => (
             <LoadingBox className="h-12 w-full" key={`${i}load`} />
           ))}
         </div>
       ) : validLendgines.length === 0 ? (
-        <div className="p2 mx-6 flex h-12 items-center justify-center rounded-xl bg-gray-200">
+        <div className="p2 mx-2 sm:mx-6 flex h-12 items-center justify-center rounded-xl bg-gray-200">
           No positions
         </div>
       ) : (
         <>
-          <div className="mt-6 grid w-full grid-cols-4 px-6">
+          <div className="mt-6 grid w-full grid-cols-3 sm:grid-cols-4 px-2 sm:px-6">
             <p className="p5">Pair</p>
-            <p className="p5 justify-self-end">Reward APR</p>
+            <p className="p5 justify-self-end hidden sm:flex">Reward APR</p>
             <p className="p5 justify-self-end">Value</p>
             <p className="p5 justify-self-end">Action</p>
           </div>
@@ -101,16 +101,24 @@ const LiquidityItem: React.FC<LiquidityProps> = ({
   const valueQuery = usePositionValue(lendgine, protocol);
 
   return (
-    <div className="grid h-[72px] w-full transform grid-cols-4 items-center px-6 duration-300 ease-in-out hover:bg-gray-200">
+    <div className="grid h-[72px] w-full transform grid-cols-3 sm:grid-cols-4 items-center px-2 sm:px-6 duration-300 ease-in-out hover:bg-gray-200">
       <div className="flex items-center">
-        <TokenIcon tokenInfo={lendgine.token0} size={32} />
-        <TokenIcon tokenInfo={lendgine.token1} size={32} />
+        <TokenIcon
+          tokenInfo={lendgine.token0}
+          size={32}
+          className="hidden sm:flex"
+        />
+        <TokenIcon
+          tokenInfo={lendgine.token1}
+          size={32}
+          className="hidden sm:flex"
+        />
 
-        <p className="p1 ml-2">
+        <p className="p2">
           {lendgine.token0.symbol} + {lendgine.token1.symbol}
         </p>
       </div>
-      <p className="p2 justify-self-end">
+      <p className="p2 justify-self-end hidden sm:flex">
         {formatPercent(calculateSupplyRate({ lendgineInfo, protocol }))}
       </p>
       <p className="p2 justify-self-end">

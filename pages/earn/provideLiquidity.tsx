@@ -103,7 +103,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
         </div>
         <div className="flex flex-col ">
           <p className="p5">TVL</p>
-          <p className="p2">
+          <p className="p1">
             {tvl ? (
               <TokenAmountDisplay amount={tvl} showSymbol />
             ) : (

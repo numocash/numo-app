@@ -64,7 +64,6 @@ export default function Mint() {
     <div className="flex w-full flex-col gap-2">
       <div className="rounded-xl border-2 border-gray-200 bg-white">
         <CurrencyAmountSelection
-          // className="p-2"
           type="display"
           selectedToken={staking.lendgine.token1}
           value={input}
@@ -80,7 +79,6 @@ export default function Mint() {
         onClick={async () => {
           invariant(mint.data);
           await Beet(mint.data);
-
           setInput("");
         }}
       >

@@ -27,13 +27,7 @@ export default function LiquidStaking() {
       <div className="flex w-full max-w-3xl flex-col items-center gap-12 pt-12">
         <Stats />
         <div className="flex w-full max-w-lg flex-col gap-2">
-          <Tab
-            tabs={tabs}
-            // selectedTab={tab}
-            // setSelectedTab={(val) => setTab(val)}
-          />
-          {/* {tab === "deposit" && <Mint />}
-        {tab === "withdraw" && <Burn />} */}
+          <Tab tabs={tabs} />
         </div>
       </div>
     </>

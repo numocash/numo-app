@@ -11,20 +11,24 @@ import { isValidMarket } from "@/lib/lendgineValidity";
 import type { Lendgine } from "@/lib/types/lendgine";
 
 import HedgeInner from "./hedgeInner";
+import { Market } from "@/lib/types/market";
 
 interface IHedge {
   lendgines: readonly Lendgine[];
   protocol: Protocol;
+  market: Market;
 }
 
 const useHedgeInternal = ({
   lendgines,
+  market,
 }: {
   lendgines?: readonly Lendgine[] | undefined;
+  market?: Market | undefined;
 } = {}): IHedge => {
-  invariant(lendgines);
+  invariant(lendgines && market);
 
-  return { lendgines, protocol: "pmmp" };
+  return { lendgines, protocol: "pmmp", market };
 };
 
 export const { Provider: HedgeProvider, useContainer: useHedge } =
@@ -67,6 +71,7 @@ export default function Hedge() {
     <HedgeProvider
       initialState={{
         lendgines,
+        market,
       }}
     >
       <HedgeInner />

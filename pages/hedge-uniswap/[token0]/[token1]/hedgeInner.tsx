@@ -1,16 +1,19 @@
-import Head from "next/head";
-
-import Image from "next/image";
-
-import TokenIcon from "@/components/tokenIcon";
-
 import { useHedge } from ".";
 import Stats from "./stats";
+import Tab from "@/components/core/tabs";
+import TokenIcon from "@/components/tokenIcon";
+import Head from "next/head";
+import Image from "next/image";
 
 export default function HedgeInner() {
   const { lendgines } = useHedge();
   const token0 = lendgines[0]!.token0;
   const token1 = lendgines[0]!.token1;
+
+  const tabs = {
+    mint: { tab: "Add hedge", panel: <></> },
+    burn: { tab: "Remove hedge", panel: <></> },
+  };
 
   return (
     <>
@@ -53,7 +56,7 @@ export default function HedgeInner() {
       <div className="flex w-full max-w-3xl flex-col items-center gap-12 pt-12">
         <Stats />
         <div className="flex w-full max-w-lg flex-col gap-2">
-          {/* <Tab tabs={tabs} /> */}
+          <Tab tabs={tabs} />
         </div>
       </div>
     </>
