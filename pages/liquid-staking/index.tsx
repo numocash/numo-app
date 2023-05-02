@@ -1,7 +1,7 @@
-import Stats from "./Stats";
-import Burn from "./burn";
-import Mint from "./mint";
 import Tab from "@/components/core/tabs";
+import Stats from "@/components/liquid-staking/Stats";
+import Burn from "@/components/liquid-staking/burn";
+import Mint from "@/components/liquid-staking/mint";
 import Head from "next/head";
 
 export default function LiquidStaking() {

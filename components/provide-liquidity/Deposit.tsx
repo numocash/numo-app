@@ -1,4 +1,4 @@
-import { useProvideLiquidity } from ".";
+import { useProvideLiquidity } from "../../pages/provide-liquidity/[protocol]/[token0]/[token1]";
 import CenterSwitch from "@/components/CenterSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";

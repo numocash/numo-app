@@ -4,7 +4,6 @@ import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import { useEnvironment } from "@/contexts/environment";
 import { useLiquidStakingReturns } from "@/hooks/useLiquidStakingReturns";
 import { useTotalValue, useValue } from "@/hooks/useValue";
-
 import { formatPercent } from "@/utils/format";
 
 export default function Stats() {

@@ -1,4 +1,3 @@
-import { usePosition } from ".";
 import CenterSwitch from "@/components/CenterSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import Button from "@/components/core/button";
@@ -17,6 +16,7 @@ import { useLendgines } from "@/hooks/useLendgines";
 import { useValue } from "@/hooks/useValue";
 import { calculateBorrowRate } from "@/lib/jumprate";
 import type { Lendgine, LendgineInfo } from "@/lib/types/lendgine";
+import { usePosition } from "@/pages/positions";
 import { Beet } from "@/utils/beet";
 import { formatPercent } from "@/utils/format";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -150,7 +150,7 @@ const PowerTokenItem: React.FC<PowerTokenProps> = ({
           className="hidden sm:flex"
         />
 
-        <p className="p1 ml-2">
+        <p className="p2 sm:ml-2">
           {lendgine.token0.symbol} + {lendgine.token1.symbol}
         </p>
       </div>

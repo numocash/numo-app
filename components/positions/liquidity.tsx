@@ -1,8 +1,3 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import Link from "next/link";
-import { useMemo } from "react";
-import { useAccount } from "wagmi";
-
 import Button from "@/components/core/button";
 import LoadingBox from "@/components/loadingBox";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
@@ -13,9 +8,12 @@ import { useLendginesPositions } from "@/hooks/useLendginesPositions";
 import { usePositionValue } from "@/hooks/useValue";
 import { calculateSupplyRate } from "@/lib/jumprate";
 import type { Lendgine, LendgineInfo } from "@/lib/types/lendgine";
+import { usePosition } from "@/pages/positions";
 import { formatPercent } from "@/utils/format";
-
-import { usePosition } from ".";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
+import { useMemo } from "react";
+import { useAccount } from "wagmi";
 
 export default function Liquidity() {
   const { isConnected, address } = useAccount();
@@ -114,7 +112,7 @@ const LiquidityItem: React.FC<LiquidityProps> = ({
           className="hidden sm:flex"
         />
 
-        <p className="p2">
+        <p className="p2 sm:ml-2">
           {lendgine.token0.symbol} + {lendgine.token1.symbol}
         </p>
       </div>

@@ -1,4 +1,3 @@
-import { useProvideLiquidity } from ".";
 import LoadingBox from "@/components/loadingBox";
 import MainStats from "@/components/mainStats";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
@@ -10,6 +9,7 @@ import {
 } from "@/hooks/useValue";
 import { calculateAccrual } from "@/lib/amounts";
 import { calculateSupplyRate } from "@/lib/jumprate";
+import { useProvideLiquidity } from "@/pages/provide-liquidity/[protocol]/[token0]/[token1]";
 import { formatPercent } from "@/utils/format";
 import { useMemo } from "react";
 

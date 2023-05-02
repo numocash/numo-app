@@ -1,4 +1,3 @@
-import { useProvideLiquidity } from ".";
 import CenterSwitch from "@/components/CenterSwitch";
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
@@ -7,6 +6,7 @@ import { useWithdrawAmount } from "@/hooks/useAmounts";
 import { useLendgine } from "@/hooks/useLendgine";
 import { useLendginePosition } from "@/hooks/useLendginePosition";
 import { useWithdraw } from "@/hooks/useWithdraw";
+import { useProvideLiquidity } from "@/pages/provide-liquidity/[protocol]/[token0]/[token1]";
 import { Beet } from "@/utils/beet";
 import { CurrencyAmount } from "@uniswap/sdk-core";
 import { useMemo, useState } from "react";

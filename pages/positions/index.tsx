@@ -1,13 +1,11 @@
-import Head from "next/head";
-
-import invariant from "tiny-invariant";
-import { createContainer } from "unstated-next";
-
 import LoadingPage from "@/components/loadingPage";
+import Liquidity from "@/components/positions/liquidity";
+import PowerTokens from "@/components/positions/powerTokens";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
 import type { Lendgine } from "@/lib/types/lendgine";
-
-import PositionInner from "./positionInner";
+import Head from "next/head";
+import invariant from "tiny-invariant";
+import { createContainer } from "unstated-next";
 
 interface IPosition {
   lendgines: readonly Lendgine[];
@@ -46,5 +44,14 @@ export default function Positions() {
         </PositionProvider>
       )}
     </>
+  );
+}
+
+function PositionInner() {
+  return (
+    <div className="flex w-full max-w-5xl flex-col gap-6 pt-6">
+      <Liquidity />
+      <PowerTokens />
+    </div>
   );
 }

@@ -1,7 +1,3 @@
-import { useMemo, useState } from "react";
-import invariant from "tiny-invariant";
-import { useAccount } from "wagmi";
-
 import AsyncButton from "@/components/core/asyncButton";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
 import { useEnvironment } from "@/contexts/environment";
@@ -11,6 +7,9 @@ import { useLendgine } from "@/hooks/useLendgine";
 import { useMint } from "@/hooks/useMint";
 import { Beet } from "@/utils/beet";
 import tryParseCurrencyAmount from "@/utils/tryParseCurrencyAmount";
+import { useMemo, useState } from "react";
+import invariant from "tiny-invariant";
+import { useAccount } from "wagmi";
 
 export default function Mint() {
   const { address } = useAccount();

@@ -1,4 +1,3 @@
-import { useHedge } from ".";
 import LoadingBox from "@/components/loadingBox";
 import MainStats from "@/components/mainStats";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
@@ -9,6 +8,7 @@ import {
   calculateEstimatedPairBurnAmount,
 } from "@/lib/amounts";
 import { invert } from "@/lib/price";
+import { useHedge } from "@/pages/hedge-uniswap/[token0]/[token1]";
 import { CurrencyAmount } from "@uniswap/sdk-core";
 import { useMemo } from "react";
 
