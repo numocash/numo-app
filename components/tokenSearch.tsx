@@ -1,6 +1,7 @@
 import Dialog from "./core/dialog";
 import TokenInfo from "./tokenInfo";
 import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { clsx } from "clsx";
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
@@ -41,7 +42,7 @@ export default function TokenSearch({
       open={open}
       onClose={onClose}
       content={
-        <div className="rounded-2xl border-2 border-gray-200 bg-white">
+        <div className="rounded-2xl border-2 border-gray-200 bg-white overflow-clip">
           <div className="flex h-16 w-full items-center gap-4 px-6">
             <FiSearch size={24} />
             <input
@@ -53,28 +54,47 @@ export default function TokenSearch({
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          <div className="w-full border-b-2 border-gray-200" />
-          <ul className="flex w-full flex-col   gap-1 p-4">
-            {results.map((r) => (
-              <button
-                key={r.address}
-                className={clsx(
-                  "flex w-full items-center justify-between rounded-xl p-1 text-left",
-                  selectedToken?.equals(r) ? "opacity-50" : "hover:bg-gray-200",
-                )}
-                onClick={() => {
-                  onSelect(r);
-                  onClose();
-                }}
-                disabled={selectedToken?.equals(r)}
-              >
-                <TokenInfo token={r} showName />
-                {selectedToken?.equals(r) && (
-                  <FiCheck className="text-[#3b82f6]" size={24} />
-                )}
-              </button>
-            ))}
-          </ul>
+          <div className="w-full border-b-2 border-gray-200 overflow-clip" />
+          <ScrollArea.Root className=" h-[300px] overflow-clip">
+            <ScrollArea.Viewport className="w-full h-full overflow-clip">
+              <ul className="flex w-full flex-col   gap-1 p-4">
+                {results.map((r) => (
+                  <button
+                    key={r.address}
+                    className={clsx(
+                      "flex w-full items-center justify-between rounded-xl p-1 text-left",
+                      selectedToken?.equals(r)
+                        ? "opacity-50"
+                        : "hover:bg-gray-200",
+                    )}
+                    onClick={() => {
+                      onSelect(r);
+                      onClose();
+                    }}
+                    disabled={selectedToken?.equals(r)}
+                  >
+                    <TokenInfo token={r} showName />
+                    {selectedToken?.equals(r) && (
+                      <FiCheck className="text-[#3b82f6]" size={24} />
+                    )}
+                  </button>
+                ))}
+              </ul>
+            </ScrollArea.Viewport>
+            <ScrollArea.Scrollbar
+              className="flex select-none touch-none p-0.5 bg-white transition-colors duration-[160ms] ease-out hover:bg-black data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
+              orientation="vertical"
+            >
+              <ScrollArea.Thumb className="flex-1 bg-gray-200 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+            </ScrollArea.Scrollbar>
+            {/* <ScrollArea.Scrollbar
+              className="flex select-none touch-none p-0.5 bg-gray-200 transition-colors duration-[160ms] ease-out hover:bg-black data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
+              orientation="horizontal"
+            >
+              <ScrollArea.Thumb className="flex-1 bg-gray-200 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+            </ScrollArea.Scrollbar> */}
+            <ScrollArea.Corner className="bg-black" />
+          </ScrollArea.Root>
         </div>
       }
     />
