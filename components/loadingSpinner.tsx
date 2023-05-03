@@ -11,7 +11,7 @@ export default function LoadingSpinner({
     <Image
       {...props}
       className={clsx(className, "spinner")}
-      src="/numoen.svg"
+      src="/numoen.png"
       alt="spin"
       height={height}
       width={width}

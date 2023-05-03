@@ -44,7 +44,7 @@ const NumoenIcon: React.FC = () => {
   return (
     <div className="h-10 w-10 rounded-xl bg-white p-1.5">
       <Image
-        src="/numoen.svg"
+        src="/numoen.png"
         alt="Numoen Logo"
         width={30}
         height={30}
