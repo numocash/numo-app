@@ -34,7 +34,7 @@ import { createContainer } from "unstated-next";
 interface IProvideLiquidity {
   lendgines: readonly Lendgine[];
   protocol: Protocol;
-  price: Price<WrappedTokenInfo, WrappedTokenInfo>;
+  price?: Price<WrappedTokenInfo, WrappedTokenInfo>;
 
   selectedLendgine: Lendgine;
   setSelectedLendgine: (val: Lendgine) => void;
@@ -49,27 +49,33 @@ const useProvideLiquidityInternal = ({
   lendgines?: Lendgine[] | undefined;
   price?: Price<WrappedTokenInfo, WrappedTokenInfo>;
 } = {}): IProvideLiquidity => {
-  invariant(lendgines && protocol && price);
+  invariant(lendgines && protocol);
 
-  const lh = nextHighestLendgine({
-    price: fractionToPrice(
-      priceToFraction(price).multiply(3).divide(2),
-      price.baseCurrency,
-      price.quoteCurrency,
-    ),
-    lendgines,
-  });
-  const l = nextHighestLendgine({
-    price,
-    lendgines,
-  });
-  const ll = nextLowestLendgine({
-    price,
-    lendgines,
-  });
-  const [selectedLendgine, setSelectedLendgine] = useState(
-    lh ?? l ?? ll ?? lendgines[0]!,
-  );
+  const start = useMemo(() => {
+    if (protocol === "stpmmp") return lendgines[0]!;
+
+    invariant(price);
+
+    const lh = nextHighestLendgine({
+      price: fractionToPrice(
+        priceToFraction(price).multiply(3).divide(2),
+        price.baseCurrency,
+        price.quoteCurrency,
+      ),
+      lendgines,
+    });
+    const l = nextHighestLendgine({
+      price,
+      lendgines,
+    });
+    const ll = nextLowestLendgine({
+      price,
+      lendgines,
+    });
+    return lh ?? l ?? ll ?? lendgines[0]!;
+  }, [price, lendgines, protocol]);
+
+  const [selectedLendgine, setSelectedLendgine] = useState(start);
 
   return { lendgines, protocol, selectedLendgine, setSelectedLendgine, price };
 };
@@ -159,8 +165,7 @@ export default function ProvideLiquidity({
   const lendgines = lendginesQuery.lendgines.filter(
     (l) => quoteToken.equals(l.token0) && baseToken.equals(l.token1),
   );
-  return lendginesQuery.status !== "success" ||
-    priceQuery.status !== "success" ? (
+  return !lendgines || !priceQuery.data?.price ? (
     <LoadingPage />
   ) : (
     <ProvideLiquidityProvider
@@ -183,7 +188,7 @@ function ProvideLiquidityInner() {
 
   const mults = useMemo(
     () =>
-      lendgines
+      price ? lendgines
         .map((l) => {
           return { multiple: priceMultiple(l, price), lendgine: l };
         })
@@ -200,7 +205,7 @@ function ProvideLiquidityInner() {
             },
           }),
           {},
-        ),
+        ) : null,
     [lendgines, price],
   );
 
@@ -209,7 +214,7 @@ function ProvideLiquidityInner() {
     withdraw: { tab: "Withdraw", panel: <Withdraw /> },
   } as const;
 
-  const items = Object.keys(mults);
+  const items = Object.keys(mults ?? {});
 
   const [toggle, setToggle] = useState<typeof items[number]>(items[0]!);
 
@@ -231,7 +236,7 @@ function ProvideLiquidityInner() {
             <p className="w-fit rounded-lg bg-white bg-opacity-50 p-2 p2">
               Provide liquidity
             </p>
-            <Toggle
+            {mults && <Toggle
               items={items}
               value={toggle}
               onChange={(val) => {
@@ -239,8 +244,8 @@ function ProvideLiquidityInner() {
                 setSelectedLendgine(mults[val]!.lendgine);
               }}
               className="bg-white bg-opacity-50 rounded-xl w-fit overflow-clip p-0.5 p2 flex items-center justify-center"
-            />
-            <Popover
+            />}
+            {mults && <Popover
               className="flex"
               button={
                 <IoIosInformationCircleOutline className="fill-white text-white h-6 w-6" />
@@ -251,7 +256,7 @@ function ProvideLiquidityInner() {
                 </div>
               }
               placement="auto"
-            />
+            />}
           </div>
         </div>
         <div className="relative left-[16px] top-[-32px] flex w-fit items-center rounded-lg bg-white p-2">
