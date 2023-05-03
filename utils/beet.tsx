@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { clsx } from "clsx";
 import type { ContractReceipt } from "ethers";
 import Link from "next/link";
@@ -58,6 +59,7 @@ export const Beet = async (stages: readonly BeetStage[]) => {
         ),
       );
     } catch (err) {
+      Sentry.captureException(err);
       console.error(err);
       return;
     }
