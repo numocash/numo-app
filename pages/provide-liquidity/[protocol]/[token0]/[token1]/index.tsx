@@ -22,11 +22,11 @@ import {
 } from "@/lib/price";
 import type { Lendgine } from "@/lib/types/lendgine";
 import { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
-import { Fraction, Price } from "@uniswap/sdk-core";
+import { Price } from "@uniswap/sdk-core";
 import { utils } from "ethers";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import invariant from "tiny-invariant";
 import { createContainer } from "unstated-next";
@@ -176,25 +176,42 @@ export default function ProvideLiquidity({
 }
 
 function ProvideLiquidityInner() {
-  const { selectedLendgine, lendgines, price } = useProvideLiquidity();
+  const { selectedLendgine, setSelectedLendgine, lendgines, price } =
+    useProvideLiquidity();
   const token0 = selectedLendgine.token0;
   const token1 = selectedLendgine.token1;
 
-  const mults = lendgines.map((l) => {
-    return { multiple: priceMultiple(l, price), lendgine: l };
-  });
+  const mults = useMemo(
+    () =>
+      lendgines
+        .map((l) => {
+          return { multiple: priceMultiple(l, price), lendgine: l };
+        })
+        .sort((a, b) => (a.multiple > b.multiple ? 1 : -1))
+        .reduce(
+          (
+            acc: Record<string, { multiple: string; lendgine: Lendgine }>,
+            cur,
+          ) => ({
+            ...acc,
+            [`${cur.multiple}x`]: {
+              multiple: `${cur.multiple}x`,
+              lendgine: cur.lendgine,
+            },
+          }),
+          {},
+        ),
+    [lendgines, price],
+  );
 
   const tabs = {
     deposit: { tab: "Deposit", panel: <Deposit /> },
     withdraw: { tab: "Withdraw", panel: <Withdraw /> },
   } as const;
 
-  const items = {
-    "2x": "2x",
-    "4x": "4x",
-  } as const;
+  const items = Object.keys(mults);
 
-  const [toggle, setToggle] = useState<keyof typeof items>("2x");
+  const [toggle, setToggle] = useState<typeof items[number]>(items[0]!);
 
   return (
     <>
@@ -217,7 +234,10 @@ function ProvideLiquidityInner() {
             <Toggle
               items={items}
               value={toggle}
-              onChange={setToggle}
+              onChange={(val) => {
+                setToggle(val);
+                setSelectedLendgine(mults[val]!.lendgine);
+              }}
               className="bg-white bg-opacity-50 rounded-xl w-fit overflow-clip p-0.5 p2 flex items-center justify-center"
             />
             <Popover

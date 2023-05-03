@@ -1,13 +1,12 @@
 import { RadioGroup } from "@headlessui/react";
-import { objectKeys } from "ts-extras";
 
-export default function Toggle<T extends string | number>({
+export default function Toggle<T extends string>({
   items,
   value,
   onChange,
   className,
 }: {
-  items: { [key in T]: React.ReactNode };
+  items: T[];
   value: T;
   onChange: (val: T) => void;
   className?: string;
@@ -16,13 +15,13 @@ export default function Toggle<T extends string | number>({
     <RadioGroup className={className} value={value} onChange={onChange}>
       <RadioGroup.Label className="sr-only">Bound</RadioGroup.Label>
 
-      {objectKeys(items).map((t) => (
+      {items.map((t) => (
         <RadioGroup.Option
           value={t}
           key={t}
-          className=" cursor-pointer ui-checked:bg-white h-9 w-9 rounded-[10px] items-center justify-center flex"
+          className="text-center overflow-clip cursor-pointer ui-checked:bg-white h-9 w-9 rounded-[10px] items-center justify-center flex p-1"
         >
-          {items[t as T]}
+          {t}
         </RadioGroup.Option>
       ))}
     </RadioGroup>

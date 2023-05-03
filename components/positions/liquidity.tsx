@@ -132,7 +132,7 @@ const LiquidityItem: React.FC<LiquidityProps> = ({
       </p>
       <Link
         className="justify-self-end"
-        href={`/earn/provide-liquidity/${protocol}/${lendgine.token0.address}/${lendgine.token1.address}`}
+        href={`/provide-liquidity/${protocol}/${lendgine.token0.address}/${lendgine.token1.address}`}
       >
         <Button variant="primary" className="p2 px-2 py-1">
           View

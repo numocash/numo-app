@@ -1,6 +1,6 @@
 import type { Lendgine, LendgineInfo } from "./types/lendgine";
 import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
-import type { CurrencyAmount, Fraction, Token } from "@uniswap/sdk-core";
+import { CurrencyAmount, Fraction, Token } from "@uniswap/sdk-core";
 import { Price } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
 
@@ -32,7 +32,7 @@ export const priceMultiple = <L extends Lendgine>(
 ) => {
   const multiple = lendgine.bound.divide(price);
   const m = multiple.greaterThan(1) ? multiple : multiple.invert();
-  const x = 2 ** Math.ceil(Math.log2(+m.quotient.toString()));
+  const x = Math.floor(+m.multiply(100).quotient.toString() / 100 + 0.5);
 
   return multiple.greaterThan(1) ? x : 1 / x;
 };

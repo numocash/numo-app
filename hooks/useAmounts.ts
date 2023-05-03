@@ -271,11 +271,11 @@ export const useDepositAmount = <L extends Lendgine>(
 
     const liquidity = amount.currency.equals(lendgine.token0)
       ? lendgineInfoQuery.data.totalLiquidity
-          .multiply(lendgineInfoQuery.data.reserve0)
-          .divide(amount)
+          .multiply(amount)
+          .divide(lendgineInfoQuery.data.reserve0)
       : lendgineInfoQuery.data.totalLiquidity
-          .multiply(lendgineInfoQuery.data.reserve1)
-          .divide(amount);
+          .multiply(amount)
+          .divide(lendgineInfoQuery.data.reserve1);
 
     const { size } = calculateEstimatedDepositAmount(
       lendgine,

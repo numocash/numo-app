@@ -85,7 +85,6 @@ export default function Deposit() {
     <div className="flex w-full flex-col gap-2">
       <div className="flex flex-col rounded-xl border-2 border-gray-200 bg-white">
         <CurrencyAmountSelection
-          // className="p-2"
           type="display"
           selectedToken={token0}
           value={
@@ -106,7 +105,6 @@ export default function Deposit() {
 
         <CenterSwitch icon="plus" />
         <CurrencyAmountSelection
-          // className="p-2"
           type="display"
           selectedToken={token1}
           value={

@@ -72,7 +72,7 @@ export const useCreate = <L extends Lendgine>(
 
   const title = `Add ${lendgine?.token0.symbol ?? ""} / ${
     lendgine?.token1.symbol ?? ""
-  } liquidty`;
+  }`;
 
   const approve0Mutation = useMutation({
     mutationFn: async ({
