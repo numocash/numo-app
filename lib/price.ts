@@ -1,6 +1,6 @@
 import type { Lendgine, LendgineInfo } from "./types/lendgine";
 import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
-import type { CurrencyAmount, Fraction, Token } from "@uniswap/sdk-core";
+import { CurrencyAmount, Fraction, Token } from "@uniswap/sdk-core";
 import { Price } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
 
@@ -24,6 +24,17 @@ export const numoenPrice = <L extends Lendgine>(
   );
 
   return fractionToPrice(priceFraction, lendgine.token1, lendgine.token0);
+};
+
+export const priceMultiple = <L extends Lendgine>(
+  lendgine: L,
+  price: Price<L["token0"], L["token1"]>,
+) => {
+  const multiple = lendgine.bound.divide(price);
+  const m = multiple.greaterThan(1) ? multiple : multiple.invert();
+  const x = Math.floor(+m.multiply(100).quotient.toString() / 100 + 0.5);
+
+  return multiple.greaterThan(1) ? x : 1 / x;
 };
 
 export const nextHighestLendgine = <L extends Lendgine>(

@@ -24,7 +24,7 @@ export default function ConnectButton() {
               if (!connected) {
                 return (
                   <Button
-                    variant="inverse"
+                    variant="connect"
                     className="h-10 rounded-xl px-1"
                     onClick={openConnectModal}
                   >

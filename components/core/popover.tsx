@@ -33,7 +33,7 @@ export default function Popover({
   });
   return (
     <HeadlessPopover {...props} className={clsx(className, "relative")}>
-      <HeadlessPopover.Button ref={setReferenceElement} className="rounded-xl">
+      <HeadlessPopover.Button ref={setReferenceElement} className="rounded-xl ">
         {button}
       </HeadlessPopover.Button>
 

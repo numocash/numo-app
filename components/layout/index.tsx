@@ -19,7 +19,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       >
         {children}
       </main>
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            width: "310px",
+          },
+        }}
+      />
       <Footer />
     </>
   );

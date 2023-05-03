@@ -119,8 +119,8 @@ const PowerTokenItem: React.FC<PowerTokenProps> = ({
         : undefined,
     [balanceQuery.data, withdrawPercent],
   );
-  const burnAmount = useBurnAmount(lendgine, shares, "stpmmp");
-  const burn = useBurn(lendgine, shares, "stpmmp");
+  const burnAmount = useBurnAmount(lendgine, shares, "pmmp");
+  const burn = useBurn(lendgine, shares, "pmmp");
 
   const disableReason = useMemo(
     () =>

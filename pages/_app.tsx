@@ -50,9 +50,9 @@ const wagmiClient = createClient({
 });
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    mutations: { retry: 3, retryDelay: (attempt) => attempt * 250 },
-  },
+  // defaultOptions: {
+  //   mutations: { retry: 3, retryDelay: (attempt) => attempt * 250 },
+  // },
 });
 
 export default function App({ Component, pageProps }: AppProps) {

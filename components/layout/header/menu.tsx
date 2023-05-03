@@ -37,6 +37,8 @@ export default function Menu() {
             contents={
               <div className="grid p-1">
                 <Link
+                  rel="noopener noreferrer"
+                  target="_blank"
                   className="resource-item"
                   href="https://numoen.gitbook.io/numoen"
                 >
@@ -45,6 +47,8 @@ export default function Menu() {
                   <p>Documentation</p>
                 </Link>
                 <Link
+                  rel="noopener noreferrer"
+                  target="_blank"
                   className="resource-item"
                   href="https://numoen.gitbook.io/numoen"
                 >
@@ -53,6 +57,8 @@ export default function Menu() {
                   <p>Discord</p>
                 </Link>
                 <Link
+                  rel="noopener noreferrer"
+                  target="_blank"
                   className="resource-item"
                   href="https://numoen.gitbook.io/numoen"
                 >
@@ -60,6 +66,8 @@ export default function Menu() {
                   <p>Github</p>
                 </Link>
                 <Link
+                  rel="noopener noreferrer"
+                  target="_blank"
                   className="resource-item"
                   href="https://numoen.gitbook.io/numoen"
                 >
@@ -67,6 +75,8 @@ export default function Menu() {
                   <p>Twitter</p>
                 </Link>
                 <Link
+                  rel="noopener noreferrer"
+                  target="_blank"
                   className="resource-item"
                   href="https://medium.com/numoen"
                 >

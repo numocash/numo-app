@@ -146,6 +146,9 @@ function HedgeInner() {
         <div className="flex w-full max-w-lg flex-col gap-2">
           <Tab tabs={tabs} />
         </div>
+        {/* <ContractAddress
+          address={environment.interface.liquidStaking!.lendgine.address}
+        /> */}
       </div>
     </>
   );

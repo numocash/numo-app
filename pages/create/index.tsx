@@ -1,6 +1,8 @@
 import CenterSwitch from "@/components/CenterSwitch";
 import Plus from "@/components/Plus";
+import ContractAddress from "@/components/contractAddress";
 import AsyncButton from "@/components/core/asyncButton";
+import Popover from "@/components/core/popover";
 import CurrencyAmountSelection from "@/components/currencyAmountSelection";
 import { useEnvironment } from "@/contexts/environment";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
@@ -25,6 +27,7 @@ import { constants } from "ethers";
 import Head from "next/head";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 import invariant from "tiny-invariant";
 import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
@@ -219,15 +222,26 @@ export default function Create() {
 
         <div className="flex h-12 flex-col items-center justify-center gap-4 rounded-xl border-2 border-gray-200 bg-white p-2">
           <div className="flex w-full items-center justify-between">
-            <p className="p2">
-              Bound{" "}
+            <div className="space-x-2 items-center flex">
+              <p className="p2">Bound</p>
+              <Popover
+                className="flex"
+                button={<IoIosInformationCircleOutline className="h-6 w-6" />}
+                contents={
+                  <div className="flex p-2 bg-white rounded-xl border-2 border-gray-200 w-64">
+                    Price where all liquidity is swapped into the short token
+                  </div>
+                }
+                placement="auto"
+              />
               {priceQuery.data && (
-                <span className="p5">
+                <p className="p5">
                   (Price: {formatPrice(priceQuery.data.price)} {token0?.symbol}{" "}
                   / {token1?.symbol})
-                </span>
+                </p>
               )}
-            </p>
+            </div>
+
             <div className="flex items-center gap-1">
               <p className="p2 text-end">
                 {formatDisplayWithSoftLimit(fractionToFloat(bound), 4, 6, {
@@ -259,6 +273,9 @@ export default function Create() {
         >
           {disableReason ?? "Create new market"}
         </AsyncButton>
+        <div className="w-full flex justify-center pt-12">
+          <ContractAddress address={environment.procotol.pmmp.factory} />
+        </div>
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import type { ContractReceipt } from "ethers";
+import Link from "next/link";
 import React from "react";
 import { toast } from "react-hot-toast";
 import type { Address } from "wagmi";
@@ -38,6 +39,8 @@ export const Beet = async (stages: readonly BeetStage[]) => {
   const totaltx = stages.reduce((acc, cur) => acc + cur.parallelTxs.length, 0);
 
   for (const [stageIndex, stage] of stages.entries()) {
+    if (stageIndex !== 0) await new Promise((r) => setTimeout(r, 150));
+
     const previousTxs = [...Array(stageIndex).keys()].reduce(
       (acc, i) => acc + (stages[i]?.parallelTxs.length ?? 0),
       0,
@@ -45,14 +48,13 @@ export const Beet = async (stages: readonly BeetStage[]) => {
 
     try {
       await Promise.all(
-        stage.parallelTxs.map(
-          async (beetTx, i) =>
-            await beetTx.callback({
-              id: `${random}-${stageIndex}-${i}`,
-              title: beetTx.title,
-              description: beetTx.description,
-              humanCount: `${1 + i + previousTxs}/${totaltx}`,
-            }),
+        stage.parallelTxs.map(async (beetTx, i) =>
+          beetTx.callback({
+            id: `${random}-${stageIndex}-${i}`,
+            title: beetTx.title,
+            description: beetTx.description,
+            humanCount: `(${1 + i + previousTxs}/${totaltx})`,
+          }),
         ),
       );
     } catch (err) {
@@ -66,7 +68,7 @@ export class DefaultToasterWrapper {
   txSending(tx: Omit<TxSending, "status">) {
     toast.loading(this._buildToastContainer({ ...tx, status: "sending" }), {
       id: tx.id,
-      duration: 10_000,
+      duration: Infinity,
       position: "bottom-left",
     });
   }
@@ -104,12 +106,12 @@ export class DefaultToasterWrapper {
     tx: TxSending | TxSuccess | TxError | TxPending,
   ) {
     return (
-      <div className="flex w-[290px] flex-col overflow-hidden">
-        <div className="flex items-center justify-between font-semibold">
-          <span className="flex items-center gap-1">
+      <div className="flex w-full flex-col overflow-hidden">
+        <div className="flex items-center justify-between  w-full">
+          <p className="flex items-center p2 gap-1 text-ellipsis ma">
             {tx.title}
-            <span className="flex text-sm text-secondary">{tx.humanCount}</span>
-          </span>
+            <span className="flex p5">{tx.humanCount}</span>
+          </p>
           <button
             className="pointer text-xl text-secondary hover:text-black"
             onClick={() => toast.dismiss(tx.id)}
@@ -118,7 +120,7 @@ export class DefaultToasterWrapper {
           </button>
         </div>
 
-        <div className="flex text-secondary">
+        <div className="flex p5">
           {tx.status === "success" ? (
             <div>
               View Transaction:
@@ -147,7 +149,7 @@ export const AddressLink: React.FC<{
 }> = ({ address, className, data }) => {
   const { chain } = useNetwork();
   return (
-    <a
+    <Link
       href={`${
         chain?.blockExplorers?.default.url ?? "https://arbiscan.io"
       }/${data}/${address}`}
@@ -156,6 +158,6 @@ export const AddressLink: React.FC<{
       className={clsx(className, "underline")}
     >
       {address.slice(0, 6)}...{address.slice(address.length - 4)}
-    </a>
+    </Link>
   );
 };

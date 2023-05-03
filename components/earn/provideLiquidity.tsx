@@ -10,10 +10,12 @@ import {
   calculateEstimatedPairBurnAmount,
   calculateEstimatedWithdrawAmount,
 } from "@/lib/amounts";
+import { scale } from "@/lib/constants";
 import { calculateSupplyRate } from "@/lib/jumprate";
+import { fractionToPrice, priceToFraction } from "@/lib/price";
 import type { Lendgine } from "@/lib/types/lendgine";
 import { formatPercent } from "@/utils/format";
-import { CurrencyAmount, Percent } from "@uniswap/sdk-core";
+import { CurrencyAmount, Fraction, Percent } from "@uniswap/sdk-core";
 import { clsx } from "clsx";
 import { useMemo } from "react";
 
@@ -31,7 +33,6 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
     quote: token0,
     base: token1,
   });
-
   const tvl = useMemo(() => {
     if (!priceQuery.data || !lendginesQuery.data) return undefined;
     return lendgines.reduce((acc, cur, i) => {
@@ -53,9 +54,30 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
   }, [lendgines, lendginesQuery.data, priceQuery.data, protocol, token0]);
 
   const bestAPR = useMemo(() => {
-    if (!lendginesQuery.data) return undefined;
+    if (!priceQuery.data || !lendginesQuery.data) return undefined;
 
     return lendgines.reduce((acc, cur, i) => {
+      const liquidity = CurrencyAmount.fromRawAmount(cur.lendgine, scale);
+      const collateral = fractionToPrice(
+        priceToFraction(cur.bound).multiply(2),
+        cur.lendgine,
+        cur.token1,
+      ).quote(liquidity);
+
+      const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
+        cur,
+        lendginesQuery.data![i]!,
+        liquidity,
+      );
+
+      const ptValue = priceQuery.data.price
+        .quote(collateral)
+        .subtract(amount0.add(priceQuery.data.price.quote(amount1)));
+
+      const lpValue = amount0.add(priceQuery.data.price.quote(amount1));
+
+      const f = lpValue.equalTo(0) ? new Fraction(1) : ptValue.divide(lpValue);
+
       const accruedInfo = calculateAccrual(
         cur,
         lendginesQuery.data![i]!,
@@ -64,8 +86,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
       const supplyRate = calculateSupplyRate({
         lendgineInfo: accruedInfo,
         protocol,
-      });
-      // TODO: compute the interest premium
+      }).multiply(new Percent(f.numerator, f.denominator));
       return supplyRate.greaterThan(acc) ? supplyRate : acc;
     }, new Percent(0));
   }, [lendgines, lendginesQuery.data, protocol]);

@@ -21,6 +21,8 @@ export default function More() {
       contents={
         <div className="grid rounded-xl bg-gray-900 p-1">
           <Link
+            rel="noopener noreferrer"
+            target="_blank"
             className="resource-item"
             href="https://numoen.gitbook.io/numoen"
           >
@@ -29,6 +31,8 @@ export default function More() {
             <p>Documentation</p>
           </Link>
           <Link
+            rel="noopener noreferrer"
+            target="_blank"
             className="resource-item"
             href="https://numoen.gitbook.io/numoen"
           >
@@ -37,6 +41,8 @@ export default function More() {
             <p>Discord</p>
           </Link>
           <Link
+            rel="noopener noreferrer"
+            target="_blank"
             className="resource-item"
             href="https://numoen.gitbook.io/numoen"
           >
@@ -44,13 +50,20 @@ export default function More() {
             <p>Github</p>
           </Link>
           <Link
+            rel="noopener noreferrer"
+            target="_blank"
             className="resource-item"
             href="https://numoen.gitbook.io/numoen"
           >
             <ImTwitter size={size} />
             <p>Twitter</p>
           </Link>
-          <Link className="resource-item" href="https://medium.com/numoen">
+          <Link
+            className="resource-item"
+            href="https://medium.com/numoen"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             <SiMedium size={size} />
             <p>Blog</p>
           </Link>
