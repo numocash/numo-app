@@ -1,7 +1,9 @@
 import LoadingBox from "@/components/loadingBox";
 import MainStats from "@/components/mainStats";
 import TokenAmountDisplay from "@/components/tokenAmountDisplay";
+import { useCollect } from "@/hooks/useCollect";
 import { useLendgine } from "@/hooks/useLendgine";
+import { useLendginePosition } from "@/hooks/useLendginePosition";
 import {
   useInterestPremium,
   usePositionValue,
@@ -11,17 +13,31 @@ import {
 import { calculateAccrual } from "@/lib/amounts";
 import { calculateSupplyRate } from "@/lib/jumprate";
 import { useProvideLiquidity } from "@/pages/provide-liquidity/[protocol]/[token0]/[token1]";
+import { Beet } from "@/utils/beet";
 import { formatPercent } from "@/utils/format";
 import { useMemo } from "react";
+import { useAccount } from "wagmi";
 
 export default function Stats() {
+  const { address } = useAccount();
   const { selectedLendgine, protocol } = useProvideLiquidity();
 
+  const lendginePositionQuery = useLendginePosition(
+    selectedLendgine,
+    address,
+    protocol,
+  );
   const lendgineInfoQuery = useLendgine(selectedLendgine);
   const userValueQuery = usePositionValue(selectedLendgine, protocol);
   const totalValueQuery = useTotalPositionValue(selectedLendgine, protocol);
   const tokensOwedQuery = useTokensOwed(selectedLendgine, protocol);
   const interestPremium = useInterestPremium(selectedLendgine);
+
+  const collect = useCollect(
+    selectedLendgine,
+    lendginePositionQuery.data,
+    protocol,
+  );
 
   const apr = useMemo(() => {
     if (!lendgineInfoQuery.data || interestPremium.status !== "success")
@@ -72,10 +88,22 @@ export default function Stats() {
             label: "Interest",
             item:
               tokensOwedQuery.status === "success" ? (
-                <TokenAmountDisplay
-                  amount={tokensOwedQuery.tokensOwed}
-                  showSymbol
-                />
+                <div className="flex flex-col gap-1 sm:items-center">
+                  <TokenAmountDisplay
+                    amount={tokensOwedQuery.tokensOwed}
+                    showSymbol
+                  />
+                  {collect.status === "success" && (
+                    <button
+                      className="p4 text-[#3b82f6]"
+                      onClick={async () => {
+                        await Beet(collect.data);
+                      }}
+                    >
+                      Collect
+                    </button>
+                  )}
+                </div>
               ) : (
                 <LoadingBox className="h-10 w-20 bg-gray-300" />
               ),
