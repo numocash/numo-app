@@ -18,7 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (address) {
       Sentry.setUser({ id: address });
-      va.track("wallet", { address });
+      va.track(address as string);
     } else {
       Sentry.setUser(null);
     }
