@@ -7,7 +7,7 @@ import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import type { AppProps } from "next/app";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { arbitrum, celo, polygon } from "wagmi/chains";
@@ -60,12 +60,12 @@ export default function App({ Component, pageProps }: AppProps) {
     <WagmiConfig client={wagmiClient}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-        <RainbowKitProvider coolMode chains={chains}>
+        <RainbowKitProvider modalSize="compact" coolMode chains={chains}>
           <EnvironmentProvider>
             <SettingsProvider>
               <Layout>
                 <Component {...pageProps} />
-                <Analytics />
+                <VercelAnalytics />
               </Layout>
             </SettingsProvider>
           </EnvironmentProvider>
