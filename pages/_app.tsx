@@ -60,7 +60,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <WagmiConfig client={wagmiClient}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-        <RainbowKitProvider coolMode chains={chains}>
+        <RainbowKitProvider modalSize="compact" coolMode chains={chains}>
           <EnvironmentProvider>
             <SettingsProvider>
               <Layout>
