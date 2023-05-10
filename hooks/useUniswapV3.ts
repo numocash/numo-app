@@ -6,10 +6,17 @@ import { useMostLiquidMarket } from "./useExternalExchange";
 import { nonfungiblePositionManagerABI } from "@/abis/nonfungiblePositionManager";
 import { useEnvironment } from "@/contexts/environment";
 import { feeTiers } from "@/graphql/uniswapV3";
-import { invert } from "@/lib/price";
+import { scale } from "@/lib/constants";
+import { invert, priceToFraction, sqrt } from "@/lib/price";
 import { Market } from "@/lib/types/market";
-import { CurrencyAmount, Price } from "@uniswap/sdk-core";
-import { Pool, Position, TickMath, priceToClosestTick } from "@uniswap/v3-sdk";
+import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
+import {
+  Pool,
+  Position,
+  TickMath,
+  priceToClosestTick,
+  tickToPrice,
+} from "@uniswap/v3-sdk";
 import { BigNumber, utils } from "ethers";
 import JSBI from "jsbi";
 import { useMemo } from "react";
@@ -236,6 +243,57 @@ export const useUniswapPositionsValue = (
   ]);
 };
 
+export const useUniswapPositionsGamma = (
+  address: HookArg<Address>,
+  market: Market,
+) => {
+  const balanceQuery = usePositionManagerBalanceOf(address);
+  const tokenIDQuery = useTokenIDsByIndex(
+    address,
+    balanceQuery.data ?? undefined,
+  );
+  const positionsQuery = usePositionsFromTokenIDs(tokenIDQuery.data);
+  const priceQuery = useMostLiquidMarket(market);
+
+  return useMemo(() => {
+    if (
+      balanceQuery.isLoading ||
+      tokenIDQuery.isLoading ||
+      positionsQuery.isLoading ||
+      priceQuery.status === "loading"
+    )
+      return { status: "loading" } as const;
+    if (
+      !address ||
+      !balanceQuery.data ||
+      !tokenIDQuery.data ||
+      !positionsQuery.data ||
+      priceQuery.status === "error"
+    )
+      return { status: "error" } as const;
+
+    const gamma = filterUniswapPositions(positionsQuery.data, market).reduce(
+      (acc, cur) => acc.add(positionGamma(cur, market, priceQuery.data.price)),
+      new Fraction(0),
+    );
+    return {
+      status: "success",
+      gamma,
+    } as const;
+  }, [
+    address,
+    market,
+    balanceQuery.isLoading,
+    balanceQuery.data,
+    tokenIDQuery.data,
+    tokenIDQuery.isLoading,
+    positionsQuery.isLoading,
+    positionsQuery.data,
+    priceQuery.status,
+    priceQuery.data,
+  ]);
+};
+
 const filterUniswapPositions = (
   positions: NonNullable<ReturnType<typeof usePositionsFromTokenIDs>["data"]>,
   market: Market,
@@ -302,4 +360,25 @@ const positionValue = (
   return market.quote.equals(position.token0)
     ? amount0.add(price.quote(amount1))
     : amount1.add(price.quote(amount0));
+};
+
+const positionGamma = (
+  position: ReturnType<typeof filterUniswapPositions>[number],
+  market: Market,
+  price: Price<Market["quote"], Market["base"]>,
+) => {
+  const lowerPrice = tickToPrice(market.base, market.quote, position.tickLower);
+  const upperPrice = tickToPrice(market.base, market.quote, position.tickUpper);
+
+  const priceFraction = priceToFraction(price);
+
+  const g =
+    price.greaterThan(upperPrice) || price.lessThan(lowerPrice)
+      ? new Fraction(0)
+      : sqrt(
+          priceFraction.multiply(priceFraction).multiply(priceFraction),
+        ).invert();
+
+  // TODO: test to make sure liqudity is 18 decimals
+  return g.multiply(position.liquidity).divide(scale);
 };

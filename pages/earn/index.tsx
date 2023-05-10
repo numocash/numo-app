@@ -5,7 +5,6 @@ import ProvideLiquidity from "@/components/earn/provideLiquidity";
 import LoadingPage from "@/components/loadingPage";
 import { useEnvironment } from "@/contexts/environment";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
-import { marketToLendgines } from "@/lib/lendgineValidity";
 import type { Lendgine } from "@/lib/types/lendgine";
 import Head from "next/head";
 import Link from "next/link";
@@ -85,7 +84,9 @@ export function EarnInner() {
     () =>
       environment.interface.hedgingMarkets?.map((hm) => ({
         market: hm,
-        lendgines: marketToLendgines(hm, lendgines),
+        lendgines: lendgines.filter(
+          (l) => l.token0.equals(hm.quote) && l.token1.equals(hm.base),
+        ),
       })),
     [environment.interface.hedgingMarkets, lendgines],
   );

@@ -4,15 +4,17 @@ import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import { useBalances } from "@/hooks/useBalances";
 import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
 import { useLendgines } from "@/hooks/useLendgines";
+import { useUniswapPositionsGamma } from "@/hooks/useUniswapV3";
 import {
   calculateEstimatedBurnAmount,
   calculateEstimatedPairBurnAmount,
 } from "@/lib/amounts";
+import { scale } from "@/lib/constants";
 import { calculateBorrowRate } from "@/lib/jumprate";
 import { invert } from "@/lib/price";
 import { useHedge } from "@/pages/hedge-uniswap/[token0]/[token1]";
 import { formatPercent } from "@/utils/format";
-import { CurrencyAmount } from "@uniswap/sdk-core";
+import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
@@ -25,6 +27,8 @@ export default function Stats() {
     address,
   );
   const priceQuery = useMostLiquidMarket(market);
+  const gammaQuery = useUniswapPositionsGamma(address, market);
+
   const borrowRate = useMemo(() => {
     if (!lendginesQuery.data) return undefined;
     const index = lendgines.findIndex(
@@ -33,6 +37,19 @@ export default function Stats() {
     const lendgineInfo = lendginesQuery.data[index]!;
     return calculateBorrowRate({ lendgineInfo, protocol: "pmmp" });
   }, [lendgines, lendginesQuery.data, selectedLendgine]);
+
+  const gamma = useMemo(() => {
+    if (!priceQuery.data || !balancesQuery.data) return undefined;
+    return balancesQuery.data?.reduce((acc, cur, i) => {
+      const lendgine = lendgines[i]!;
+
+      if (priceQuery.data!.price.greaterThan(lendgine.bound)) return acc;
+
+      return acc.add(new Fraction(2).multiply(cur).divide(scale));
+    }, new Fraction(0));
+  }, [priceQuery.data, balancesQuery.data, lendgines]);
+
+  console.log(gamma?.toSignificant(5));
 
   const tvl = useMemo(() => {
     if (!priceQuery.data || !lendginesQuery.data) return undefined;
@@ -125,7 +142,13 @@ export default function Stats() {
           },
           {
             label: "IL hedge",
-            item: <LoadingBox className="h-10 w-20 bg-gray-300" />,
+            item:
+              gammaQuery.status === "success" &&
+              !gammaQuery.gamma.equalTo(0) ? (
+                gammaQuery.gamma.toSignificant(4)
+              ) : (
+                <LoadingBox className="h-10 w-20 bg-gray-300" />
+              ),
           },
         ] as const
       }
