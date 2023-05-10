@@ -1,10 +1,13 @@
 import Button from "@/components/core/button";
+import HedgeUniswap from "@/components/earn/hedgeUniswap";
 import LiquidStaking from "@/components/earn/liquidStaking";
 import ProvideLiquidity from "@/components/earn/provideLiquidity";
 import LoadingPage from "@/components/loadingPage";
 import { useEnvironment } from "@/contexts/environment";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
+import { lendgineToMarket } from "@/lib/lendgineValidity";
 import type { Lendgine } from "@/lib/types/lendgine";
+import { Market } from "@/lib/types/market";
 import Head from "next/head";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -79,37 +82,37 @@ export function EarnInner() {
     [lendgines],
   );
 
-  // const partitionedMarkets = useMemo(
-  //   () =>
-  //     Object.values(
-  //       lendgines.reduce(
-  //         (
-  //           acc: Record<string, { market: Market; lendgines: Lendgine[] }>,
-  //           cur,
-  //         ) => {
-  //           const market = lendgineToMarket(
-  //             cur,
-  //             environment.interface.wrappedNative,
-  //             environment.interface.specialtyMarkets,
-  //           );
-  //           const key = `${market.quote.address}_${market.base.address}`;
-  //           const value = acc[key];
-  //           return {
-  //             ...acc,
-  //             [key]: value
-  //               ? { market: market, lendgines: value.lendgines.concat(cur) }
-  //               : { market, lendgines: [cur] },
-  //           };
-  //         },
-  //         {},
-  //       ),
-  //     ),
-  //   [
-  //     environment.interface.specialtyMarkets,
-  //     environment.interface.wrappedNative,
-  //     lendgines,
-  //   ],
-  // );
+  const partitionedMarkets = useMemo(
+    () =>
+      Object.values(
+        lendgines.reduce(
+          (
+            acc: Record<string, { market: Market; lendgines: Lendgine[] }>,
+            cur,
+          ) => {
+            const market = lendgineToMarket(
+              cur,
+              environment.interface.wrappedNative,
+              environment.interface.specialtyMarkets,
+            );
+            const key = `${market.quote.address}_${market.base.address}`;
+            const value = acc[key];
+            return {
+              ...acc,
+              [key]: value
+                ? { market: market, lendgines: value.lendgines.concat(cur) }
+                : { market, lendgines: [cur] },
+            };
+          },
+          {},
+        ),
+      ),
+    [
+      environment.interface.specialtyMarkets,
+      environment.interface.wrappedNative,
+      lendgines,
+    ],
+  );
 
   return (
     <div className="grid w-full max-w-5xl grid-cols-1 gap-4 pt-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
@@ -127,13 +130,13 @@ export function EarnInner() {
           protocol="pmmp"
         />
       ))}
-      {/* {partitionedMarkets.map((pm) => (
+      {partitionedMarkets.map((pm) => (
         <HedgeUniswap
           key={`pm${pm.market.quote.address}${pm.market.base.address}`}
           lendgines={pm.lendgines}
           market={pm.market}
         />
-      ))} */}
+      ))}
     </div>
   );
 }
