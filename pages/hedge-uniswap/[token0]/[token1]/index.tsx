@@ -146,9 +146,9 @@ export default function Hedge({
 
 function HedgeInner() {
   const { address } = useAccount();
-  const { lendgines, market } = useHedge();
-  const token0 = lendgines[0]!.token0;
-  const token1 = lendgines[0]!.token1;
+  const { market } = useHedge();
+  const token0 = market.quote;
+  const token1 = market.base;
 
   const numPositionsQuery = useNumberOfPositions(address, market);
   const positionsValueQuery = useUniswapPositionsValue(address, market);

@@ -301,5 +301,5 @@ const positionValue = (
 
   return market.quote.equals(position.token0)
     ? amount0.add(price.quote(amount1))
-    : amount1.add(invert(price).quote(amount0));
+    : amount1.add(price.quote(amount0));
 };

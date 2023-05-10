@@ -86,6 +86,12 @@ export const arbitrumConfig = {
         quote: Stable[chainID.arbitrum],
       },
     ],
+    hedgingMarkets: [
+      {
+        base: WrappedNative[chainID.arbitrum],
+        quote: Stable[chainID.arbitrum],
+      },
+    ],
   },
   procotol: {
     pmmp: {

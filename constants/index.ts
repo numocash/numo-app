@@ -40,6 +40,7 @@ export type NumoenInterfaceConfig = {
   native?: NativeCurrency;
   liquidStaking?: LiquidStakingConfig;
   specialtyMarkets?: readonly Market[];
+  hedgingMarkets?: readonly Market[];
 };
 
 export const config: {
