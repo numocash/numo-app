@@ -1,23 +1,31 @@
-import { useMintAmount } from "@/hooks/useAmounts";
 import CenterSwitch from "../CenterSwitch";
 import AsyncButton from "../core/asyncButton";
 import CurrencyAmountDisplay from "../currencyAmountDisplay";
 import Slider from "../slider";
+import { useSettings } from "@/contexts/settings";
+import { useMintAmount } from "@/hooks/useAmounts";
 import { useBalances } from "@/hooks/useBalances";
-import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
+import { isV3, useMostLiquidMarket } from "@/hooks/useExternalExchange";
 import { useLendgines } from "@/hooks/useLendgines";
+import { useMint } from "@/hooks/useMint";
 import { useUniswapPositionsGamma } from "@/hooks/useUniswapV3";
-import { calculateEstimatedBurnAmount } from "@/lib/amounts";
+import {
+  calculateEstimatedBurnAmount,
+  calculateEstimatedPairBurnAmount,
+} from "@/lib/amounts";
 import { calculateAccrual } from "@/lib/amounts";
-import { scale } from "@/lib/constants";
+import { ONE_HUNDRED_PERCENT, scale } from "@/lib/constants";
+import { fractionToPrice, priceToFraction } from "@/lib/price";
 import { useHedge } from "@/pages/hedge-uniswap/[token0]/[token1]";
+import { Beet } from "@/utils/beet";
 import { CurrencyAmount, Fraction, Percent } from "@uniswap/sdk-core";
 import { useEffect, useMemo, useState } from "react";
+import invariant from "tiny-invariant";
 import { useAccount } from "wagmi";
-import { useMint } from "@/hooks/useMint";
 
 export default function Add() {
   const { address } = useAccount();
+  const settings = useSettings();
   const { lendgines, market, selectedLendgine } = useHedge();
   const lendginesQuery = useLendgines(lendgines);
   const balancesQuery = useBalances(
@@ -27,7 +35,7 @@ export default function Add() {
   const priceQuery = useMostLiquidMarket(market);
   const gammaQuery = useUniswapPositionsGamma(address, market);
 
-  const { currentGamma, hedge, maxSlide } = useMemo(() => {
+  const { currentGamma, hedge, maxSlide, minSlide } = useMemo(() => {
     if (!priceQuery.data || !balancesQuery.data || !lendginesQuery.data)
       return {};
     const currentGamma = balancesQuery.data!.reduce((acc, cur, i) => {
@@ -48,16 +56,22 @@ export default function Add() {
     }, new Fraction(0));
     if (gammaQuery.status !== "success") return { currentGamma };
 
-    const hedge = new Percent(
-      currentGamma.divide(gammaQuery.gamma).numerator,
-      currentGamma.divide(gammaQuery.gamma).denominator,
-    );
+    const hedge = gammaQuery.gamma.equalTo(0)
+      ? new Percent(0)
+      : new Percent(
+          currentGamma.divide(gammaQuery.gamma).numerator,
+          currentGamma.divide(gammaQuery.gamma).denominator,
+        );
 
     const maxSlide = hedge.greaterThan(new Percent(1))
       ? +hedge.toFixed(2)
       : 100;
 
-    return { currentGamma, hedge, maxSlide };
+    const minSlide = hedge.greaterThan(new Percent(0))
+      ? Math.ceil(+hedge.toFixed(2))
+      : 0;
+
+    return { currentGamma, hedge, maxSlide, minSlide };
   }, [priceQuery.data, balancesQuery.data, lendgines]);
   const [hedgePercent, setHedgePercent] = useState<number | undefined>(
     undefined,
@@ -68,16 +82,21 @@ export default function Add() {
   }, [maxSlide]);
 
   // determine the ideal gamma from the hedge percent
-  const { shares } = useMemo(() => {
+  const { amountIn } = useMemo(() => {
     if (
       gammaQuery.status !== "success" ||
       hedgePercent === undefined ||
       !lendginesQuery.data ||
-      !currentGamma
+      !currentGamma ||
+      !priceQuery.data ||
+      hedgePercent > 100 ||
+      gammaQuery.gamma.equalTo(0)
     )
       return {};
 
-    const idealGamma = gammaQuery.gamma.multiply(Math.floor(hedgePercent)).divide(100);
+    const idealGamma = gammaQuery.gamma
+      .multiply(Math.floor(hedgePercent))
+      .divide(100);
     const deltaGamma = idealGamma.subtract(currentGamma);
 
     const liquidity = CurrencyAmount.fromRawAmount(
@@ -101,7 +120,33 @@ export default function Add() {
           .multiply(accruedLendgineInfo.totalSupply)
           .divide(accruedLendgineInfo.totalLiquidityBorrowed);
 
-    return { shares };
+    const collateral = fractionToPrice(
+      priceToFraction(lendgines[index]!.bound).multiply(2),
+      lendgines[index]!.lendgine,
+      lendgines[index]!.token1,
+    ).quote(liquidity);
+
+    const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
+      lendgines[index]!,
+      lendginesQuery.data[index]!,
+      liquidity,
+    );
+
+    // determine value
+    const dexFee = isV3(priceQuery.data.pool)
+      ? new Percent(priceQuery.data.pool.feeTier, "1000000")
+      : new Percent("3000", "1000000");
+
+    // token1
+    const expectedSwapOutput = priceQuery.data.price
+      .invert()
+      .quote(amount0)
+      .multiply(ONE_HUNDRED_PERCENT.subtract(dexFee))
+      .multiply(ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent));
+
+    const amountIn = collateral.subtract(amount1.add(expectedSwapOutput));
+
+    return { shares, amountIn };
   }, [
     gammaQuery,
     hedgePercent,
@@ -111,8 +156,8 @@ export default function Add() {
     lendgines,
   ]);
 
-  // const mintAmounts = useMintAmount(selectedLendgine, parsedAmount, "stpmmp");
-  // const mint = useMint(selectedLendgine, parsedAmount, "stpmmp");
+  const mintAmounts = useMintAmount(selectedLendgine, amountIn, "pmmp");
+  const mint = useMint(selectedLendgine, amountIn, "pmmp");
 
   const disableReason = useMemo(
     () =>
@@ -120,10 +165,24 @@ export default function Add() {
         ? "Loading"
         : hedgePercent === 0
         ? "Slide to amount"
-        : !hedge
+        : !hedge || gammaQuery.status !== "success"
         ? "Loading"
+        : gammaQuery.gamma.equalTo(0)
+        ? "Deposit in Uniswap first"
         : hedge.greaterThan(new Percent(1))
         ? "Remove hedge"
+        : mintAmounts.status !== "success" ||
+          mint.status !== "success" ||
+          !lendginesQuery.data
+        ? "Loading"
+        : mintAmounts.liquidity.greaterThan(
+            lendginesQuery.data[
+              lendgines.findIndex(
+                (l) => l.address === selectedLendgine.address,
+              )!
+            ]!.totalLiquidity,
+          )
+        ? "Insufficient liqudity"
         : null,
     [hedgePercent, hedge],
   );
@@ -136,15 +195,15 @@ export default function Add() {
             input={hedgePercent ?? 0}
             onChange={setHedgePercent}
             max={maxSlide}
-            min={maxSlide !== undefined && maxSlide !== 100 ? maxSlide : 0}
+            min={minSlide}
           />
         </div>
         <div className=" w-full border-b-2 border-gray-200" />
         <CenterSwitch icon="arrow" />
         <CurrencyAmountDisplay
-          // className="justify-center"
-          amount={CurrencyAmount.fromRawAmount(selectedLendgine.token1, 0)}
-          // inputDisabled={true}
+          amount={
+            amountIn ?? CurrencyAmount.fromRawAmount(selectedLendgine.token1, 0)
+          }
         />
       </div>
       <AsyncButton
@@ -152,8 +211,8 @@ export default function Add() {
         className="h-12 items-center text-xl font-bold"
         disabled={!!disableReason}
         onClick={async () => {
-          // invariant(withdraw.data);
-          // await Beet(withdraw.data);
+          invariant(mint.data);
+          await Beet(mint.data);
         }}
       >
         {disableReason ?? "Add hedge"}

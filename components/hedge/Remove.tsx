@@ -74,7 +74,9 @@ export default function Remove() {
     )
       return {};
 
-    const idealGamma = gammaQuery.gamma.multiply(hedgePercent).divide(100);
+    const idealGamma = gammaQuery.gamma
+      .multiply(Math.floor(hedgePercent))
+      .divide(100);
     const deltaGamma = currentGamma.subtract(idealGamma);
 
     const liquidity = CurrencyAmount.fromRawAmount(

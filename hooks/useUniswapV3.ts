@@ -163,12 +163,15 @@ export const useNumberOfPositions = (
   const positionsQuery = usePositionsFromTokenIDs(tokenIDQuery.data);
 
   return useMemo(() => {
+    if (balanceQuery.data === 0)
+      return { status: "success", amount: 0 } as const;
     if (
       balanceQuery.isLoading ||
       tokenIDQuery.isLoading ||
       positionsQuery.isLoading
     )
       return { status: "loading" } as const;
+
     if (
       !address ||
       !balanceQuery.data ||
@@ -205,6 +208,11 @@ export const useUniswapPositionsValue = (
   const priceQuery = useMostLiquidMarket(market);
 
   return useMemo(() => {
+    if (balanceQuery.data === 0)
+      return {
+        status: "success",
+        value: CurrencyAmount.fromRawAmount(market.quote, 0),
+      };
     if (
       balanceQuery.isLoading ||
       tokenIDQuery.isLoading ||
@@ -256,6 +264,8 @@ export const useUniswapPositionsGamma = (
   const priceQuery = useMostLiquidMarket(market);
 
   return useMemo(() => {
+    if (balanceQuery.data === 0)
+      return { status: "success", gamma: new Fraction(0) };
     if (
       balanceQuery.isLoading ||
       tokenIDQuery.isLoading ||
