@@ -56,7 +56,7 @@ export default function Remove() {
 
     const maxSlide = hedge.greaterThan(new Percent(1))
       ? 100
-      : +hedge.toFixed(2);
+      : +hedge.toFixed(0);
 
     return { currentGamma, hedge, maxSlide };
   }, [priceQuery.data, balancesQuery.data, lendgines]);

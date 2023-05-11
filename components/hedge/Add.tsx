@@ -64,7 +64,7 @@ export default function Add() {
         );
 
     const maxSlide = hedge.greaterThan(new Percent(1))
-      ? +hedge.toFixed(2)
+      ? +hedge.toFixed(0)
       : 100;
 
     const minSlide = hedge.greaterThan(new Percent(0))

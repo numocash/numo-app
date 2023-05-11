@@ -9,6 +9,7 @@ import { feeTiers } from "@/graphql/uniswapV3";
 import { scale } from "@/lib/constants";
 import { invert, priceToFraction, sqrt } from "@/lib/price";
 import { Market } from "@/lib/types/market";
+import { sqrt as JSBIsqrt } from "@uniswap/sdk-core";
 import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
 import {
   Pool,
@@ -390,5 +391,12 @@ const positionGamma = (
         ).invert();
 
   // TODO: test to make sure liqudity is 18 decimals
-  return g.multiply(position.liquidity).divide(scale);
+  // liquidity is off by 10^6
+  const decimalsAdjust = position.token0.decimals - position.token1.decimals;
+  return g
+    .multiply(position.liquidity)
+    .multiply(
+      JSBIsqrt(JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(decimalsAdjust))),
+    )
+    .divide(scale);
 };
