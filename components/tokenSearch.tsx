@@ -71,6 +71,7 @@ export default function TokenSearch({
                       onSelect(r);
                       onClose();
                     }}
+                    type="button"
                     disabled={selectedToken?.equals(r)}
                   >
                     <TokenInfo token={r} showName />

@@ -208,7 +208,7 @@ function HedgeInner() {
           </div>
         </div>
       </div>
-      <div className="rounded-xl bg-gray-900 p-6 flex flex-col w-full gap-6 max-w-5xl mt-12">
+      <div className="rounded-xl bg-gray-1000 p-6 flex flex-col w-full gap-6 max-w-5xl mt-12">
         <p className="p1 text-white">Your Uniswap positions</p>
         <div className="w-full flex flex-col gap-6 sm:flex-row">
           <div className="flex flex-col gap-1 w-full">

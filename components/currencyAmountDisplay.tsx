@@ -14,7 +14,9 @@ export default function CurrencyAmountSelection({
         <TokenInfo token={amount.currency} showName={false} />
 
         <p className="p1 text-2xl">
-          {formatDisplayWithSoftLimit(Number(amount.toFixed(6)), 4, 10)}
+          {amount.equalTo(0) || amount.lessThan(0)
+            ? "0"
+            : formatDisplayWithSoftLimit(Number(amount.toFixed(6)), 4, 10)}
         </p>
       </div>
     </>
