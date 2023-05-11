@@ -84,11 +84,11 @@ export class Matic extends NativeCurrency {
   private static _etherCache: { [chainId: number]: Matic } = {};
 
   static onChain(chainId: number): Matic {
-    return (
-      this._etherCache[chainId] ??
-      // rome-ignore lint/nursery/noAssignInExpressions: <explanation>
-      (this._etherCache[chainId] = new Matic(chainId))
-    );
+    if (this._etherCache[chainId]) return this._etherCache[chainId]!;
+
+    const ether = new Matic(chainId);
+    this._etherCache[chainId] = ether;
+    return ether;
   }
 
   equals(other: Currency): boolean {
