@@ -14,7 +14,7 @@ import { calculateBorrowRate } from "@/lib/jumprate";
 import { invert } from "@/lib/price";
 import { useHedge } from "@/pages/hedge-uniswap/[token0]/[token1]";
 import { formatPercent } from "@/utils/format";
-import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
+import { CurrencyAmount, Fraction, Percent } from "@uniswap/sdk-core";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
@@ -39,17 +39,25 @@ export default function Stats() {
   }, [lendgines, lendginesQuery.data, selectedLendgine]);
 
   const gamma = useMemo(() => {
-    if (!priceQuery.data || !balancesQuery.data) return undefined;
-    return balancesQuery.data?.reduce((acc, cur, i) => {
+    if (!priceQuery.data || !balancesQuery.data || !lendginesQuery.data)
+      return undefined;
+    return balancesQuery.data!.reduce((acc, cur, i) => {
       const lendgine = lendgines[i]!;
+      const lendgineInfo = lendginesQuery.data![i]!;
 
       if (priceQuery.data!.price.greaterThan(lendgine.bound)) return acc;
 
-      return acc.add(new Fraction(2).multiply(cur).divide(scale));
+      // TODO: do we need to adjust for decimals
+      const { liquidity } = calculateEstimatedBurnAmount(
+        lendgine,
+        lendgineInfo,
+        cur,
+        "pmmp",
+      );
+
+      return acc.add(new Fraction(2).multiply(liquidity).divide(scale));
     }, new Fraction(0));
   }, [priceQuery.data, balancesQuery.data, lendgines]);
-
-  console.log(gamma?.toSignificant(5));
 
   const tvl = useMemo(() => {
     if (!priceQuery.data || !lendginesQuery.data) return undefined;
@@ -144,8 +152,14 @@ export default function Stats() {
             label: "IL hedge",
             item:
               gammaQuery.status === "success" &&
+              !!gamma &&
               !gammaQuery.gamma.equalTo(0) ? (
-                gammaQuery.gamma.toSignificant(4)
+                formatPercent(
+                  new Percent(
+                    gamma.divide(gammaQuery.gamma).numerator,
+                    gamma.divide(gammaQuery.gamma).denominator,
+                  ),
+                )
               ) : (
                 <LoadingBox className="h-10 w-20 bg-gray-300" />
               ),

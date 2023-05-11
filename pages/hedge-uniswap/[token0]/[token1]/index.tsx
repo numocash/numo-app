@@ -1,4 +1,6 @@
 import Tab from "@/components/core/tabs";
+import Add from "@/components/hedge/Add";
+import Remove from "@/components/hedge/Remove";
 import Stats from "@/components/hedge/stats";
 import LoadingBox from "@/components/loadingBox";
 import LoadingPage from "@/components/loadingPage";
@@ -154,8 +156,8 @@ function HedgeInner() {
   const positionsValueQuery = useUniswapPositionsValue(address, market);
 
   const tabs = {
-    mint: { tab: "Add hedge", panel: <></> },
-    burn: { tab: "Remove hedge", panel: <></> },
+    mint: { tab: "Add hedge", panel: <Add /> },
+    burn: { tab: "Remove hedge", panel: <Remove /> },
   };
 
   // TODO: add component for removing out of bounds power
