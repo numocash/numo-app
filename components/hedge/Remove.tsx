@@ -146,7 +146,7 @@ export default function Remove() {
             input={hedgePercent ?? 0}
             onChange={setHedgePercent}
             max={maxSlide}
-            min={maxSlide !== undefined && maxSlide !== 100 ? maxSlide : 0}
+            min={0}
           />
         </div>
         <div className=" w-full border-b-2 border-gray-200" />
