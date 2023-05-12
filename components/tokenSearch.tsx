@@ -76,7 +76,7 @@ export default function TokenSearch({
                   >
                     <TokenInfo token={r} showName />
                     {selectedToken?.equals(r) && (
-                      <FiCheck className="text-[#3b82f6]" size={24} />
+                      <FiCheck className="text-brand" size={24} />
                     )}
                   </button>
                 ))}

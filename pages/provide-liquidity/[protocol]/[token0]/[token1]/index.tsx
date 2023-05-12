@@ -275,7 +275,7 @@ function ProvideLiquidityInner() {
             {token0.symbol} + {token1.symbol}
           </p>
           <div className="grid gap-2">
-            <p className="max-w-md text-[#8f8f8f] sm:text-lg">
+            <p className="max-w-md p3">
               Provide liquidity to an AMM and earn from lending the position
               out.
             </p>

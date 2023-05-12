@@ -27,9 +27,9 @@ export default function Slider({
           aria-label="Volume"
         >
           <SliderPrimitive.Track className="relative  h-[4px] grow rounded-full bg-gray-200">
-            <SliderPrimitive.Range className="absolute  h-full rounded-full bg-[#3b82f6]" />
+            <SliderPrimitive.Range className="absolute  h-full rounded-full bg-brand" />
           </SliderPrimitive.Track>
-          <SliderPrimitive.Thumb className="block  h-5 w-2 cursor-pointer rounded-[10px] bg-[#3b82f6]  " />
+          <SliderPrimitive.Thumb className="block  h-5 w-2 cursor-pointer rounded-[10px] bg-brand ring-white ring-2" />
         </SliderPrimitive.Root>
       </form>
     </div>

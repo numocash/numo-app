@@ -1,3 +1,4 @@
+import ContractAddress from "@/components/contractAddress";
 import Tab from "@/components/core/tabs";
 import Add from "@/components/hedge/Add";
 import Remove from "@/components/hedge/Remove";
@@ -148,7 +149,7 @@ export default function Hedge({
 
 function HedgeInner() {
   const { address } = useAccount();
-  const { market } = useHedge();
+  const { market, selectedLendgine } = useHedge();
   const token0 = market.quote;
   const token1 = market.base;
 
@@ -234,8 +235,8 @@ function HedgeInner() {
         </div>
         <Link href={"https://app.uniswap.org/#/pools"} target="_blank">
           <div className="space-x-2 flex items-center">
-            <p className="p2 text-[#3b82f6]">Manage positions</p>
-            <FaChevronDown scale={0.75} className="fill-[#3b82f6] -rotate-90" />
+            <p className="p2 text-brand">Manage positions</p>
+            <FaChevronDown scale={0.75} className="fill-brand -rotate-90" />
           </div>
         </Link>
       </div>
@@ -245,9 +246,7 @@ function HedgeInner() {
         <div className="flex w-full max-w-lg flex-col gap-2">
           <Tab tabs={tabs} />
         </div>
-        {/* <ContractAddress
-          address={environment.interface.liquidStaking!.lendgine.address}
-        /> */}
+        <ContractAddress address={selectedLendgine.address} />
       </div>
     </>
   );

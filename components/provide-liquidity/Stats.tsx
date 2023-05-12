@@ -95,7 +95,7 @@ export default function Stats() {
                   />
                   {collect.status === "success" && (
                     <button
-                      className="p4 text-[#3b82f6]"
+                      className="p4 text-brand"
                       onClick={async () => {
                         await Beet(collect.data);
                       }}

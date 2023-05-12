@@ -51,7 +51,7 @@ export default function Button({
         variant === "primary" && "bg-gray-1000 text-white",
         variant === "inverse" && "bg-white",
         variant === "danger" && "bg-red-500 text-white",
-        variant === "connect" && "bg-[#3b82f6] text-white",
+        variant === "connect" && "bg-brand text-white",
         "disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-secondary",
         className,
       )}

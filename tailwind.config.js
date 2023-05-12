@@ -27,6 +27,7 @@ module.exports = {
     extend: {
       colors: {
         gray,
+        brand: "#0E76FD",
       },
       textColor,
     },
