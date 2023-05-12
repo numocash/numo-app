@@ -26,7 +26,7 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
   const priceQuery = useMostLiquidMarket(market);
 
   const tvl = useMemo(() => {
-    if (!priceQuery.data || !lendginesQuery.data) return undefined;
+    if (!priceQuery.data?.price || !lendginesQuery.data) return undefined;
     return lendgines.reduce((acc, cur, i) => {
       const inverse = !cur.token0.equals(market.quote);
       const { collateral, liquidity } = calculateEstimatedBurnAmount(
