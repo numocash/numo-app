@@ -145,6 +145,7 @@ export default function Remove() {
       <div className="flex flex-col rounded-xl border-2 border-gray-200 bg-white">
         <div className=" flex h-20 w-full flex-col justify-center gap-2 px-6 py-2">
           <Slider
+            label="Hedge"
             input={hedgePercent ?? 0}
             onChange={setHedgePercent}
             max={maxSlide}
@@ -154,6 +155,7 @@ export default function Remove() {
         <div className=" w-full border-b-2 border-gray-200" />
         <CenterSwitch icon="arrow" />
         <CurrencyAmountDisplay
+          label="Output"
           amount={
             burnAmount.status === "success"
               ? burnAmount.collateral
