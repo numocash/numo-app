@@ -68,12 +68,16 @@ export const calcMedianPrice = (
 // Takes a function, and the arguments to be applied, returns a function
 // const partialApplication = <
 //   TArgs extends {},
-//   TAppliedArgs extends Partial<TArgs>,
+//   TAppliedArgs extends keyof TArgs,
 //   TReturn,
 // >(
 //   func: (args: TArgs) => TReturn,
-//   args: TAppliedArgs,
+//   args: Pick<TArgs, TAppliedArgs>,
 // ) => {
-//   return (remainingArgs: Omit<TArgs, keyof TAppliedArgs>) =>
+//   return (remainingArgs: Omit<TArgs, TAppliedArgs>) =>
 //     func({ ...args, ...remainingArgs } as unknown as TArgs);
 // };
+
+// const add = ({ x, y }: { x: number; y: number }) => x + y;
+
+// const add2 = partialApplication(add, { y: 2 });
