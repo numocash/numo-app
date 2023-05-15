@@ -34,7 +34,7 @@ export default function More() {
             rel="noopener noreferrer"
             target="_blank"
             className="resource-item"
-            href="https://numoen.gitbook.io/numoen"
+            href="https://discord.gg/V745FmMN2B"
           >
             <FaDiscord size={size} />
 
@@ -44,7 +44,7 @@ export default function More() {
             rel="noopener noreferrer"
             target="_blank"
             className="resource-item"
-            href="https://numoen.gitbook.io/numoen"
+            href="https://github.com/numoen"
           >
             <ImGithub size={size} />
             <p>Github</p>
@@ -53,7 +53,7 @@ export default function More() {
             rel="noopener noreferrer"
             target="_blank"
             className="resource-item"
-            href="https://numoen.gitbook.io/numoen"
+            href="https://twitter.com/numoen"
           >
             <ImTwitter size={size} />
             <p>Twitter</p>

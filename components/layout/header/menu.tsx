@@ -50,7 +50,7 @@ export default function Menu() {
                   rel="noopener noreferrer"
                   target="_blank"
                   className="resource-item"
-                  href="https://numoen.gitbook.io/numoen"
+                  href="https://discord.gg/V745FmMN2B"
                 >
                   <FaDiscord size={size} />
 
@@ -60,7 +60,7 @@ export default function Menu() {
                   rel="noopener noreferrer"
                   target="_blank"
                   className="resource-item"
-                  href="https://numoen.gitbook.io/numoen"
+                  href="https://github.com/numoen"
                 >
                   <ImGithub size={size} />
                   <p>Github</p>
@@ -69,16 +69,16 @@ export default function Menu() {
                   rel="noopener noreferrer"
                   target="_blank"
                   className="resource-item"
-                  href="https://numoen.gitbook.io/numoen"
+                  href="https://twitter.com/numoen"
                 >
                   <ImTwitter size={size} />
                   <p>Twitter</p>
                 </Link>
                 <Link
-                  rel="noopener noreferrer"
-                  target="_blank"
                   className="resource-item"
                   href="https://medium.com/numoen"
+                  rel="noopener noreferrer"
+                  target="_blank"
                 >
                   <SiMedium size={size} />
                   <p>Blog</p>
