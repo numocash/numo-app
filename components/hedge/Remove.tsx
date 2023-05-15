@@ -54,7 +54,9 @@ export default function Remove() {
       currentGamma.divide(gammaQuery.gamma).denominator,
     );
 
-    const maxSlide = hedge.greaterThan(new Percent(1))
+    const maxSlide = hedge.equalTo(0)
+      ? 100
+      : hedge.greaterThan(new Percent(1))
       ? 100
       : +hedge.toFixed(0);
 
