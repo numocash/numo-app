@@ -1,6 +1,6 @@
 export default function Background() {
   return (
-    // rome-ignore: IDK
+    // rome-ignore lint/a11y/noSvgWithoutTitle: IDK
     <svg height="200vh" width="100vw" className="fixed top-0 -z-10">
       <line
         className="absolute"

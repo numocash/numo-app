@@ -115,6 +115,7 @@ export class DefaultToasterWrapper {
             <span className="flex p5">{tx.humanCount}</span>
           </p>
           <button
+            type="button"
             className="pointer text-xl text-secondary hover:text-black"
             onClick={() => toast.dismiss(tx.id)}
           >

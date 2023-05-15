@@ -99,6 +99,7 @@ export default function Stats() {
                       onClick={async () => {
                         await Beet(collect.data);
                       }}
+                      type="button"
                     >
                       Collect
                     </button>
