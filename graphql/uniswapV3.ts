@@ -1,6 +1,6 @@
 import JSBI from "jsbi";
 
-export const feeTiers = {
+export const FeeAmount = {
   100: "100",
   500: "500",
   3000: "3000",
@@ -9,7 +9,7 @@ export const feeTiers = {
 
 export type UniswapV3Pool = {
   version: "V3";
-  feeTier: typeof feeTiers[keyof typeof feeTiers];
+  feeTier: typeof FeeAmount[keyof typeof FeeAmount];
 };
 
 export const Q96 = JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(96));

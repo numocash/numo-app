@@ -1,7 +1,6 @@
 import { useEnvironment } from "../contexts/environment";
 import type { UniswapV2Pool } from "../graphql/uniswapV2";
-import type { UniswapV3Pool } from "../graphql/uniswapV3";
-import { feeTiers } from "../graphql/uniswapV3";
+import { FeeAmount, UniswapV3Pool } from "../graphql/uniswapV3";
 import type { Market } from "../lib/types/market";
 import { calcMedianPrice, sortTokens } from "../lib/uniswap";
 import type { HookArg } from "./internal/types";
@@ -12,7 +11,6 @@ import { getUniswapV2Pair } from "@/lib/reverseMirage/uniswapV2";
 import { getUniswapV3Pool } from "@/lib/reverseMirage/uniswapV3";
 import { useQuery } from "@tanstack/react-query";
 import { CurrencyAmount, Price } from "@uniswap/sdk-core";
-import { FeeAmount } from "@uniswap/v3-sdk";
 import { chunk } from "lodash";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
@@ -58,11 +56,7 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
         salt: keccak256(
           encodeAbiParameters(
             parseAbiParameters("address tokenA, address tokenB, uint24 fee"),
-            [
-              token0.address as Address,
-              token1.address as Address,
-              FeeAmount[fee],
-            ],
+            [token0.address as Address, token1.address as Address, +fee],
           ),
         ),
       }),
@@ -152,7 +146,7 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
           price: v3PriceQuery.data[maxTVLIndex.index - 1]!,
           pool: {
             version: "V3",
-            feeTier: objectKeys(feeTiers)[maxTVLIndex.index - 1],
+            feeTier: objectKeys(FeeAmount)[maxTVLIndex.index - 1],
           } as UniswapV3Pool,
         },
       } as const;
@@ -231,7 +225,7 @@ const useV3Price = (market: HookArg<Market>) => {
           args: {
             tokenA: market.quote,
             tokenB: market.base,
-            feeAmount: FeeAmount[f],
+            feeAmount: +f,
             factoryAddress: environment.interface.uniswapV2.factoryAddress,
             bytecode: environment.interface.uniswapV2.pairInitCodeHash,
           },
@@ -249,7 +243,7 @@ const useV3Price = (market: HookArg<Market>) => {
           getUniswapV3Pool(publicClient, {
             tokenA: market.quote,
             tokenB: market.base,
-            feeAmount: FeeAmount[f],
+            feeAmount: +FeeAmount[f],
             factoryAddress: environment.interface.uniswapV2.factoryAddress,
             bytecode: environment.interface.uniswapV2.pairInitCodeHash,
           }),

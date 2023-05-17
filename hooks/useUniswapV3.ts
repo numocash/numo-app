@@ -3,7 +3,6 @@ import { useQueryKey } from "./internal/useQueryKey";
 import { userRefectchInterval } from "./internal/utils";
 import { useMostLiquidMarket } from "./useExternalExchange";
 import { useEnvironment } from "@/contexts/environment";
-import { feeTiers } from "@/graphql/uniswapV3";
 import { scale } from "@/lib/constants";
 import { invert, priceToFraction, sqrt } from "@/lib/price";
 import {
@@ -16,7 +15,6 @@ import { useQuery } from "@tanstack/react-query";
 import { sqrt as JSBIsqrt } from "@uniswap/sdk-core";
 import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
 import {
-  FeeAmount,
   Pool,
   Position,
   TickMath,

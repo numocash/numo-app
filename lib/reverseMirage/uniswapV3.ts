@@ -1,7 +1,8 @@
 import { nonfungiblePositionManagerABI } from "@/abis/nonfungiblePositionManager";
 import { uniswapV3PoolABI } from "@/abis/uniswapV3Pool";
+import { FeeAmount } from "@/graphql/uniswapV3";
 import { Token } from "@uniswap/sdk-core";
-import { FeeAmount, Pool, Position } from "@uniswap/v3-sdk";
+import { Pool, Position } from "@uniswap/v3-sdk";
 import {
   Hex,
   encodeAbiParameters,
@@ -16,7 +17,7 @@ export const getUniswapV3Pool = async <TToken extends Token>(
   args: {
     tokenA: TToken;
     tokenB: TToken;
-    feeAmount: FeeAmount;
+    feeAmount: keyof typeof FeeAmount;
     factoryAddress: Address;
     bytecode: Hex;
   },
