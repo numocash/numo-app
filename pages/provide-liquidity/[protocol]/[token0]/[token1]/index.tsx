@@ -188,24 +188,26 @@ function ProvideLiquidityInner() {
 
   const mults = useMemo(
     () =>
-      price ? lendgines
-        .map((l) => {
-          return { multiple: priceMultiple(l, price), lendgine: l };
-        })
-        .sort((a, b) => (a.multiple > b.multiple ? 1 : -1))
-        .reduce(
-          (
-            acc: Record<string, { multiple: string; lendgine: Lendgine }>,
-            cur,
-          ) => ({
-            ...acc,
-            [`${cur.multiple}x`]: {
-              multiple: `${cur.multiple}x`,
-              lendgine: cur.lendgine,
-            },
-          }),
-          {},
-        ) : null,
+      price
+        ? lendgines
+            .map((l) => {
+              return { multiple: priceMultiple(l, price), lendgine: l };
+            })
+            .sort((a, b) => (a.multiple > b.multiple ? 1 : -1))
+            .reduce(
+              (
+                acc: Record<string, { multiple: string; lendgine: Lendgine }>,
+                cur,
+              ) => ({
+                ...acc,
+                [`${cur.multiple}x`]: {
+                  multiple: `${cur.multiple}x`,
+                  lendgine: cur.lendgine,
+                },
+              }),
+              {},
+            )
+        : null,
     [lendgines, price],
   );
 
@@ -236,27 +238,31 @@ function ProvideLiquidityInner() {
             <p className="w-fit rounded-lg bg-white bg-opacity-50 p-2 p2">
               Provide liquidity
             </p>
-            {mults && <Toggle
-              items={items}
-              value={toggle}
-              onChange={(val) => {
-                setToggle(val);
-                setSelectedLendgine(mults[val]!.lendgine);
-              }}
-              className="bg-white bg-opacity-50 rounded-xl w-fit overflow-clip p-0.5 p2 flex items-center justify-center"
-            />}
-            {mults && <Popover
-              className="flex"
-              button={
-                <IoIosInformationCircleOutline className="fill-white text-white h-6 w-6" />
-              }
-              contents={
-                <div className="flex p-2 bg-white rounded-xl border-2 border-gray-200 w-64">
-                  Price movement until liquidity is out of range
-                </div>
-              }
-              placement="auto"
-            />}
+            {mults && (
+              <Toggle
+                items={items}
+                value={toggle}
+                onChange={(val) => {
+                  setToggle(val);
+                  setSelectedLendgine(mults[val]!.lendgine);
+                }}
+                className="bg-white bg-opacity-50 rounded-xl w-fit overflow-clip p-0.5 p2 flex items-center justify-center"
+              />
+            )}
+            {mults && (
+              <Popover
+                className="flex"
+                button={
+                  <IoIosInformationCircleOutline className="fill-white text-white h-6 w-6" />
+                }
+                contents={
+                  <div className="flex p-2 bg-white rounded-xl border-2 border-gray-200 w-64">
+                    Price movement until liquidity is out of range
+                  </div>
+                }
+                placement="auto"
+              />
+            )}
           </div>
         </div>
         <div className="relative left-[16px] top-[-32px] flex w-fit items-center rounded-lg bg-white p-2">
@@ -269,7 +275,7 @@ function ProvideLiquidityInner() {
             {token0.symbol} + {token1.symbol}
           </p>
           <div className="grid gap-2">
-            <p className="max-w-md text-[#8f8f8f] sm:text-lg">
+            <p className="max-w-md p3">
               Provide liquidity to an AMM and earn from lending the position
               out.
             </p>

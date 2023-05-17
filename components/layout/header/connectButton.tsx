@@ -47,14 +47,18 @@ export default function ConnectButton() {
 
               return (
                 <>
-                  <button onClick={openAccountModal}>
+                  <button onClick={openAccountModal} type="button">
                     <div className="flex h-10  flex-col rounded-xl bg-gray-700 px-4">
                       <p className="p2 flex h-full items-center text-white">
                         {account.displayName}
                       </p>
                     </div>
                   </button>
-                  <button onClick={openChainModal} className="pl-1">
+                  <button
+                    onClick={openChainModal}
+                    className="pl-1"
+                    type="button"
+                  >
                     <div className="flex h-10 flex-col items-center justify-center rounded-xl bg-gray-700 px-1.5">
                       <Image
                         alt={chain.name ?? "Chain icon"}

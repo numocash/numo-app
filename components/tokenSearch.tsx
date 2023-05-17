@@ -71,11 +71,12 @@ export default function TokenSearch({
                       onSelect(r);
                       onClose();
                     }}
+                    type="button"
                     disabled={selectedToken?.equals(r)}
                   >
                     <TokenInfo token={r} showName />
                     {selectedToken?.equals(r) && (
-                      <FiCheck className="text-[#3b82f6]" size={24} />
+                      <FiCheck className="text-brand" size={24} />
                     )}
                   </button>
                 ))}

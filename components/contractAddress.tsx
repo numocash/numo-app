@@ -11,7 +11,7 @@ export default function ContractAddress({ address }: { address: Address }) {
       }/address/${address}`}
       rel="noopener noreferrer"
       target="_blank"
-      className={"p4 text-[#3b82f6] flex"}
+      className={"p4 text-brand flex"}
     >
       {address}
     </Link>

@@ -8,6 +8,7 @@ export default function Plus({
 } & Pick<React.ButtonHTMLAttributes<HTMLButtonElement>, "onClick">) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-200 text-secondary"
     >

@@ -3,7 +3,11 @@ import { EnvironmentProvider } from "@/contexts/environment";
 import { SettingsProvider } from "@/contexts/settings";
 import "@/styles/globals.css";
 import { DefaultToasterWrapper } from "@/utils/beet";
-import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import {
+  RainbowKitProvider,
+  getDefaultWallets,
+  lightTheme,
+} from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -60,7 +64,12 @@ export default function App({ Component, pageProps }: AppProps) {
     <WagmiConfig client={wagmiClient}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools />
-        <RainbowKitProvider modalSize="compact" coolMode chains={chains}>
+        <RainbowKitProvider
+          modalSize="compact"
+          theme={lightTheme({ borderRadius: "medium" })}
+          coolMode
+          chains={chains}
+        >
           <EnvironmentProvider>
             <SettingsProvider>
               <Layout>

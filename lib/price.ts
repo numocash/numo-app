@@ -2,6 +2,7 @@ import type { Lendgine, LendgineInfo } from "./types/lendgine";
 import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 import { CurrencyAmount, Fraction, Token } from "@uniswap/sdk-core";
 import { Price } from "@uniswap/sdk-core";
+import { sqrt as jsbiSQRT } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
 
 // returns price in token0 / token1
@@ -168,3 +169,6 @@ export const invert = <TBase extends Token, TQuote extends Token>(
     return new Price(price.quoteCurrency, price.baseCurrency, 1, 0);
   return price.invert();
 };
+
+export const sqrt = (fraction: Fraction) =>
+  new Fraction(jsbiSQRT(fraction.numerator), jsbiSQRT(fraction.denominator));

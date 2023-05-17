@@ -14,7 +14,7 @@ export default function Switch({
       onChange={setEnabled}
       className={clsx(
         "relative inline-flex h-7 w-11 items-center rounded-2xl",
-        enabled ? "bg-[#3b82f6]" : "bg-gray-700",
+        enabled ? "bg-brand" : "bg-gray-700",
       )}
     >
       <span className="sr-only">Enable notifications</span>

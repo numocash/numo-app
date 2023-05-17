@@ -41,7 +41,6 @@ const nextConfig = {
 
 module.exports = nextConfig;
 
-
 // Inected Content via Sentry Wizard Below
 
 const { withSentryConfig } = require("@sentry/nextjs");
@@ -76,5 +75,5 @@ module.exports = withSentryConfig(
 
     // Automatically tree-shake Sentry logger statements to reduce bundle size
     disableLogger: true,
-  }
+  },
 );

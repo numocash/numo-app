@@ -64,3 +64,20 @@ export const calcMedianPrice = (
   const sum = priceToFraction(lower).add(priceToFraction(upper));
   return fractionToPrice(sum.divide(2), market.base, market.quote);
 };
+
+// Takes a function, and the arguments to be applied, returns a function
+// const partialApplication = <
+//   TArgs extends {},
+//   TAppliedArgs extends keyof TArgs,
+//   TReturn,
+// >(
+//   func: (args: TArgs) => TReturn,
+//   args: Pick<TArgs, TAppliedArgs>,
+// ) => {
+//   return (remainingArgs: Omit<TArgs, TAppliedArgs>) =>
+//     func({ ...args, ...remainingArgs } as unknown as TArgs);
+// };
+
+// const add = ({ x, y }: { x: number; y: number }) => x + y;
+
+// const add2 = partialApplication(add, { y: 2 });

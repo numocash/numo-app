@@ -84,11 +84,11 @@ export class Matic extends NativeCurrency {
   private static _etherCache: { [chainId: number]: Matic } = {};
 
   static onChain(chainId: number): Matic {
-    return (
-      this._etherCache[chainId] ??
-      // rome-ignore lint/nursery/noAssignInExpressions: <explanation>
-      (this._etherCache[chainId] = new Matic(chainId))
-    );
+    if (this._etherCache[chainId]) return this._etherCache[chainId]!;
+
+    const ether = new Matic(chainId);
+    this._etherCache[chainId] = ether;
+    return ether;
   }
 
   equals(other: Currency): boolean {
@@ -110,6 +110,7 @@ export const polygonConfig = {
       factoryAddress: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
       pairInitCodeHash:
         "0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54",
+      positionManagerAddress: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
     },
     liquidStaking: {
       return: new Percent(42, 1000),

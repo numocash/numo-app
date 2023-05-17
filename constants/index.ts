@@ -34,12 +34,13 @@ type LiquidStakingConfig = {
 
 export type NumoenInterfaceConfig = {
   uniswapV2: UniswapConfig;
-  uniswapV3: UniswapConfig;
+  uniswapV3: UniswapConfig & { positionManagerAddress: Address };
   numoenSubgraph: string;
   wrappedNative: WrappedTokenInfo;
   native?: NativeCurrency;
   liquidStaking?: LiquidStakingConfig;
   specialtyMarkets?: readonly Market[];
+  hedgingMarkets?: readonly Market[];
 };
 
 export const config: {

@@ -18,6 +18,7 @@ export const useInvalidateCall = () => {
           predicate: (query) => {
             const queryKey = query.queryKey;
             if (queryKey.length !== 1) return false;
+            // rome-ignore lint/suspicious/noExplicitAny: <explanation>
             if (!("contracts" in (queryKey[0] as any))) return false;
 
             if (

@@ -55,6 +55,7 @@ export default function CurrencyAmountSelection(
             <p className="p5">
               Balance{" "}
               <button
+                type="button"
                 className="p4 hover:underline focus:underline"
                 onClick={() => props.onChange(props.amount!.toExact())}
               >
@@ -77,6 +78,7 @@ export default function CurrencyAmountSelection(
             </Button>
           ) : (
             <button
+              type="button"
               onClick={() => setOpen(true)}
               className="flex items-center space-x-2 rounded-xl p-1 text-left"
             >
