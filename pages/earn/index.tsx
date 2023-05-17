@@ -1,4 +1,5 @@
 import Button from "@/components/core/button";
+import HedgeUniswap from "@/components/earn/hedgeUniswap";
 import LiquidStaking from "@/components/earn/liquidStaking";
 import ProvideLiquidity from "@/components/earn/provideLiquidity";
 import LoadingPage from "@/components/loadingPage";
@@ -79,40 +80,26 @@ export function EarnInner() {
     [lendgines],
   );
 
-  // const partitionedMarkets = useMemo(
-  //   () =>
-  //     Object.values(
-  //       lendgines.reduce(
-  //         (
-  //           acc: Record<string, { market: Market; lendgines: Lendgine[] }>,
-  //           cur,
-  //         ) => {
-  //           const market = lendgineToMarket(
-  //             cur,
-  //             environment.interface.wrappedNative,
-  //             environment.interface.specialtyMarkets,
-  //           );
-  //           const key = `${market.quote.address}_${market.base.address}`;
-  //           const value = acc[key];
-  //           return {
-  //             ...acc,
-  //             [key]: value
-  //               ? { market: market, lendgines: value.lendgines.concat(cur) }
-  //               : { market, lendgines: [cur] },
-  //           };
-  //         },
-  //         {},
-  //       ),
-  //     ),
-  //   [
-  //     environment.interface.specialtyMarkets,
-  //     environment.interface.wrappedNative,
-  //     lendgines,
-  //   ],
-  // );
+  const partitionedMarkets = useMemo(
+    () =>
+      environment.interface.hedgingMarkets?.map((hm) => ({
+        market: hm,
+        lendgines: lendgines.filter(
+          (l) => l.token0.equals(hm.quote) && l.token1.equals(hm.base),
+        ),
+      })),
+    [environment.interface.hedgingMarkets, lendgines],
+  );
 
   return (
     <div className="grid w-full max-w-5xl grid-cols-1 gap-4 pt-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+      {partitionedMarkets?.map((pm) => (
+        <HedgeUniswap
+          key={`pm${pm.market.quote.address}${pm.market.base.address}`}
+          lendgines={pm.lendgines}
+          market={pm.market}
+        />
+      ))}
       {environment.interface.liquidStaking && <LiquidStaking />}
       {environment.interface.liquidStaking && (
         <ProvideLiquidity
@@ -127,13 +114,6 @@ export function EarnInner() {
           protocol="pmmp"
         />
       ))}
-      {/* {partitionedMarkets.map((pm) => (
-        <HedgeUniswap
-          key={`pm${pm.market.quote.address}${pm.market.base.address}`}
-          lendgines={pm.lendgines}
-          market={pm.market}
-        />
-      ))} */}
     </div>
   );
 }

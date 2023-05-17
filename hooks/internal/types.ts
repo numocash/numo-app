@@ -21,7 +21,7 @@ export type DeepPartial<
   ? { [P in keyof T]?: DeepPartial<T[P], MaxDepth, [...Depth, 1]> }
   : T;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 export type QueryFunctionArgs<T extends (...args: any) => any> =
   QueryFunctionContext<ReturnType<T>>;
 

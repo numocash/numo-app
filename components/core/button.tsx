@@ -43,14 +43,15 @@ export default function Button({
             }
           : undefined
       }
+      type="button"
       disabled={disabled || loading}
       className={clsx(
         "p2 flex flex-row items-center justify-center rounded-xl px-4 py-2 leading-normal",
         "transistion-transform active:scale-98 hover:bg-opacity-90",
-        variant === "primary" && "bg-black text-white",
+        variant === "primary" && "bg-gray-1000 text-white",
         variant === "inverse" && "bg-white",
         variant === "danger" && "bg-red-500 text-white",
-        variant === "connect" && "bg-[#3b82f6] text-white",
+        variant === "connect" && "bg-brand text-white",
         "disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-secondary",
         className,
       )}

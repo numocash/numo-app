@@ -17,6 +17,7 @@ export const celoConfig = {
       factoryAddress: "0xAfE208a311B21f13EF87E33A90049fC17A7acDEc",
       pairInitCodeHash:
         "0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54",
+      positionManagerAddress: "0x3d79EdAaBC0EaB6F08ED885C05Fc0B014290D95A",
     },
     numoenSubgraph:
       "https://api.thegraph.com/subgraphs/name/kyscott18/numoen-celo",

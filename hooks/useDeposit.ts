@@ -187,6 +187,7 @@ export const useDeposit = <L extends Lendgine>(
         native0 || native1
           ? async () => {
               const config = await prepareWriteContract({
+                // TODO: use the previous transaction block number to make sure that the simulation is being run against an up to date block
                 abi: liquidityManagerABI,
                 functionName: "multicall",
                 address: protocolConfig.liquidityManager,

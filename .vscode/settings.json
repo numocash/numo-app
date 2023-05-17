@@ -11,7 +11,5 @@
   },
   "editor.codeActionsOnSave": {
     "source.organizeImports.rome": true
-  },
-  "tailwindcss.documentColors": true,
-  "tailwindcss.jsxPropImportChecking": false
+  }
 }

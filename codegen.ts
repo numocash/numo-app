@@ -8,21 +8,6 @@ const config = {
 
 const codegenConfig: CodegenConfig = {
   generates: {
-    "./gql/uniswapV2/": {
-      schema:
-        "https://api.thegraph.com/subgraphs/name/sushiswap/exchange-arbitrum-backup",
-      documents: "graphql/uniswapV2.graphql",
-      preset: "client",
-      config,
-      plugins: [],
-    },
-    "./gql/uniswapV3/": {
-      schema: "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev",
-      documents: "graphql/uniswapV3.graphql",
-      preset: "client",
-      config,
-      plugins: [],
-    },
     "./gql/numoen/": {
       schema:
         "https://api.thegraph.com/subgraphs/name/kyscott18/numoen-arbitrum",
