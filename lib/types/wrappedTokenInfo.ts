@@ -1,7 +1,7 @@
 import type { TokenInfo, color } from "../../hooks/useTokens";
 import type { Currency, Token } from "@uniswap/sdk-core";
 import type { TokenList } from "@uniswap/token-lists";
-import { utils } from "ethers";
+import { getAddress } from "viem";
 
 /**
  * Token instances created from token info on a token list.
@@ -17,7 +17,7 @@ export class WrappedTokenInfo implements Token {
   constructor(tokenInfo: TokenInfo, list?: TokenList) {
     this.tokenInfo = tokenInfo;
     this.list = list;
-    const checksummedAddress = utils.getAddress(this.tokenInfo.address);
+    const checksummedAddress = getAddress(this.tokenInfo.address);
     if (!checksummedAddress) {
       throw new Error(`Invalid token address: ${this.tokenInfo.address}`);
     }

@@ -1,8 +1,8 @@
 import { CurrencyAmount } from "@uniswap/sdk-core";
-import { utils } from "ethers";
 import JSBI from "jsbi";
 
 import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
+import { parseUnits } from "viem";
 
 /**
  * Parses a CurrencyAmount from the passed string.
@@ -16,9 +16,10 @@ export default function tryParseCurrencyAmount<T extends WrappedTokenInfo>(
     return undefined;
   }
   try {
-    const typedValueParsed = utils
-      .parseUnits(value, currency.decimals)
-      .toString();
+    const typedValueParsed = parseUnits(
+      value as `${number}`,
+      currency.decimals,
+    ).toString();
     if (typedValueParsed !== "0") {
       return CurrencyAmount.fromRawAmount(
         currency,

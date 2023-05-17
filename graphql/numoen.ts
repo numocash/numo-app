@@ -1,5 +1,5 @@
 import type { LendginesQuery } from "../gql/numoen/graphql";
-import { utils } from "ethers";
+import { getAddress } from "viem";
 import type { Address } from "wagmi";
 
 export const parseLendgines = (
@@ -13,11 +13,11 @@ export const parseLendgines = (
   address: Address;
 }[] => {
   return lendginesQuery.lendgines.map((l) => ({
-    token0: utils.getAddress(l.token0.id),
-    token1: utils.getAddress(l.token1.id),
+    token0: getAddress(l.token0.id),
+    token1: getAddress(l.token1.id),
     token0Exp: +l.token0Exp,
     token1Exp: +l.token1Exp,
     upperBound: l.upperBound,
-    address: utils.getAddress(l.id),
+    address: getAddress(l.id),
   }));
 };

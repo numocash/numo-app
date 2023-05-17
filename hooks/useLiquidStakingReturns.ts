@@ -1,8 +1,7 @@
-import { useMemo } from "react";
-
 import { useEnvironment } from "@/contexts/environment";
 import { useLendgine } from "@/hooks/useLendgine";
 import { calculateBorrowRate } from "@/lib/jumprate";
+import { useMemo } from "react";
 
 export const useLiquidStakingReturns = () => {
   const environment = useEnvironment();

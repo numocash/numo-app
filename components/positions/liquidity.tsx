@@ -21,7 +21,7 @@ export default function Liquidity() {
   const { lendgines } = usePosition();
   const lendgineInfoQuery = useLendgines(lendgines);
 
-  const positionQuery = useLendginesPositions(lendgines, address);
+  const positionQuery = useLendginesPositions(lendgines, address, "pmmp");
 
   const validLendgines = useMemo(() => {
     if (!positionQuery.data) return undefined;

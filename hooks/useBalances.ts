@@ -1,35 +1,42 @@
 import type { HookArg } from "./internal/types";
-import { useContractReads } from "./internal/useContractReads";
+import { useQueryKey } from "./internal/useQueryKey";
 import { userRefectchInterval } from "./internal/utils";
-import { getBalanceRead } from "./useBalance";
+import { balanceOf } from "@/lib/reverseMirage/token";
+import { useQuery } from "@tanstack/react-query";
 import type { Token } from "@uniswap/sdk-core";
-import { CurrencyAmount } from "@uniswap/sdk-core";
-import { useMemo } from "react";
-import type { Address } from "wagmi";
+import invariant from "tiny-invariant";
+import { Address, usePublicClient } from "wagmi";
 
 export const useBalances = <T extends Token>(
   tokens: HookArg<readonly T[]>,
   address: HookArg<Address>,
 ) => {
-  const contracts = useMemo(
-    () =>
-      address && tokens
-        ? tokens.map((t) => getBalanceRead(t, address))
-        : undefined,
-    [address, tokens],
+  const publicClient = usePublicClient();
+
+  const queryKey = useQueryKey(
+    tokens && address
+      ? tokens.map((t) => {
+          return {
+            get: balanceOf,
+            args: {
+              token: t,
+              address,
+            },
+          };
+        })
+      : undefined,
   );
 
-  return useContractReads({
-    contracts,
-    allowFailure: false,
+  return useQuery({
+    queryKey,
+    queryFn: async () => {
+      invariant(tokens && address);
+      return Promise.all(
+        tokens.map((t) => balanceOf(publicClient, { token: t, address })),
+      );
+    },
     staleTime: Infinity,
     enabled: !!tokens && !!address,
-    select: (data) =>
-      tokens
-        ? data.map((d, i) =>
-            CurrencyAmount.fromRawAmount(tokens[i]!, d.toString()),
-          )
-        : undefined,
     refetchInterval: userRefectchInterval,
   });
 };

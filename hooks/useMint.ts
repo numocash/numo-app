@@ -4,7 +4,7 @@ import { useEnvironment } from "../contexts/environment";
 import { useSettings } from "../contexts/settings";
 import type { UniswapV2Pool } from "../graphql/uniswapV2";
 import type { UniswapV3Pool } from "../graphql/uniswapV3";
-import { ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
+import { AddressZero, ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
 import { priceToFraction } from "../lib/price";
 import type { Lendgine } from "../lib/types/lendgine";
 import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
@@ -12,25 +12,23 @@ import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
 import type { HookArg } from "./internal/types";
 import { useInvalidateCall } from "./internal/useInvalidateCall";
-import { getAllowanceRead } from "./useAllowance";
 import { useMintAmount } from "./useAmounts";
 import { useApprove } from "./useApprove";
-import { useAwaitTX } from "./useAwaitTX";
-import { getBalanceRead } from "./useBalance";
 import { isV3, useMostLiquidMarket } from "./useExternalExchange";
 import { useIsWrappedNative } from "./useTokens";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { allowance, balanceOf } from "@/lib/reverseMirage/token";
+import { useMutation } from "@tanstack/react-query";
 import type { CurrencyAmount, Token } from "@uniswap/sdk-core";
-import { BigNumber, constants, utils } from "ethers";
 import { useMemo } from "react";
+import {
+  encodeAbiParameters,
+  encodeFunctionData,
+  parseAbiParameters,
+} from "viem";
 import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
-import type { SendTransactionResult } from "wagmi/actions";
-import {
-  getContract,
-  prepareWriteContract,
-  writeContract,
-} from "wagmi/actions";
+import { SendTransactionResult, waitForTransaction } from "wagmi/actions";
+import { prepareWriteContract, writeContract } from "wagmi/actions";
 
 export const useMint = <L extends Lendgine>(
   lendgine: HookArg<L>,
@@ -43,8 +41,6 @@ export const useMint = <L extends Lendgine>(
   const { address } = useAccount();
 
   const invalidate = useInvalidateCall();
-  const queryClient = useQueryClient();
-  const awaitTX = useAwaitTX();
 
   const mintAmounts = useMintAmount(lendgine, amountIn, protocol);
   const mostLiquid = useMostLiquidMarket(
@@ -54,11 +50,6 @@ export const useMint = <L extends Lendgine>(
   const approve = useApprove(amountIn, protocolConfig.lendgineRouter);
 
   const native = useIsWrappedNative(lendgine?.token1);
-
-  const lendgineRouterContract = getContract({
-    abi: lendgineRouterABI,
-    address: protocolConfig.lendgineRouter,
-  });
 
   const title = useMemo(
     () => `Buy ${lendgine?.token1.symbol}+`,
@@ -76,20 +67,18 @@ export const useMint = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await awaitTX(transaction);
+      return await waitForTransaction(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
       lendgine &&
-        (await invalidate(
-          getAllowanceRead(
-            lendgine.token1,
-            address ?? constants.AddressZero,
-            protocolConfig.lendgineRouter,
-          ),
-        ));
+        (await invalidate(allowance, {
+          token: lendgine.token1,
+          address: address ?? AddressZero,
+          spender: protocolConfig.lendgineRouter,
+        }));
     },
   });
 
@@ -112,16 +101,16 @@ export const useMint = <L extends Lendgine>(
     } & { toast: TxToast }) => {
       const args = [
         {
-          token0: utils.getAddress(lendgine.token0.address),
-          token1: utils.getAddress(lendgine.token1.address),
-          token0Exp: BigNumber.from(lendgine.token0.decimals),
-          token1Exp: BigNumber.from(lendgine.token1.decimals),
-          upperBound: BigNumber.from(
+          token0: lendgine.token0.address as Address,
+          token1: lendgine.token1.address as Address,
+          token0Exp: BigInt(lendgine.token0.decimals),
+          token1Exp: BigInt(lendgine.token1.decimals),
+          upperBound: BigInt(
             priceToFraction(lendgine.bound).multiply(scale).quotient.toString(),
           ),
-          amountIn: BigNumber.from(amountIn.quotient.toString()),
-          amountBorrow: BigNumber.from(borrowAmount.quotient.toString()),
-          sharesMin: BigNumber.from(
+          amountIn: BigInt(amountIn.quotient.toString()),
+          amountBorrow: BigInt(borrowAmount.quotient.toString()),
+          sharesMin: BigInt(
             shares
               .multiply(
                 ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
@@ -130,17 +119,12 @@ export const useMint = <L extends Lendgine>(
           ),
           swapType: isV3(mostLiquidPool) ? 1 : 0,
           swapExtraData: isV3(mostLiquidPool)
-            ? (utils.defaultAbiCoder.encode(
-                ["tuple(uint24 fee)"],
-                [
-                  {
-                    fee: +mostLiquidPool.feeTier,
-                  },
-                ],
-              ) as Address)
-            : constants.AddressZero,
+            ? encodeAbiParameters(parseAbiParameters("uint24 fee"), [
+                +mostLiquidPool.feeTier,
+              ])
+            : "0x",
           recipient: address,
-          deadline: BigNumber.from(
+          deadline: BigInt(
             Math.round(Date.now() / 1000) + settings.timeout * 60,
           ),
         },
@@ -154,20 +138,20 @@ export const useMint = <L extends Lendgine>(
               address: protocolConfig.lendgineRouter,
               args: [
                 [
-                  lendgineRouterContract.interface.encodeFunctionData(
-                    "mint",
+                  encodeFunctionData({
+                    abi: lendgineRouterABI,
+                    functionName: "mint",
                     args,
-                  ),
-                  lendgineRouterContract.interface.encodeFunctionData(
-                    "refundETH",
-                  ),
-                ] as `0x${string}`[],
+                  }),
+                  encodeFunctionData({
+                    abi: lendgineRouterABI,
+                    functionName: "refundETH",
+                  }),
+                ],
               ],
-              overrides: {
-                value: args[0].amountIn,
-              },
+              value: args[0].amountIn,
             });
-            return await writeContract(config);
+            return await writeContract(config.request);
           }
         : async () => {
             const config = await prepareWriteContract({
@@ -175,32 +159,34 @@ export const useMint = <L extends Lendgine>(
               functionName: "mint",
               address: protocolConfig.lendgineRouter,
               args,
+              value: BigInt(0),
             });
-            return await writeContract(config);
+            return await writeContract(config.request);
           };
 
       const transaction = await tx();
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await awaitTX(transaction);
+      return await waitForTransaction(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
       await Promise.all([
-        invalidate(
-          getAllowanceRead(
-            input.amountIn.currency,
-            input.address,
-            protocolConfig.lendgineRouter,
-          ),
-        ),
-        invalidate(getBalanceRead(input.amountIn.currency, input.address)),
-        invalidate(getBalanceRead(input.shares.currency, input.address)),
-        queryClient.invalidateQueries({
-          queryKey: ["user trades", input.address],
+        invalidate(allowance, {
+          token: input.amountIn.currency,
+          address: input.address,
+          spender: protocolConfig.lendgineRouter,
+        }),
+        invalidate(balanceOf, {
+          token: input.amountIn.currency,
+          address: input.address,
+        }),
+        invalidate(balanceOf, {
+          token: input.shares.currency,
+          address: input.address,
         }),
       ]);
     },

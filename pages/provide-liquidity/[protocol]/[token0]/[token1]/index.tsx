@@ -23,13 +23,13 @@ import {
 import type { Lendgine } from "@/lib/types/lendgine";
 import { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
 import { Price } from "@uniswap/sdk-core";
-import { utils } from "ethers";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useMemo, useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import invariant from "tiny-invariant";
 import { createContainer } from "unstated-next";
+import { getAddress } from "viem";
 
 interface IProvideLiquidity {
   lendgines: readonly Lendgine[];
@@ -120,12 +120,12 @@ export default function ProvideLiquidity({
   if (protocol === "stpmmp") {
     if (environment.interface.liquidStaking) {
       if (
-        utils.getAddress(token0 as string) ===
-          utils.getAddress(
+        getAddress(token0 as string) ===
+          getAddress(
             environment.interface.liquidStaking.lendgine.token0.address,
           ) &&
-        utils.getAddress(token1 as string) ===
-          utils.getAddress(
+        getAddress(token1 as string) ===
+          getAddress(
             environment.interface.liquidStaking.lendgine.token1.address,
           )
       ) {

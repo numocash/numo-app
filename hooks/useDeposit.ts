@@ -4,12 +4,8 @@ import { useEnvironment } from "../contexts/environment";
 import { useSettings } from "../contexts/settings";
 import type { HookArg } from "../hooks/internal/types";
 import { useInvalidateCall } from "../hooks/internal/useInvalidateCall";
-import { getAllowanceRead } from "../hooks/useAllowance";
 import { useApprove } from "../hooks/useApprove";
-import { useAwaitTX } from "../hooks/useAwaitTX";
-import { getBalanceRead } from "../hooks/useBalance";
 import { useLendgine } from "../hooks/useLendgine";
-import { getLendginePositionRead } from "../hooks/useLendginePosition";
 import { useIsWrappedNative } from "../hooks/useTokens";
 import { ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
 import { priceToFraction } from "../lib/price";
@@ -17,18 +13,16 @@ import type { Lendgine, LendgineInfo } from "../lib/types/lendgine";
 import { toaster } from "../pages/_app";
 import type { BeetStage, BeetTx, TxToast } from "../utils/beet";
 import { useDepositAmount } from "./useAmounts";
+import { position as positionRead } from "@/lib/reverseMirage/liquidityManager";
+import { allowance, balanceOf } from "@/lib/reverseMirage/token";
 import { useMutation } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
-import { BigNumber, constants, utils } from "ethers";
 import { useMemo } from "react";
+import { encodeFunctionData, getAddress } from "viem";
 import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
-import type { SendTransactionResult } from "wagmi/actions";
-import {
-  getContract,
-  prepareWriteContract,
-  writeContract,
-} from "wagmi/actions";
+import { SendTransactionResult, waitForTransaction } from "wagmi/actions";
+import { prepareWriteContract, writeContract } from "wagmi/actions";
 
 export const useDeposit = <L extends Lendgine>(
   lendgine: HookArg<L>,
@@ -42,7 +36,6 @@ export const useDeposit = <L extends Lendgine>(
   const settings = useSettings();
   const { address } = useAccount();
 
-  const awaitTX = useAwaitTX();
   const invalidate = useInvalidateCall();
 
   const native0 = useIsWrappedNative(lendgine?.token0);
@@ -60,11 +53,6 @@ export const useDeposit = <L extends Lendgine>(
   );
   const lendgineInfo = useLendgine(lendgine);
 
-  const liquidityManagerContract = getContract({
-    abi: liquidityManagerABI,
-    address: protocolConfig.liquidityManager,
-  });
-
   const title = `Add ${lendgine?.token0.symbol ?? ""} / ${
     lendgine?.token1.symbol ?? ""
   }`;
@@ -80,20 +68,19 @@ export const useDeposit = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await awaitTX(transaction);
+      return await waitForTransaction(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
       lendgine &&
-        (await invalidate(
-          getAllowanceRead(
-            lendgine.token0,
-            address ?? constants.AddressZero,
-            protocolConfig.liquidityManager,
-          ),
-        ));
+        address &&
+        (await invalidate(allowance, {
+          token: lendgine.token0,
+          address: address,
+          spender: protocolConfig.liquidityManager,
+        }));
     },
   });
 
@@ -108,20 +95,19 @@ export const useDeposit = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await awaitTX(transaction);
+      return await waitForTransaction(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
       lendgine &&
-        (await invalidate(
-          getAllowanceRead(
-            lendgine.token1,
-            address ?? constants.AddressZero,
-            protocolConfig.liquidityManager,
-          ),
-        ));
+        address &&
+        (await invalidate(allowance, {
+          token: lendgine.token1,
+          address: address,
+          spender: protocolConfig.liquidityManager,
+        }));
     },
   });
 
@@ -145,31 +131,31 @@ export const useDeposit = <L extends Lendgine>(
     } & { toast: TxToast }) => {
       const args = [
         {
-          token0: utils.getAddress(lendgine.token0.address),
-          token1: utils.getAddress(lendgine.token1.address),
-          token0Exp: BigNumber.from(lendgine.token0.decimals),
-          token1Exp: BigNumber.from(lendgine.token1.decimals),
-          upperBound: BigNumber.from(
+          token0: getAddress(lendgine.token0.address),
+          token1: getAddress(lendgine.token1.address),
+          token0Exp: BigInt(lendgine.token0.decimals),
+          token1Exp: BigInt(lendgine.token1.decimals),
+          upperBound: BigInt(
             priceToFraction(lendgine.bound).multiply(scale).quotient.toString(),
           ),
-          liquidity: BigNumber.from(
+          liquidity: BigInt(
             liquidity.multiply(999990).divide(1000000).quotient.toString(),
           ),
-          amount0Min: BigNumber.from(
+          amount0Min: BigInt(
             amount0
               .multiply(
                 ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
               .quotient.toString(),
           ),
-          amount1Min: BigNumber.from(
+          amount1Min: BigInt(
             amount1
               .multiply(
                 ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
               .quotient.toString(),
           ),
-          sizeMin: BigNumber.from(
+          sizeMin: BigInt(
             size
               .multiply(
                 ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
@@ -177,7 +163,7 @@ export const useDeposit = <L extends Lendgine>(
               .quotient.toString(),
           ),
           recipient: address,
-          deadline: BigNumber.from(
+          deadline: BigInt(
             Math.round(Date.now() / 1000) + settings.timeout * 60,
           ),
         },
@@ -193,22 +179,22 @@ export const useDeposit = <L extends Lendgine>(
                 address: protocolConfig.liquidityManager,
                 args: [
                   [
-                    liquidityManagerContract.interface.encodeFunctionData(
-                      "addLiquidity",
+                    encodeFunctionData({
+                      abi: liquidityManagerABI,
+                      functionName: "addLiquidity",
                       args,
-                    ),
-                    liquidityManagerContract.interface.encodeFunctionData(
-                      "refundETH",
-                    ),
-                  ] as `0x${string}`[],
+                    }),
+                    encodeFunctionData({
+                      abi: liquidityManagerABI,
+                      functionName: "refundETH",
+                    }),
+                  ],
                 ],
-                overrides: {
-                  value: native0
-                    ? BigNumber.from(amount0.quotient.toString() ?? 0)
-                    : BigNumber.from(amount1.quotient.toString() ?? 0),
-                },
+                value: native0
+                  ? BigInt(amount0.quotient.toString() ?? 0)
+                  : BigInt(amount1.quotient.toString() ?? 0),
               });
-              const data = writeContract(config);
+              const data = writeContract(config.request);
               return data;
             }
           : async () => {
@@ -217,8 +203,9 @@ export const useDeposit = <L extends Lendgine>(
                 functionName: "addLiquidity",
                 args: args,
                 address: protocolConfig.liquidityManager,
+                value: BigInt(0),
               });
-              const data = writeContract(config);
+              const data = writeContract(config.request);
               return data;
             };
 
@@ -226,38 +213,39 @@ export const useDeposit = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return awaitTX(transaction);
+      return waitForTransaction(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
-      lendgine &&
-        (await Promise.all([
-          invalidate(
-            getLendginePositionRead(
-              lendgine,
-              input.address,
-              protocolConfig.liquidityManager,
-            ),
-          ),
-          invalidate(
-            getAllowanceRead(
-              input.amount0.currency,
-              input.address,
-              protocolConfig.liquidityManager,
-            ),
-          ),
-          invalidate(
-            getAllowanceRead(
-              input.amount1.currency,
-              input.address,
-              protocolConfig.liquidityManager,
-            ),
-          ),
-          invalidate(getBalanceRead(input.amount0.currency, input.address)),
-          invalidate(getBalanceRead(input.amount1.currency, input.address)),
-        ]));
+
+      await Promise.all([
+        lendgine &&
+          invalidate(positionRead, {
+            lendgine,
+            address: input.address,
+            liquidityManagerAddress: protocolConfig.liquidityManager,
+          }),
+        invalidate(allowance, {
+          token: input.amount0.currency,
+          address: input.address,
+          spender: protocolConfig.liquidityManager,
+        }),
+        invalidate(allowance, {
+          token: input.amount1.currency,
+          address: input.address,
+          spender: protocolConfig.liquidityManager,
+        }),
+        invalidate(balanceOf, {
+          token: input.amount0.currency,
+          address: input.address,
+        }),
+        invalidate(balanceOf, {
+          token: input.amount1.currency,
+          address: input.address,
+        }),
+      ]);
     },
   });
 

@@ -1,53 +1,60 @@
-import type { HookArg, ReadConfig } from "./internal/types";
-import { useContractRead } from "./internal/useContractRead";
-import { useContractReads } from "./internal/useContractReads";
+import type { HookArg } from "./internal/types";
+import { useQueryKey } from "./internal/useQueryKey";
 import { userRefectchInterval } from "./internal/utils";
 import { useMostLiquidMarket } from "./useExternalExchange";
-import { nonfungiblePositionManagerABI } from "@/abis/nonfungiblePositionManager";
 import { useEnvironment } from "@/contexts/environment";
 import { feeTiers } from "@/graphql/uniswapV3";
 import { scale } from "@/lib/constants";
 import { invert, priceToFraction, sqrt } from "@/lib/price";
+import {
+  balanceOf,
+  position,
+  tokenOfOwnerByIndex,
+} from "@/lib/reverseMirage/uniswapV3";
 import { Market } from "@/lib/types/market";
+import { useQuery } from "@tanstack/react-query";
 import { sqrt as JSBIsqrt } from "@uniswap/sdk-core";
 import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
 import {
+  FeeAmount,
   Pool,
   Position,
   TickMath,
   priceToClosestTick,
   tickToPrice,
 } from "@uniswap/v3-sdk";
-import { BigNumber, utils } from "ethers";
 import JSBI from "jsbi";
 import { useMemo } from "react";
-import type { Address } from "wagmi";
+import invariant from "tiny-invariant";
+import { objectKeys } from "ts-extras";
+import { Address, usePublicClient } from "wagmi";
 
 export const usePositionManagerBalanceOf = (address: HookArg<Address>) => {
+  const publicClient = usePublicClient();
   const {
     interface: { uniswapV3: { positionManagerAddress } },
   } = useEnvironment();
-  const config = address
-    ? ({
-        address: positionManagerAddress,
-        args: [address],
-        abi: nonfungiblePositionManagerABI,
-        functionName: "balanceOf",
-      } as const satisfies ReadConfig<
-        typeof nonfungiblePositionManagerABI,
-        "balanceOf"
-      >)
-    : {
-        address: undefined,
-        abi: undefined,
-        functionName: undefined,
-        args: undefined,
-      };
-  return useContractRead({
-    ...config,
+
+  const queryKey = useQueryKey(
+    address
+      ? [
+          {
+            get: balanceOf,
+            args: { address, positionManagerAddress },
+          },
+        ]
+      : undefined,
+  );
+
+  return useQuery({
+    queryKey,
+    queryFn: async () => {
+      invariant(address);
+
+      return balanceOf(publicClient, { address, positionManagerAddress });
+    },
     staleTime: Infinity,
     enabled: !!address,
-    select: (data) => +data.toString(),
     refetchInterval: userRefectchInterval,
   });
 };
@@ -56,101 +63,73 @@ export const useTokenIDsByIndex = (
   address: HookArg<Address>,
   balance: HookArg<number>,
 ) => {
+  const publicClient = usePublicClient();
   const {
     interface: { uniswapV3: { positionManagerAddress } },
   } = useEnvironment();
-  const contracts = useMemo(
-    () =>
-      !!balance && !!address
-        ? [...Array(balance).keys()].map((i) =>
-            getTokenOfOwnerByIndexRead(address, i, positionManagerAddress),
-          )
-        : undefined,
-    [address, balance, positionManagerAddress],
+
+  const queryKey = useQueryKey(
+    address && balance
+      ? [
+          {
+            get: tokenOfOwnerByIndex,
+            args: { address, positionManagerAddress, balance },
+          },
+        ]
+      : undefined,
   );
 
-  return useContractReads({
-    contracts,
-    staleTime: Infinity,
-    allowFailure: false,
-    enabled: !!contracts,
-    select: (data) => {
-      return data.map((p) => +p.toString());
+  return useQuery({
+    queryKey,
+    queryFn: async () => {
+      invariant(address && balance);
+
+      return tokenOfOwnerByIndex(publicClient, {
+        address,
+        positionManagerAddress,
+        balance,
+      });
     },
-    refetchInterval: userRefectchInterval,
-  });
-};
-
-const getTokenOfOwnerByIndexRead = (
-  address: Address,
-  index: number,
-  nonfungiblePositionManager: Address,
-) =>
-  ({
-    address: nonfungiblePositionManager,
-    args: [address, BigNumber.from(index)],
-    abi: nonfungiblePositionManagerABI,
-    functionName: "tokenOfOwnerByIndex",
-  }) as const satisfies ReadConfig<
-    typeof nonfungiblePositionManagerABI,
-    "tokenOfOwnerByIndex"
-  >;
-
-export const usePositionFromTokenID = (tokenID: HookArg<number>) => {
-  const {
-    interface: { uniswapV3: { positionManagerAddress } },
-  } = useEnvironment();
-  const config = tokenID
-    ? getPositionFromTokenIDRead(tokenID, positionManagerAddress)
-    : {
-        address: undefined,
-        abi: undefined,
-        functionName: undefined,
-        args: undefined,
-      };
-  return useContractRead({
-    ...config,
     staleTime: Infinity,
-    enabled: !!tokenID,
+    enabled: !!address && !!balance,
     refetchInterval: userRefectchInterval,
   });
 };
 
-export const usePositionsFromTokenIDs = (tokenIDs: HookArg<number[]>) => {
+export const usePositionsFromTokenIDs = (
+  pool: HookArg<Pool>,
+  tokenIDs: HookArg<number[]>,
+) => {
+  const publicClient = usePublicClient();
   const {
     interface: { uniswapV3: { positionManagerAddress } },
   } = useEnvironment();
-  const contracts = useMemo(
-    () =>
-      tokenIDs
-        ? tokenIDs.map((i) =>
-            getPositionFromTokenIDRead(i, positionManagerAddress),
-          )
-        : undefined,
-    [tokenIDs, positionManagerAddress],
+
+  const queryKey = useQueryKey(
+    tokenIDs && pool
+      ? tokenIDs.map((t) => ({
+          get: position,
+          args: { tokenID: t, positionManagerAddress, pool },
+        }))
+      : undefined,
   );
-  return useContractReads({
-    contracts,
+
+  return useQuery({
+    queryKey,
+    queryFn: () => {
+      invariant(tokenIDs && pool);
+
+      return Promise.all(
+        tokenIDs.map((t) =>
+          position(publicClient, { tokenID: t, positionManagerAddress, pool }),
+        ),
+      );
+    },
     staleTime: Infinity,
-    allowFailure: false,
-    enabled: !!contracts,
+    enabled: !!tokenIDs && !!pool,
     refetchInterval: userRefectchInterval,
   });
 };
-
-const getPositionFromTokenIDRead = (
-  tokenID: number,
-  nonfungiblePositionManager: Address,
-) =>
-  ({
-    address: nonfungiblePositionManager,
-    args: [BigNumber.from(tokenID)],
-    abi: nonfungiblePositionManagerABI,
-    functionName: "positions",
-  }) as const satisfies ReadConfig<
-    typeof nonfungiblePositionManagerABI,
-    "positions"
-  >;
 
 export const useNumberOfPositions = (
   address: HookArg<Address>,

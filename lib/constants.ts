@@ -5,6 +5,8 @@ export const ONE_HUNDRED_PERCENT = new Fraction(1);
 
 export const scale = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18));
 
+export const AddressZero = "0x0000000000000000000000000000000000000000";
+
 export const chainID = {
   mainnet: 1,
   goerli: 5,

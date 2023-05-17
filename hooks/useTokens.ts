@@ -6,9 +6,9 @@ import { useChain } from "./useChain";
 import NumoenTokens from "@numoen/default-token-list";
 import type { Token } from "@uniswap/sdk-core";
 import type { TokenInfo as UniswapTokenInfo } from "@uniswap/token-lists";
-import { utils } from "ethers";
 import { useCallback } from "react";
 import invariant from "tiny-invariant";
+import { getAddress } from "viem";
 
 export type color = `#${string}` | undefined;
 
@@ -57,9 +57,8 @@ export const useGetAddressToToken = () => {
     (address: HookArg<string>) => {
       if (!address) return null;
       return (
-        tokens.find(
-          (t) => utils.getAddress(t.address) === utils.getAddress(address),
-        ) ?? null
+        tokens.find((t) => getAddress(t.address) === getAddress(address)) ??
+        null
       );
     },
     [tokens],

@@ -4,7 +4,7 @@ import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { WrappedNative } from "./tokens";
 import type { Currency } from "@uniswap/sdk-core";
 import { NativeCurrency, Percent, Price, Token } from "@uniswap/sdk-core";
-import { utils } from "ethers";
+import { getAddress } from "viem";
 
 const USDC = new WrappedTokenInfo({
   name: "USDCoin",
@@ -147,11 +147,9 @@ export const polygonConfig = {
   },
   procotol: {
     pmmp: {
-      factory: utils.getAddress("0x8396a792510a402681812ece6ad3ff19261928ba"),
-      lendgineRouter: utils.getAddress(
-        "0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0",
-      ),
-      liquidityManager: utils.getAddress(
+      factory: getAddress("0x8396a792510a402681812ece6ad3ff19261928ba"),
+      lendgineRouter: getAddress("0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0"),
+      liquidityManager: getAddress(
         "0x6b0c66824c39766f554F07481B66ca24A54A90E0",
       ),
     },

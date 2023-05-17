@@ -1,59 +1,54 @@
 import { useEnvironment } from "../contexts/environment";
-import type { HookArg, ReadConfig } from "./internal/types";
-import { useBalance as useNativeBalance } from "./internal/useBalance";
-import { useContractRead } from "./internal/useContractRead";
+import type { HookArg } from "./internal/types";
+import { useQueryKey } from "./internal/useQueryKey";
 import { userRefectchInterval } from "./internal/utils";
 import { useIsWrappedNative } from "./useTokens";
+import { balance, balanceOf } from "@/lib/reverseMirage/token";
+import { useQuery } from "@tanstack/react-query";
 import type { Token } from "@uniswap/sdk-core";
 import { CurrencyAmount } from "@uniswap/sdk-core";
-import { utils } from "ethers";
-import type { Address } from "wagmi";
-import { erc20ABI } from "wagmi";
+import invariant from "tiny-invariant";
+import { Address, usePublicClient } from "wagmi";
 
 export const useBalance = <T extends Token>(
   token: HookArg<T>,
   address: HookArg<Address>,
 ) => {
+  const publicClient = usePublicClient();
+
   const environment = useEnvironment();
   const native = environment.interface.native;
+  const isNative = useIsWrappedNative(token);
 
-  const nativeBalance = useNativeBalance({
-    address: address ?? undefined,
-    enabled: !!address && !!native,
+  const nativeQueryKey = useQueryKey(
+    native && address
+      ? [
+          {
+            get: balance,
+            args: { token: native, address },
+          },
+        ]
+      : undefined,
+  );
+  const queryKey = useQueryKey(
+    token && address
+      ? [{ get: balanceOf, args: { token, address } }]
+      : undefined,
+  );
+
+  return useQuery({
+    queryKey: isNative ? nativeQueryKey : queryKey,
+    queryFn: async () => {
+      invariant(token && address);
+
+      const result = isNative
+        ? await balance(publicClient, { token: native!, address })
+        : await balanceOf(publicClient, { token, address });
+
+      return CurrencyAmount.fromRawAmount(token, result.quotient);
+    },
     staleTime: Infinity,
-    select: (data) =>
-      CurrencyAmount.fromRawAmount(
-        environment.interface.wrappedNative,
-        data.value.toString(),
-      ),
-  });
-
-  const config =
-    !!token && !!address
-      ? getBalanceRead(token, address)
-      : {
-          address: undefined,
-          abi: undefined,
-          functionName: undefined,
-          args: undefined,
-        };
-
-  const balanceQuery = useContractRead({
-    ...config,
-    staleTime: Infinity,
-    enabled: !!token && !!address,
-    select: (data) => CurrencyAmount.fromRawAmount(token!, data.toString()),
     refetchInterval: userRefectchInterval,
+    enabled: !!token && !!address,
   });
-
-  if (useIsWrappedNative(token)) return nativeBalance;
-  return balanceQuery;
 };
-
-export const getBalanceRead = <T extends Token>(token: T, address: Address) =>
-  ({
-    address: utils.getAddress(token.address),
-    args: [address],
-    abi: erc20ABI,
-    functionName: "balanceOf",
-  }) as const satisfies ReadConfig<typeof erc20ABI, "balanceOf">;

@@ -202,8 +202,8 @@ function HedgeInner() {
           </h2>
           <div className="grid gap-2">
             <p className="p3 max-w-md">
-              Provide liquidity to an AMM and earn from lending the position
-              out.
+              Match the impermanent gain of Numoen with the impermanent loss of
+              Uniswap.
             </p>
             {/* <p className="p4 underline">View details</p> */}
           </div>

@@ -8,19 +8,19 @@ import type { BeetStage, TxToast } from "../utils/beet";
 import type { HookArg } from "./internal/types";
 import { useInvalidateCall } from "./internal/useInvalidateCall";
 import { useCollectAmount } from "./useAmounts";
-import { useAwaitTX } from "./useAwaitTX";
-import { getBalanceRead } from "./useBalance";
-import { getLendginePositionRead } from "./useLendginePosition";
 import { useIsWrappedNative } from "./useTokens";
+import { AddressZero } from "@/lib/constants";
+import { position as positionRead } from "@/lib/reverseMirage/liquidityManager";
+import { balanceOf } from "@/lib/reverseMirage/token";
 import { useMutation } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
 import type { Address } from "abitype";
-import { BigNumber, constants } from "ethers";
 import { useMemo } from "react";
+import { encodeFunctionData } from "viem";
 import { useAccount } from "wagmi";
 import {
-  getContract,
   prepareWriteContract,
+  waitForTransaction,
   writeContract,
 } from "wagmi/actions";
 
@@ -30,10 +30,9 @@ export const useCollect = <L extends Lendgine>(
   protocol: Protocol,
 ) => {
   const environment = useEnvironment();
-  const protolConfig = environment.procotol[protocol]!;
+  const protocolConfig = environment.procotol[protocol]!;
   const { address } = useAccount();
 
-  const awaitTX = useAwaitTX();
   const invalidate = useInvalidateCall();
 
   const native = useIsWrappedNative(lendgine?.token1);
@@ -57,54 +56,53 @@ export const useCollect = <L extends Lendgine>(
       const args = [
         {
           lendgine: lendgine.address,
-          recipient: native ? constants.AddressZero : address,
-          amountRequested: BigNumber.from(tokensOwed.quotient.toString()),
+          recipient: native ? AddressZero : address,
+          amountRequested: BigInt(tokensOwed.quotient.toString()),
         },
       ] as const;
 
-      const unwrapArgs = [BigNumber.from(0), address] as const; // safe to be zero because the collect estimation will fail
-
-      const liquidityManagerContract = getContract({
-        abi: liquidityManagerABI,
-        address: protolConfig.liquidityManager,
-      });
+      const unwrapArgs = [BigInt(0), address] as const; // safe to be zero because the collect estimation will fail
 
       const tx = native
         ? async () => {
             const config = await prepareWriteContract({
               abi: liquidityManagerABI,
-              address: protolConfig.liquidityManager,
+              address: protocolConfig.liquidityManager,
               functionName: "multicall",
+              value: BigInt(0),
               args: [
                 [
-                  liquidityManagerContract.interface.encodeFunctionData(
-                    "collect",
+                  encodeFunctionData({
+                    abi: liquidityManagerABI,
+                    functionName: "collect",
                     args,
-                  ),
-                  liquidityManagerContract.interface.encodeFunctionData(
-                    "unwrapWETH",
-                    unwrapArgs,
-                  ),
-                ] as `0x${string}`[],
+                  }),
+                  encodeFunctionData({
+                    abi: liquidityManagerABI,
+                    args: unwrapArgs,
+                    functionName: "unwrapWETH",
+                  }),
+                ],
               ],
             });
-            return await writeContract(config);
+            return await writeContract(config.request);
           }
         : async () => {
             const config = await prepareWriteContract({
               abi: liquidityManagerABI,
-              address: protolConfig.liquidityManager,
+              address: protocolConfig.liquidityManager,
               functionName: "collect",
               args,
+              value: BigInt(0),
             });
-            return await writeContract(config);
+            return await writeContract(config.request);
           };
 
       const transaction = await tx();
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await awaitTX(transaction);
+      return await waitForTransaction(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
@@ -112,14 +110,15 @@ export const useCollect = <L extends Lendgine>(
       toaster.txSuccess({ ...input.toast, receipt: data });
       lendgine &&
         (await Promise.all([
-          invalidate(
-            getLendginePositionRead(
-              lendgine,
-              input.address,
-              protolConfig.liquidityManager,
-            ),
-          ),
-          invalidate(getBalanceRead(lendgine.token1, input.address)),
+          invalidate(positionRead, {
+            lendgine: lendgine,
+            address: input.address,
+            liquidityManagerAddress: protocolConfig.liquidityManager,
+          }),
+          invalidate(balanceOf, {
+            token: lendgine.token1,
+            address: input.address,
+          }),
         ]));
     },
   });

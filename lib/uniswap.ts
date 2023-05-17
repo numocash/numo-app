@@ -1,10 +1,7 @@
-import type { UniswapV3Pool } from "../graphql/uniswapV3";
 import { fractionToPrice, priceToFraction } from "./price";
 import type { Market } from "./types/market";
 import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 import type { Price } from "@uniswap/sdk-core";
-import type { Address } from "abitype";
-import { utils } from "ethers";
 
 export const sortTokens = (
   tokens: readonly [WrappedTokenInfo, WrappedTokenInfo],
@@ -12,39 +9,6 @@ export const sortTokens = (
   tokens[0].sortsBefore(tokens[1])
     ? ([tokens[0], tokens[1]] as const)
     : ([tokens[1], tokens[0]] as const);
-
-export const calcV2Address = (
-  sortedTokens: readonly [WrappedTokenInfo, WrappedTokenInfo],
-  factoryAddress: Address,
-  initCodeHash: string,
-) =>
-  utils.getCreate2Address(
-    factoryAddress,
-    utils.keccak256(
-      utils.solidityPack(
-        ["address", "address"],
-        [sortedTokens[0].address, sortedTokens[1].address],
-      ),
-    ),
-    initCodeHash,
-  );
-
-export const calcV3Address = (
-  sortedTokens: readonly [WrappedTokenInfo, WrappedTokenInfo],
-  feeTier: UniswapV3Pool["feeTier"],
-  factoryAddress: Address,
-  initCodeHash: string,
-) =>
-  utils.getCreate2Address(
-    factoryAddress,
-    utils.keccak256(
-      utils.defaultAbiCoder.encode(
-        ["address", "address", "uint24"],
-        [sortedTokens[0].address, sortedTokens[1].address, feeTier],
-      ),
-    ),
-    initCodeHash,
-  );
 
 export const calcMedianPrice = (
   prices: (Price<WrappedTokenInfo, WrappedTokenInfo> | undefined)[],

@@ -12,6 +12,7 @@ import { useChain } from "@/hooks/useChain";
 import { useCreate } from "@/hooks/useCreate";
 import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
 import { useTokens } from "@/hooks/useTokens";
+import { AddressZero } from "@/lib/constants";
 import { isValidLendgine } from "@/lib/lendgineValidity";
 import { fractionToPrice, priceToFraction } from "@/lib/price";
 import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
@@ -23,13 +24,12 @@ import {
 } from "@/utils/format";
 import tryParseCurrencyAmount from "@/utils/tryParseCurrencyAmount";
 import { Fraction, Token } from "@uniswap/sdk-core";
-import { constants } from "ethers";
 import Head from "next/head";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import invariant from "tiny-invariant";
-import type { Address } from "wagmi";
+import { Address } from "viem";
 import { useAccount } from "wagmi";
 
 export default function Create() {
@@ -63,8 +63,8 @@ export default function Create() {
             token0Exp: token0.decimals,
             token1Exp: token1.decimals,
             bound: fractionToPrice(bound, token1, token0),
-            address: constants.AddressZero as Address,
-            lendgine: new Token(chainID, constants.AddressZero, 18),
+            address: AddressZero as Address,
+            lendgine: new Token(chainID, AddressZero, 18),
           }
         : undefined,
     [bound, chainID, token0, token1],
