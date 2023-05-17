@@ -15,9 +15,9 @@ import { position as positionRead } from "@/lib/reverseMirage/liquidityManager";
 import { balanceOf } from "@/lib/reverseMirage/token";
 import { useMutation } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
-import type { Address } from "abitype";
 import { useMemo } from "react";
 import { encodeFunctionData, getAddress } from "viem";
+import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
 import {
   prepareWriteContract,

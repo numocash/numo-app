@@ -26,7 +26,6 @@ import {
 import JSBI from "jsbi";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
-import { objectKeys } from "ts-extras";
 import { Address, usePublicClient } from "wagmi";
 
 export const usePositionManagerBalanceOf = (address: HookArg<Address>) => {
