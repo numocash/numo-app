@@ -1,13 +1,13 @@
 import TokenIcon from "./tokenIcon";
-import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import { Currency } from "@/lib/types/currency";
 import { clsx } from "clsx";
 
 export default function TokenInfo({
-  token,
+  currency,
   showName,
   size,
 }: {
-  token: WrappedTokenInfo;
+  currency: Currency;
   showName: boolean;
   size?: number;
 }) {
@@ -18,10 +18,10 @@ export default function TokenInfo({
         showName ? "space-x-4" : "space-x-2",
       )}
     >
-      <TokenIcon tokenInfo={token} size={size ?? showName ? 44 : 32} />
+      <TokenIcon currency={currency} size={size ?? showName ? 44 : 32} />
       <div className="">
-        <p className="p1">{showName ? token.name : token.symbol}</p>
-        {showName && <p className="p3">{token.symbol}</p>}
+        <p className="p1">{showName ? currency.name : currency.symbol}</p>
+        {showName && <p className="p3">{currency.symbol}</p>}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import TokenInfo from "./tokenInfo";
-import { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import { Currency } from "@/lib/types/currency";
 import { formatDisplayWithSoftLimit } from "@/utils/format";
 import { CurrencyAmount } from "@uniswap/sdk-core";
 
@@ -7,7 +7,7 @@ export default function CurrencyAmountSelection({
   amount,
   label,
 }: {
-  amount: CurrencyAmount<WrappedTokenInfo>;
+  amount: CurrencyAmount<Currency>;
   label?: string;
 }) {
   return (

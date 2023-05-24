@@ -35,6 +35,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     alchemyProvider({ apiKey: "UOYl0nPuXw_tVCxLnPnd6lSYtj4agcDO" }),
     publicProvider(),
   ],
+  { pollingInterval: 1000 },
 );
 
 export const toaster = new DefaultToasterWrapper();
@@ -51,13 +52,10 @@ const config = createConfig({
   connectors,
   publicClient,
   webSocketPublicClient,
+  persister: null,
 });
 
-const queryClient = new QueryClient({
-  // defaultOptions: {
-  //   mutations: { retry: 3, retryDelay: (attempt) => attempt * 250 },
-  // },
-});
+const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

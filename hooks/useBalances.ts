@@ -1,42 +1,28 @@
-import type { HookArg } from "./internal/types";
-import { useQueryKey } from "./internal/useQueryKey";
+import { HookArg } from "./internal/types";
+import { useQueryFactory } from "./internal/useQueryFactory";
 import { userRefectchInterval } from "./internal/utils";
-import { balanceOf } from "@/lib/reverseMirage/token";
-import { useQuery } from "@tanstack/react-query";
-import type { Token } from "@uniswap/sdk-core";
-import invariant from "tiny-invariant";
-import { Address, usePublicClient } from "wagmi";
+import { Currency } from "@/lib/types/currency";
+import { useQueries } from "@tanstack/react-query";
+import { Address } from "viem";
 
-export const useBalances = <T extends Token>(
-  tokens: HookArg<readonly T[]>,
+export const useBalances = (
+  tokens: HookArg<readonly Currency[]>,
   address: HookArg<Address>,
 ) => {
-  const publicClient = usePublicClient();
+  const queries = useQueryFactory();
 
-  const queryKey = useQueryKey(
-    tokens && address
+  return useQueries({
+    queries: tokens
       ? tokens.map((t) => {
+          const query = t?.isNative
+            ? queries.reverseMirage.balance({ nativeCurrency: t, address })
+            : queries.reverseMirage.erc20BalanceOf({ token: t, address });
+
           return {
-            get: balanceOf,
-            args: {
-              token: t,
-              address,
-            },
+            ...query,
+            refetchInterval: userRefectchInterval,
           };
         })
-      : undefined,
-  );
-
-  return useQuery({
-    queryKey,
-    queryFn: async () => {
-      invariant(tokens && address);
-      return Promise.all(
-        tokens.map((t) => balanceOf(publicClient, { token: t, address })),
-      );
-    },
-    staleTime: Infinity,
-    enabled: !!tokens && !!address,
-    refetchInterval: userRefectchInterval,
+      : [],
   });
 };

@@ -1,54 +1,24 @@
-import { useEnvironment } from "../contexts/environment";
 import type { HookArg } from "./internal/types";
-import { useQueryKey } from "./internal/useQueryKey";
+import { useQueryFactory } from "./internal/useQueryFactory";
 import { userRefectchInterval } from "./internal/utils";
-import { useIsWrappedNative } from "./useTokens";
-import { balance, balanceOf } from "@/lib/reverseMirage/token";
-import { useQuery } from "@tanstack/react-query";
-import type { Token } from "@uniswap/sdk-core";
+import { Currency } from "@/lib/types/currency";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { CurrencyAmount } from "@uniswap/sdk-core";
-import invariant from "tiny-invariant";
-import { Address, usePublicClient } from "wagmi";
+import { Address } from "wagmi";
 
-export const useBalance = <T extends Token>(
-  token: HookArg<T>,
+export const useBalance = <TCurrency extends Currency>(
+  token: HookArg<TCurrency>,
   address: HookArg<Address>,
-) => {
-  const publicClient = usePublicClient();
+): UseQueryResult<CurrencyAmount<TCurrency>> => {
+  const queries = useQueryFactory();
 
-  const environment = useEnvironment();
-  const native = environment.interface.native;
-  const isNative = useIsWrappedNative(token);
+  const query = token?.isNative
+    ? queries.reverseMirage.balance({ nativeCurrency: token, address })
+    : queries.reverseMirage.erc20BalanceOf({ token, address });
 
-  const nativeQueryKey = useQueryKey(
-    native && address
-      ? [
-          {
-            get: balance,
-            args: { token: native, address },
-          },
-        ]
-      : undefined,
+  // TODO: figure out why this is happening
+  return useQuery(
+    // @ts-ignore
+    { ...query, refetchInterval: userRefectchInterval },
   );
-  const queryKey = useQueryKey(
-    token && address
-      ? [{ get: balanceOf, args: { token, address } }]
-      : undefined,
-  );
-
-  return useQuery({
-    queryKey: isNative ? nativeQueryKey : queryKey,
-    queryFn: async () => {
-      invariant(token && address);
-
-      const result = isNative
-        ? await balance(publicClient, { token: native!, address })
-        : await balanceOf(publicClient, { token, address });
-
-      return CurrencyAmount.fromRawAmount(token, result.quotient);
-    },
-    staleTime: Infinity,
-    refetchInterval: userRefectchInterval,
-    enabled: !!token && !!address,
-  });
 };

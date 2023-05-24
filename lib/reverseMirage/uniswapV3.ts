@@ -12,7 +12,7 @@ import {
 } from "viem";
 import { Address, PublicClient } from "wagmi";
 
-export const getUniswapV3Pool = async <TToken extends Token>(
+const uniswapV3GetPool = async <TToken extends Token>(
   publicClient: PublicClient,
   args: {
     tokenA: TToken;
@@ -61,7 +61,7 @@ export const getUniswapV3Pool = async <TToken extends Token>(
   );
 };
 
-export const balanceOf = async (
+const uniswapV3BalanceOf = async (
   publicClient: PublicClient,
   args: { positionManagerAddress: Address; address: Address },
 ) => {
@@ -75,7 +75,7 @@ export const balanceOf = async (
   return +data.toString();
 };
 
-export const tokenOfOwnerByIndex = async (
+const uniswapV3TokenOfOwnerByIndex = async (
   publicClient: PublicClient,
   args: { positionManagerAddress: Address; address: Address; balance: number },
 ) => {
@@ -93,7 +93,7 @@ export const tokenOfOwnerByIndex = async (
   return data.map((d) => +d.toString());
 };
 
-export const position = async (
+const uniswapV3Position = async (
   publicClient: PublicClient,
   args: { positionManagerAddress: Address; pool: Pool; tokenID: number },
 ) => {
@@ -111,3 +111,10 @@ export const position = async (
     tickUpper: data[6],
   });
 };
+
+export const uniswapV3Mirage = {
+  uniswapV3GetPool,
+  uniswapV3BalanceOf,
+  uniswapV3TokenOfOwnerByIndex,
+  uniswapV3Position,
+} as const;

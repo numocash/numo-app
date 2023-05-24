@@ -1,14 +1,11 @@
 import type { Lendgine } from "../lib/types/lendgine";
 import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import type { HookArg } from "./internal/types";
-import { useQueryKey } from "./internal/useQueryKey";
+import { useQueryFactory } from "./internal/useQueryFactory";
 import { externalRefetchInterval } from "./internal/utils";
 import { useAllLendgines } from "./useAllLendgines";
-import { getLendgineInfo } from "@/lib/reverseMirage/lendgine";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import invariant from "tiny-invariant";
-import { usePublicClient } from "wagmi";
 
 export const useLendginesForTokens = (
   tokens: HookArg<readonly [WrappedTokenInfo, WrappedTokenInfo]>,
@@ -26,27 +23,10 @@ export const useLendginesForTokens = (
 };
 
 export const useLendgine = <L extends Lendgine>(lendgine: HookArg<L>) => {
-  const publicClient = usePublicClient();
-
-  const queryKey = useQueryKey(
-    lendgine
-      ? [
-          {
-            get: getLendgineInfo,
-            args: { lendgine },
-          },
-        ]
-      : undefined,
-  );
+  const queries = useQueryFactory();
 
   return useQuery({
-    queryFn: async () => {
-      invariant(lendgine);
-      return getLendgineInfo(publicClient, { lendgine });
-    },
-    queryKey,
-    staleTime: Infinity,
-    enabled: !!lendgine,
+    ...queries.reverseMirage.lendgineGetInfo({ lendgine }),
     refetchInterval: externalRefetchInterval,
   });
 };

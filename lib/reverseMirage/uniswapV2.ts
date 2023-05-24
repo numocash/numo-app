@@ -4,7 +4,7 @@ import { Pair } from "@uniswap/v2-sdk";
 import { Hex, encodePacked, getCreate2Address, keccak256 } from "viem";
 import { Address, PublicClient } from "wagmi";
 
-export const getUniswapV2Pair = async <TToken extends Token>(
+export const uniswapV2GetPair = async <TToken extends Token>(
   publicClient: PublicClient,
   args: {
     tokenA: TToken;
@@ -39,3 +39,5 @@ export const getUniswapV2Pair = async <TToken extends Token>(
 
   return new Pair(token0Amount, token1Amount);
 };
+
+export const uniswapV2Mirage = { uniswapV2GetPair } as const;

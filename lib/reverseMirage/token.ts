@@ -1,19 +1,19 @@
-import { CurrencyAmount, NativeCurrency, Token } from "@uniswap/sdk-core";
+import { CurrencyAmount, NativeCurrency, Token } from "../types/currency";
 import { getAddress } from "viem";
 import { Address, PublicClient, erc20ABI } from "wagmi";
 
-export const balance = async (
+const balance = async (
   publicClient: PublicClient,
-  args: { token: NativeCurrency; address: Address },
+  args: { nativeCurrency: NativeCurrency; address: Address },
 ) => {
   const data = await publicClient.getBalance({ address: args.address });
 
-  return CurrencyAmount.fromRawAmount(args.token, data.toString());
+  return CurrencyAmount.fromRawAmount(args.nativeCurrency, data.toString());
 };
 
-export const balanceOf = async <TToken extends Token>(
+const erc20BalanceOf = async (
   publicClient: PublicClient,
-  args: { token: TToken; address: Address },
+  args: { token: Token; address: Address },
 ) => {
   const data = await publicClient.readContract({
     abi: erc20ABI,
@@ -25,9 +25,9 @@ export const balanceOf = async <TToken extends Token>(
   return CurrencyAmount.fromRawAmount(args.token, data.toString());
 };
 
-export const allowance = async <TToken extends Token>(
+const erc20Allowance = async (
   publicClient: PublicClient,
-  args: { token: TToken; address: Address; spender: Address },
+  args: { token: Token; address: Address; spender: Address },
 ) => {
   const data = await publicClient.readContract({
     abi: erc20ABI,
@@ -39,9 +39,9 @@ export const allowance = async <TToken extends Token>(
   return CurrencyAmount.fromRawAmount(args.token, data.toString());
 };
 
-export const totalSupply = async <TToken extends Token>(
+const erc20TotalSupply = async (
   publicClient: PublicClient,
-  args: { token: TToken },
+  args: { token: Token },
 ) => {
   const data = await publicClient.readContract({
     abi: erc20ABI,
@@ -52,9 +52,9 @@ export const totalSupply = async <TToken extends Token>(
   return CurrencyAmount.fromRawAmount(args.token, data.toString());
 };
 
-export const name = async <TToken extends Token>(
+const erc20Name = async (
   publicClient: PublicClient,
-  args: { token: Pick<TToken, "address"> },
+  args: { token: Pick<Token, "address"> },
 ) => {
   const data = await publicClient.readContract({
     abi: erc20ABI,
@@ -65,9 +65,9 @@ export const name = async <TToken extends Token>(
   return data;
 };
 
-export const symbol = async <TToken extends Token>(
+const erc20Symbol = async (
   publicClient: PublicClient,
-  args: { token: Pick<TToken, "address"> },
+  args: { token: Pick<Token, "address"> },
 ) => {
   const data = await publicClient.readContract({
     abi: erc20ABI,
@@ -78,9 +78,9 @@ export const symbol = async <TToken extends Token>(
   return data;
 };
 
-export const decimals = async <TToken extends Token>(
+const erc20Decimals = async (
   publicClient: PublicClient,
-  args: { token: Pick<TToken, "address"> },
+  args: { token: Pick<Token, "address"> },
 ) => {
   const data = await publicClient.readContract({
     abi: erc20ABI,
@@ -91,14 +91,14 @@ export const decimals = async <TToken extends Token>(
   return data;
 };
 
-export const getToken = async <TToken extends Token>(
+const erc20GetToken = async (
   publicClient: PublicClient,
-  args: { token: Pick<TToken, "address" | "chainId"> },
+  args: { token: Pick<Token, "address" | "chainId"> },
 ) => {
   const data = await Promise.all([
-    name(publicClient, args),
-    symbol(publicClient, args),
-    decimals(publicClient, args),
+    erc20Name(publicClient, args),
+    erc20Symbol(publicClient, args),
+    erc20Decimals(publicClient, args),
   ]);
 
   return new Token(
@@ -109,3 +109,14 @@ export const getToken = async <TToken extends Token>(
     data[0],
   );
 };
+
+export const erc20Mirage = {
+  balance,
+  erc20BalanceOf,
+  erc20Allowance,
+  erc20TotalSupply,
+  erc20Name,
+  erc20Symbol,
+  erc20Decimals,
+  erc20GetToken,
+} as const;

@@ -6,7 +6,7 @@ import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
 import { PublicClient } from "viem";
 import { Address } from "wagmi";
 
-export const position = async <TLendgine extends Lendgine>(
+export const liquidityManagerPosition = async <TLendgine extends Lendgine>(
   publicClient: PublicClient,
   args: {
     lendgine: TLendgine;
@@ -39,3 +39,7 @@ export const position = async <TLendgine extends Lendgine>(
 
   return { size, rewardPerPositionPaid, tokensOwed };
 };
+
+export const liquidityManagerMirage = {
+  liquidityManagerPosition,
+} as const;

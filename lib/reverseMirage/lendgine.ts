@@ -1,11 +1,12 @@
 import { scale } from "../constants";
 import { fractionToPrice } from "../price";
+import { CurrencyAmount } from "../types/currency";
 import { Lendgine, LendgineInfo } from "../types/lendgine";
 import { lendgineABI } from "@/abis/lendgine";
-import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
+import { Fraction } from "@uniswap/sdk-core";
 import { PublicClient } from "wagmi";
 
-export const totalPositionSize = async (
+const lendgineTotalPositionSize = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -18,7 +19,7 @@ export const totalPositionSize = async (
   return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
 };
 
-export const totalLiquidityBorrowed = async (
+const lendgineTotalLiquidityBorrowed = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -31,7 +32,7 @@ export const totalLiquidityBorrowed = async (
   return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
 };
 
-export const totalSupply = async (
+const lendgineTotalSupply = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -44,7 +45,7 @@ export const totalSupply = async (
   return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
 };
 
-export const totalLiquidity = async (
+const lendgineTotalLiquidity = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -57,7 +58,7 @@ export const totalLiquidity = async (
   return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
 };
 
-export const rewardPerPositionStored = async (
+const lendgineRewardPerPositionStored = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -74,7 +75,7 @@ export const rewardPerPositionStored = async (
   );
 };
 
-export const lastUpdate = async (
+const lendgineLastUpdate = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -87,7 +88,7 @@ export const lastUpdate = async (
   return +data.toString();
 };
 
-export const reserve0 = async (
+const lendgineReserve0 = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -100,7 +101,7 @@ export const reserve0 = async (
   return CurrencyAmount.fromRawAmount(args.lendgine.token0, data.toString());
 };
 
-export const reserve1 = async (
+const lendgineReserve1 = async (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
@@ -113,7 +114,7 @@ export const reserve1 = async (
   return CurrencyAmount.fromRawAmount(args.lendgine.token1, data.toString());
 };
 
-export const factory = async (
+const lendgineFactory = async (
   publicClient: PublicClient,
   args: { lendgine: Pick<Lendgine, "address"> },
 ) => {
@@ -126,19 +127,19 @@ export const factory = async (
   return data;
 };
 
-export const getLendgineInfo = async <TLendgine extends Lendgine>(
+const lendgineGetInfo = async <TLendgine extends Lendgine>(
   publicClient: PublicClient,
   args: { lendgine: TLendgine },
 ): Promise<LendgineInfo<TLendgine>> => {
   const data = await Promise.all([
-    totalPositionSize(publicClient, args),
-    totalLiquidity(publicClient, args),
-    rewardPerPositionStored(publicClient, args),
-    lastUpdate(publicClient, args),
-    totalSupply(publicClient, args),
-    reserve0(publicClient, args),
-    reserve1(publicClient, args),
-    totalLiquidity(publicClient, args),
+    lendgineTotalPositionSize(publicClient, args),
+    lendgineTotalLiquidity(publicClient, args),
+    lendgineRewardPerPositionStored(publicClient, args),
+    lendgineLastUpdate(publicClient, args),
+    lendgineTotalSupply(publicClient, args),
+    lendgineReserve0(publicClient, args),
+    lendgineReserve1(publicClient, args),
+    lendgineTotalLiquidity(publicClient, args),
   ]);
 
   return {
@@ -152,3 +153,16 @@ export const getLendgineInfo = async <TLendgine extends Lendgine>(
     totalLiquidity: data[7],
   };
 };
+
+export const lendgineMirage = {
+  lendgineTotalPositionSize,
+  lendgineTotalLiquidityBorrowed,
+  lendgineTotalSupply,
+  lendgineTotalLiquidity,
+  lendgineRewardPerPositionStored,
+  lendgineLastUpdate,
+  lendgineReserve0,
+  lendgineReserve1,
+  lendgineFactory,
+  lendgineGetInfo,
+} as const;

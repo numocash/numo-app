@@ -1,43 +1,30 @@
 import { useChain } from "../useChain";
-import { SupportedChainId } from "@uniswap/sdk-core";
+import { SupportedChainIDs } from "@/constants";
+import { useMemo } from "react";
 
-export const useQueryKey = <TArgs extends unknown[]>(
-  reads:
-    | [
-        ...{
-          [I in keyof TArgs]: {
-            // rome-ignore lint/suspicious/noExplicitAny: i dont care
-            get: (publicClient: any, args: TArgs[I]) => any;
-            args: TArgs[I];
-          };
-        },
-      ]
-    | undefined,
+export const useQueryKey = <TArgs extends object>(
+  // rome-ignore lint/suspicious/noExplicitAny: dont need
+  get: (publicClient: any, args: TArgs) => any,
+  args: Partial<TArgs>,
 ) => {
-  const chainId = useChain();
+  const chainID = useChain();
 
-  return getQueryKey(reads ? reads : [], chainId);
+  return useMemo(() => getQueryKey(get, args, chainID), [get, args, chainID]);
 };
 
-export const getQueryKey = <TArgs extends unknown[]>(
-  reads: [
-    ...{
-      [I in keyof TArgs]: {
-        // rome-ignore lint/suspicious/noExplicitAny: i dont care
-        get: (publicClient: any, args: TArgs[I]) => any;
-        args: TArgs[I];
-      };
-    },
-  ],
-  chainID: SupportedChainId,
+export const getQueryKey = <TArgs extends object>(
+  // rome-ignore lint/suspicious/noExplicitAny: dont need
+  get: (publicClient: any, args: TArgs) => any,
+  args: Partial<TArgs>,
+  chainID: SupportedChainIDs,
 ) => {
   return [
     {
       chainID,
-      reads: reads.map((r) => ({
-        name: r.get.name,
-        args: r.args,
-      })),
+      read: {
+        name: get.name,
+        args,
+      },
     },
   ] as const;
 };

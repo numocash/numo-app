@@ -1,9 +1,10 @@
 import type { Config } from ".";
 import { chainID } from "../lib/constants";
-import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { WrappedNative } from "./tokens";
+import { allTokens } from "@/hooks/useTokens";
+import { NativeCurrency, Token } from "@/lib/types/currency";
 import type { Currency } from "@uniswap/sdk-core";
-import { NativeCurrency, Percent, Price, Token } from "@uniswap/sdk-core";
+import { Percent, Price } from "@uniswap/sdk-core";
 import { getAddress } from "viem";
 
 const USDC = new WrappedTokenInfo({
@@ -72,29 +73,9 @@ const stMATIC = new WrappedTokenInfo({
     "https://assets.coingecko.com/coins/images/24185/small/stMATIC.png?1646789287",
 });
 
-export class Matic extends NativeCurrency {
-  protected constructor(chainId: number) {
-    super(chainId, 18, "MATIC", "Matic");
-  }
+const polygonTokens = allTokens[137]!;
 
-  get wrapped(): Token {
-    return WrappedNative[chainID.polygon];
-  }
-
-  private static _etherCache: { [chainId: number]: Matic } = {};
-
-  static onChain(chainId: number): Matic {
-    if (this._etherCache[chainId]) return this._etherCache[chainId]!;
-
-    const ether = new Matic(chainId);
-    this._etherCache[chainId] = ether;
-    return ether;
-  }
-
-  equals(other: Currency): boolean {
-    return other.isNative && other.chainId === this.chainId;
-  }
-}
+export const Matic = new NativeCurrency(137, 18, "MATIC", "Matic");
 
 export const polygonConfig = {
   interface: {
@@ -125,14 +106,15 @@ export const polygonConfig = {
           137,
           "0x0A435BC2488c85A7C87fA3dac0CD4fA538DDe4Ce",
           18,
+          "NRD",
+          "Numoen Replicating Derivative",
         ),
       },
       color: "#a457ff",
     },
     numoenSubgraph:
       "https://api.thegraph.com/subgraphs/name/kyscott18/numoen-polygon",
-    wrappedNative: WrappedNative[chainID.polygon],
-    native: Matic.onChain(chainID.polygon),
+    native: Matic,
     specialtyMarkets: [
       {
         base: WrappedNative[chainID.polygon],
