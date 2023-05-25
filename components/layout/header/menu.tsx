@@ -21,6 +21,9 @@ export default function Menu() {
       }
       contents={
         <div className="flex w-full flex-col rounded-xl bg-gray-900 p-1">
+          <Link className="p-2 hover:opacity-80" href="/trade">
+            <p className="p2 text-white">Trade</p>
+          </Link>
           <Link className="p-2 hover:opacity-80" href="/earn">
             <p className="p2 text-white">Earn</p>
           </Link>
