@@ -1,6 +1,8 @@
 import ContractAddress from "../contractAddress";
 import AsyncButton from "../core/asyncButton";
 import CurrencyAmountSelection from "../currencyAmountSelection";
+import Long from "./long";
+import Short from "./short";
 import Stats from "./stats";
 import { useMintAmount } from "@/hooks/useAmounts";
 import { useBalance } from "@/hooks/useBalance";
@@ -10,7 +12,6 @@ import { Lendgine } from "@/lib/types/lendgine";
 import { Market } from "@/lib/types/market";
 import { Beet } from "@/utils/beet";
 import tryParseCurrencyAmount from "@/utils/tryParseCurrencyAmount";
-import Image from "next/image";
 import { useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 import { useAccount } from "wagmi";
@@ -70,7 +71,6 @@ export default function MintOrBurn({
 
   return (
     <div className="flex w-full flex-col gap-6 pt-6 items-center">
-      <Stats selectedLendgine={lendgine} />
       <div className="rounded-xl border-2 border-gray-200 bg-white w-full">
         <CurrencyAmountSelection
           type="display"
@@ -80,27 +80,6 @@ export default function MintOrBurn({
           amount={balanceQuery.data}
         />
       </div>
-
-      <div className="rounded-xl border-2 border-gray-200 bg-white overflow-clip flex w-full">
-        <Image
-          alt="long"
-          src={`/${type}.png`}
-          width={312}
-          height={202}
-          className=""
-        />
-        <div className="border-r-2 border-gray-200 w-[2px]" />
-        <div className="flex flex-col w-full">
-          <div className="h-1/2 flex w-full p-2">
-            <p className="p5">Value if price -50%</p>
-          </div>
-          <div className=" border-b-2 border-gray-200 w-full" />
-          <div className="h-1/2 flex w-full p-2">
-            <p className="p5">Value if price 2x</p>
-          </div>
-        </div>
-      </div>
-
       <AsyncButton
         variant="primary"
         className="p1 h-12 w-full"
@@ -113,6 +92,14 @@ export default function MintOrBurn({
       >
         {disableReason ?? "Trade"}
       </AsyncButton>
+
+      <Stats selectedLendgine={lendgine} />
+      {type === "long" ? (
+        <Long input={parsedAmount} />
+      ) : (
+        <Short input={parsedAmount} />
+      )}
+
       {lendgine && <ContractAddress address={lendgine.address} />}
     </div>
   );

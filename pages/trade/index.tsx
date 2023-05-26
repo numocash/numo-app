@@ -121,7 +121,7 @@ const TradeInner = ({
       <Head>
         <title>Numoen</title>
       </Head>
-      <div className="flex w-full max-w-3xl flex-col items-center gap-12 pt-24">
+      <div className="flex w-full max-w-3xl flex-col items-center gap-6 pt-24">
         <MarketSelection
           selectedMarket={selectedMarket}
           onSelect={setSelectedMarket}

@@ -1,6 +1,8 @@
 import LoadingBox from "./loadingBox";
 import MarketSearch from "./marketSearch";
 import TokenIcon from "./tokenIcon";
+import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
+import { formatPrice } from "@/utils/format";
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
@@ -15,6 +17,8 @@ export default function MarketSelection({
   selectedMarket,
 }: SelectTokenProps) {
   const [open, setOpen] = useState(false);
+
+  const priceQuery = useMostLiquidMarket(selectedMarket);
   return (
     <>
       <MarketSearch
@@ -40,7 +44,11 @@ export default function MarketSelection({
         </div>
         <div className="w-1/3 transform animate-pulse duration-3000 ease-in-out border-b-2 border-gray-200 border-dashed" />
         <div className="flex items-center gap-2">
-          <LoadingBox className=" bg-gray-200" />
+          {priceQuery.data ? (
+            <p className="p2">{formatPrice(priceQuery.data.price)}</p>
+          ) : (
+            <LoadingBox className=" bg-gray-200" />
+          )}
           <FaChevronDown />
         </div>
       </button>

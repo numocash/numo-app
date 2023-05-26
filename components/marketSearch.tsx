@@ -1,6 +1,5 @@
 import Dialog from "./core/dialog";
 import TokenIcon from "./tokenIcon";
-import TokenInfo from "./tokenInfo";
 import { marketEqual } from "@/lib/lendgineValidity";
 import { Market } from "@/lib/types/market";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
