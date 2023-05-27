@@ -1,7 +1,11 @@
 import LoadingBox from "./loadingBox";
 import MarketSearch from "./marketSearch";
+import MiniChart from "./miniChart";
 import TokenIcon from "./tokenIcon";
-import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
+import {
+  useMostLiquidMarket,
+  usePriceHistory,
+} from "@/hooks/useExternalExchange";
 import { formatPrice } from "@/utils/format";
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
@@ -19,6 +23,10 @@ export default function MarketSelection({
   const [open, setOpen] = useState(false);
 
   const priceQuery = useMostLiquidMarket(selectedMarket);
+  const priceHistoryQuery = usePriceHistory(
+    selectedMarket,
+    priceQuery.data?.pool,
+  );
   return (
     <>
       <MarketSearch
@@ -42,12 +50,23 @@ export default function MarketSelection({
             {selectedMarket.base.symbol} / {selectedMarket.quote.symbol}
           </p>
         </div>
-        <div className="w-1/3 transform animate-pulse duration-3000 ease-in-out border-b-2 border-gray-200 border-dashed" />
+        {priceQuery.data?.price && priceHistoryQuery.data ? (
+          <MiniChart
+            priceHistory={priceHistoryQuery.data}
+            currentPrice={priceQuery.data.price}
+            market={selectedMarket}
+          />
+        ) : (
+          <div className="w-1/3 transform animate-pulse duration-3000 ease-in-out border-b-2 border-gray-200 border-dashed" />
+        )}
+
         <div className="flex items-center gap-2">
           {priceQuery.data ? (
-            <p className="p2">{formatPrice(priceQuery.data.price)}</p>
+            <p className="p2 hidden md:flex">
+              {formatPrice(priceQuery.data.price)}
+            </p>
           ) : (
-            <LoadingBox className=" bg-gray-200" />
+            <LoadingBox className="hidden md:flex bg-gray-200" />
           )}
           <FaChevronDown />
         </div>

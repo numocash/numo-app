@@ -73,6 +73,7 @@ export default function MintOrBurn({
     <div className="flex w-full flex-col gap-6 pt-6 items-center">
       <div className="rounded-xl border-2 border-gray-200 bg-white w-full">
         <CurrencyAmountSelection
+          label="Input"
           type="display"
           selectedToken={token}
           value={input}

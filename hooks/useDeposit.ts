@@ -21,7 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
 import { BigNumber, constants, utils } from "ethers";
 import { useMemo } from "react";
-import type { Address } from "wagmi";
+import { Address } from "wagmi";
 import { useAccount } from "wagmi";
 import type { SendTransactionResult } from "wagmi/actions";
 import {
