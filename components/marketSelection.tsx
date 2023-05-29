@@ -62,9 +62,12 @@ export default function MarketSelection({
 
         <div className="flex items-center gap-2">
           {priceQuery.data ? (
-            <p className="p2 hidden md:flex">
-              {formatPrice(priceQuery.data.price)}
-            </p>
+            <div className="flex flex-col text-left">
+              <p className="p5">Price</p>
+              <p className="p2 hidden md:flex">
+                {formatPrice(priceQuery.data.price)}
+              </p>
+            </div>
           ) : (
             <LoadingBox className="hidden md:flex bg-gray-200" />
           )}
