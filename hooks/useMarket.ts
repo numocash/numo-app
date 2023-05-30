@@ -9,7 +9,7 @@ export const useLendgineToMarket = (lendgine: Lendgine): Market => {
 
   return lendgineToMarket(
     lendgine,
-    environment.interface.wrappedNative,
+    environment.interface.native.wrapped,
     environment.interface.specialtyMarkets,
   );
 };

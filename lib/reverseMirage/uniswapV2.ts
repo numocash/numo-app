@@ -48,5 +48,5 @@ export const uniswapV2GetPair = <TToken extends Token>(
 
       return new Pair(token0Amount, token1Amount);
     },
-  } satisfies ReverseMirage<readonly [bigint, bigint, number]>;
+  } satisfies ReverseMirage<readonly [bigint, bigint, number], Pair>;
 };

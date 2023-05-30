@@ -1,14 +1,15 @@
 import type { Lendgine } from "../lib/types/lendgine";
-import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import type { HookArg } from "./internal/types";
-import { useQueryFactory } from "./internal/useQueryFactory";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { externalRefetchInterval } from "./internal/utils";
 import { useAllLendgines } from "./useAllLendgines";
+import { lendgineGetInfo } from "@/lib/reverseMirage/lendgine";
+import { Token } from "@/lib/types/currency";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 export const useLendginesForTokens = (
-  tokens: HookArg<readonly [WrappedTokenInfo, WrappedTokenInfo]>,
+  tokens: HookArg<readonly [Token, Token]>,
 ) => {
   const lendginesQuery = useAllLendgines();
 
@@ -23,10 +24,10 @@ export const useLendginesForTokens = (
 };
 
 export const useLendgine = <L extends Lendgine>(lendgine: HookArg<L>) => {
-  const queries = useQueryFactory();
+  const lendgineQuery = useQueryGenerator(lendgineGetInfo);
 
   return useQuery({
-    ...queries.reverseMirage.lendgineGetInfo({ lendgine }),
+    ...lendgineQuery({ lendgine }),
     refetchInterval: externalRefetchInterval,
   });
 };

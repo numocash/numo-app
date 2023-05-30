@@ -4,12 +4,14 @@ import { FeeAmount, UniswapV3Pool } from "../graphql/uniswapV3";
 import type { Market } from "../lib/types/market";
 import { calcMedianPrice, sortTokens } from "../lib/uniswap";
 import type { HookArg } from "./internal/types";
-import { useQueryFactory } from "./internal/useQueryFactory";
-import { useQueryKey } from "./internal/useQueryKey";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { externalRefetchInterval } from "./internal/utils";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { erc20BalanceOf } from "@/lib/reverseMirage/token";
+import { uniswapV2GetPair } from "@/lib/reverseMirage/uniswapV2";
+import { uniswapV3GetPool } from "@/lib/reverseMirage/uniswapV3";
+import { Token } from "@/lib/types/currency";
+import { UseQueryResult, useQueries, useQuery } from "@tanstack/react-query";
 import { CurrencyAmount, Price } from "@uniswap/sdk-core";
-import { Pool } from "@uniswap/v3-sdk";
 import { chunk } from "lodash";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
@@ -21,13 +23,12 @@ import {
   keccak256,
   parseAbiParameters,
 } from "viem";
-import { Address, usePublicClient } from "wagmi";
+import { Address } from "wagmi";
 
 export const isV3 = (t: UniswapV2Pool | UniswapV3Pool): t is UniswapV3Pool =>
   t.version === "V3";
 
 export const useMostLiquidMarket = (market: HookArg<Market>) => {
-  const queries = useQueryFactory();
   const environment = useEnvironment();
 
   const v2PriceQuery = useV2Price(market);
@@ -70,19 +71,21 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
     market,
   ]);
 
+  const balanceQuery = useQueryGenerator(erc20BalanceOf);
+
   const balanceQueries = useQueries({
     queries:
       v2Address && v3Addresses
         ? [v2Address, ...v3Addresses].flatMap((a) => [
             {
-              ...queries.reverseMirage.erc20BalanceOf({
+              ...balanceQuery({
                 token: market?.quote,
                 address: a,
               }),
               refetchInterval: 60_000,
             },
             {
-              ...queries.reverseMirage.erc20BalanceOf({
+              ...balanceQuery({
                 token: market?.base,
                 address: a,
               }),
@@ -109,8 +112,11 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
     );
 
     const tvls = chunk(balanceQueries, 2).map((bq) => {
-      if (!bq || !bq[0]!.data || !bq[1]!.data) return undefined;
-      return !bq[1]!.data.add(medianPrice.quote(bq[0]!.data));
+      const balance0: UseQueryResult<CurrencyAmount<Token>> = bq[0]!;
+      const balance1: UseQueryResult<CurrencyAmount<Token>> = bq[1]!;
+
+      if (!balance0.data || !balance1.data) return undefined;
+      return balance1.data.add(medianPrice.quote(balance0.data));
     });
 
     const maxTVLIndex = tvls.reduce(
@@ -123,7 +129,7 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
       return {
         status: "success",
         data: {
-          price: v2PriceQuery.data,
+          price: v2PriceQuery.data!,
           pool: { version: "V2" } as UniswapV2Pool,
         },
       } as const;
@@ -131,7 +137,7 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
       return {
         status: "success",
         data: {
-          price: v3PriceQuery.data[maxTVLIndex.index - 1]!,
+          price: v3PriceQuery[maxTVLIndex.index - 1]!.data!,
           pool: {
             version: "V3",
             feeTier: objectKeys(FeeAmount)[maxTVLIndex.index - 1],
@@ -139,35 +145,27 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
         },
       } as const;
     }
-  }, [
-    balancesQuery.data,
-    balancesQuery.isError,
-    balancesQuery.isLoading,
-    market,
-    v2PriceQuery.data,
-    v2PriceQuery.isError,
-    v2PriceQuery.isLoading,
-    v3PriceQuery.data,
-    v3PriceQuery.isError,
-    v3PriceQuery.isLoading,
-  ]);
+  }, [balanceQueries, market, v2PriceQuery, v3PriceQuery]);
 };
 
 const useV2Price = (market: HookArg<Market>) => {
   const environment = useEnvironment();
 
-  const queries = useQueryFactory();
+  const uniswapV2Query = useQueryGenerator(uniswapV2GetPair);
+  const query = uniswapV2Query({
+    tokenA: market?.quote,
+    tokenB: market?.base,
+    factoryAddress: environment.interface.uniswapV2.factoryAddress,
+    bytecode: environment.interface.uniswapV2.pairInitCodeHash,
+  });
 
   return useQuery({
-    ...queries.reverseMirage.uniswapV2GetPair({
-      tokenA: market?.quote,
-      tokenB: market?.base,
-      factoryAddress: environment.interface.uniswapV2.factoryAddress,
-      bytecode: environment.interface.uniswapV2.pairInitCodeHash,
-    }),
+    ...query,
     refetchInterval: externalRefetchInterval,
-    select: (pair) => {
+    select: (data) => {
       if (!market) return undefined;
+
+      const pair = query.select(data);
 
       const price = pair.token0.equals(market.quote)
         ? pair.token1Price
@@ -184,33 +182,42 @@ const useV2Price = (market: HookArg<Market>) => {
 };
 
 const useV3Price = (market: HookArg<Market>) => {
-  const queries = useQueryFactory();
   const environment = useEnvironment();
 
+  const uniswapV3Query = useQueryGenerator(uniswapV3GetPool);
+
   return useQueries({
-    queries: objectKeys(FeeAmount).map((f) => ({
-      ...queries.reverseMirage.uniswapV3GetPool({
+    queries: objectKeys(FeeAmount).map((f) => {
+      const query = uniswapV3Query({
         tokenA: market?.quote,
         tokenB: market?.base,
         feeAmount: +f as keyof typeof FeeAmount,
         factoryAddress: environment.interface.uniswapV2.factoryAddress,
         bytecode: environment.interface.uniswapV2.pairInitCodeHash,
-      }),
-      refetchInterval: externalRefetchInterval,
-      select: (pool: Pool) => {
-        if (!market) return undefined;
+      });
+      return {
+        ...query,
+        refetchInterval: externalRefetchInterval,
+        select: (
+          data: Awaited<
+            ReturnType<ReturnType<typeof uniswapV3GetPool>["read"]>
+          >,
+        ) => {
+          const pool = query.select(data);
+          if (!market) return undefined;
 
-        const price = pool.token0.equals(market.quote)
-          ? pool.token1Price
-          : pool.token0Price;
+          const price = pool.token0.equals(market.quote)
+            ? pool.token1Price
+            : pool.token0Price;
 
-        return new Price(
-          market.base,
-          market.quote,
-          price.denominator,
-          price.numerator,
-        );
-      },
-    })),
+          return new Price(
+            market.base,
+            market.quote,
+            price.denominator,
+            price.numerator,
+          );
+        },
+      };
+    }),
   });
 };
