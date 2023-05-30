@@ -1,8 +1,7 @@
 import ContractAddress from "../contractAddress";
 import AsyncButton from "../core/asyncButton";
 import CurrencyAmountSelection from "../currencyAmountSelection";
-import Long from "./long";
-import Short from "./short";
+import Returns from "./returns";
 import Stats from "./stats";
 import { useMintAmount } from "@/hooks/useAmounts";
 import { useBalance } from "@/hooks/useBalance";
@@ -96,9 +95,9 @@ export default function MintOrBurn({
 
       <Stats selectedLendgine={lendgine} />
       {type === "long" ? (
-        <Long input={parsedAmount} />
+        <Returns market={market} long />
       ) : (
-        <Short input={parsedAmount} />
+        <Returns market={market} long={false} />
       )}
 
       {lendgine && <ContractAddress address={lendgine.address} />}
