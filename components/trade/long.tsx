@@ -1,8 +1,8 @@
 import TokenAmountDisplay from "../tokenAmountDisplay";
+import Returns from "./returns";
 import { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
 import { formatPercent } from "@/utils/format";
 import { CurrencyAmount, Percent } from "@uniswap/sdk-core";
-import Image from "next/image";
 import { useMemo } from "react";
 
 export default function Long({
@@ -24,13 +24,7 @@ export default function Long({
 
   return (
     <div className="rounded-xl border-2 border-gray-200 bg-white overflow-clip flex w-full">
-      <Image
-        alt="long"
-        src={"/long.png"}
-        width={312}
-        height={202}
-        className=""
-      />
+      <Returns />
       <div className="border-r-2 border-gray-200 w-[2px]" />
       <div className="flex flex-col w-full">
         <div className="h-1/2 flex w-full p-2 flex-col gap-2">
