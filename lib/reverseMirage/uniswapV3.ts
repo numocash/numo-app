@@ -1,8 +1,10 @@
+import { ReverseMirage } from "./types";
 import { nonfungiblePositionManagerABI } from "@/abis/nonfungiblePositionManager";
 import { uniswapV3PoolABI } from "@/abis/uniswapV3Pool";
 import { FeeAmount } from "@/graphql/uniswapV3";
 import { Token } from "@uniswap/sdk-core";
 import { Pool, Position } from "@uniswap/v3-sdk";
+import { AbiParametersToPrimitiveTypes, ExtractAbiFunction } from "abitype";
 import {
   Hex,
   encodeAbiParameters,
@@ -12,7 +14,7 @@ import {
 } from "viem";
 import { Address, PublicClient } from "wagmi";
 
-const uniswapV3GetPool = async <TToken extends Token>(
+export const uniswapV3GetPool = <TToken extends Token>(
   publicClient: PublicClient,
   args: {
     tokenA: TToken;
@@ -37,84 +39,101 @@ const uniswapV3GetPool = async <TToken extends Token>(
     ),
   });
 
-  const data = await Promise.all([
-    publicClient.readContract({
-      abi: uniswapV3PoolABI,
-      address,
-      functionName: "slot0",
-    }),
-    publicClient.readContract({
-      abi: uniswapV3PoolABI,
-      address,
-      functionName: "liquidity",
-    }),
-  ] as const);
-
-  return new Pool(
-    args.tokenA,
-    args.tokenB,
-    args.feeAmount,
-    data[0][0].toString(),
-    data[1].toString(),
-    data[0][1],
-    [],
-  );
+  return {
+    read: () =>
+      Promise.all([
+        publicClient.readContract({
+          abi: uniswapV3PoolABI,
+          address,
+          functionName: "slot0",
+        }),
+        publicClient.readContract({
+          abi: uniswapV3PoolABI,
+          address,
+          functionName: "liquidity",
+        }),
+      ] as const),
+    parse: (data) =>
+      new Pool(
+        args.tokenA,
+        args.tokenB,
+        args.feeAmount,
+        data[0][0].toString(),
+        data[1].toString(),
+        data[0][1],
+        [],
+      ),
+  } satisfies ReverseMirage<
+    [
+      AbiParametersToPrimitiveTypes<
+        ExtractAbiFunction<typeof uniswapV3PoolABI, "slot0">["outputs"]
+      >,
+      bigint,
+    ]
+  >;
 };
 
-const uniswapV3BalanceOf = async (
+export const uniswapV3BalanceOf = (
   publicClient: PublicClient,
   args: { positionManagerAddress: Address; address: Address },
 ) => {
-  const data = await publicClient.readContract({
-    abi: nonfungiblePositionManagerABI,
-    address: args.positionManagerAddress,
-    functionName: "balanceOf",
-    args: [args.address],
-  });
-
-  return +data.toString();
-};
-
-const uniswapV3TokenOfOwnerByIndex = async (
-  publicClient: PublicClient,
-  args: { positionManagerAddress: Address; address: Address; balance: number },
-) => {
-  const data = await Promise.all(
-    [...Array(args.balance).keys()].map((i) =>
+  return {
+    read: () =>
       publicClient.readContract({
         abi: nonfungiblePositionManagerABI,
         address: args.positionManagerAddress,
-        functionName: "tokenOfOwnerByIndex",
-        args: [args.address, BigInt(i)],
+        functionName: "balanceOf",
+        args: [args.address],
       }),
-    ),
-  );
-
-  return data.map((d) => +d.toString());
+    parse: (data) => +data.toString(),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const uniswapV3Position = async (
+export const uniswapV3TokenOfOwnerByIndex = (
+  publicClient: PublicClient,
+  args: { positionManagerAddress: Address; address: Address; balance: number },
+) => {
+  return {
+    read: () =>
+      Promise.all(
+        [...Array(args.balance).keys()].map((i) =>
+          publicClient.readContract({
+            abi: nonfungiblePositionManagerABI,
+            address: args.positionManagerAddress,
+            functionName: "tokenOfOwnerByIndex",
+            args: [args.address, BigInt(i)],
+          }),
+        ),
+      ),
+    parse: (data) => data.map((d) => +d.toString()),
+  } satisfies ReverseMirage<bigint[]>;
+};
+
+export const uniswapV3Position = (
   publicClient: PublicClient,
   args: { positionManagerAddress: Address; pool: Pool; tokenID: number },
 ) => {
-  const data = await publicClient.readContract({
-    abi: nonfungiblePositionManagerABI,
-    address: args.positionManagerAddress,
-    functionName: "positions",
-    args: [BigInt(args.tokenID)],
-  });
-
-  return new Position({
-    pool: args.pool,
-    liquidity: data[7].toString(),
-    tickLower: data[5],
-    tickUpper: data[6],
-  });
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: nonfungiblePositionManagerABI,
+        address: args.positionManagerAddress,
+        functionName: "positions",
+        args: [BigInt(args.tokenID)],
+      }),
+    parse: (data) =>
+      new Position({
+        pool: args.pool,
+        liquidity: data[7].toString(),
+        tickLower: data[5],
+        tickUpper: data[6],
+      }),
+  } satisfies ReverseMirage<
+    AbiParametersToPrimitiveTypes<
+      ExtractAbiFunction<
+        typeof nonfungiblePositionManagerABI,
+        "positions"
+      >["outputs"]
+    >
+  >;
 };
-
-export const uniswapV3Mirage = {
-  uniswapV3GetPool,
-  uniswapV3BalanceOf,
-  uniswapV3TokenOfOwnerByIndex,
-  uniswapV3Position,
-} as const;

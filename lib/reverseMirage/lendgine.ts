@@ -2,167 +2,194 @@ import { scale } from "../constants";
 import { fractionToPrice } from "../price";
 import { CurrencyAmount } from "../types/currency";
 import { Lendgine, LendgineInfo } from "../types/lendgine";
+import { ReverseMirage } from "./types";
 import { lendgineABI } from "@/abis/lendgine";
 import { Fraction } from "@uniswap/sdk-core";
+import { getAddress } from "viem";
 import { PublicClient } from "wagmi";
 
-const lendgineTotalPositionSize = async (
+export const lendgineTotalPositionSize = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "totalPositionSize",
-  });
-
-  return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "totalPositionSize",
+      }),
+    parse: (data) =>
+      CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString()),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineTotalLiquidityBorrowed = async (
+export const lendgineTotalLiquidityBorrowed = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "totalLiquidityBorrowed",
-  });
-
-  return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "totalLiquidityBorrowed",
+      }),
+    parse: (data) =>
+      CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString()),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineTotalSupply = async (
+export const lendgineTotalSupply = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "totalSupply",
-  });
-
-  return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "totalSupply",
+      }),
+    parse: (data) =>
+      CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString()),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineTotalLiquidity = async (
+export const lendgineTotalLiquidity = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "totalLiquidity",
-  });
-
-  return CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString());
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "totalLiquidity",
+      }),
+    parse: (data) =>
+      CurrencyAmount.fromRawAmount(args.lendgine.lendgine, data.toString()),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineRewardPerPositionStored = async (
+export const lendgineRewardPerPositionStored = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "rewardPerPositionStored",
-  });
-
-  return fractionToPrice(
-    new Fraction(data.toString(), scale),
-    args.lendgine.lendgine,
-    args.lendgine.token1,
-  );
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "rewardPerPositionStored",
+      }),
+    parse: (data) =>
+      fractionToPrice(
+        new Fraction(data.toString(), scale),
+        args.lendgine.lendgine,
+        args.lendgine.token1,
+      ),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineLastUpdate = async (
+export const lendgineLastUpdate = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "lastUpdate",
-  });
-
-  return +data.toString();
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "lastUpdate",
+      }),
+    parse: (data) => +data.toString(),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineReserve0 = async (
+export const lendgineReserve0 = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "reserve0",
-  });
-
-  return CurrencyAmount.fromRawAmount(args.lendgine.token0, data.toString());
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "reserve0",
+      }),
+    parse: (data) =>
+      CurrencyAmount.fromRawAmount(args.lendgine.token0, data.toString()),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineReserve1 = async (
+export const lendgineReserve1 = (
   publicClient: PublicClient,
   args: { lendgine: Lendgine },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "reserve1",
-  });
-
-  return CurrencyAmount.fromRawAmount(args.lendgine.token1, data.toString());
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "reserve1",
+      }),
+    parse: (data) =>
+      CurrencyAmount.fromRawAmount(args.lendgine.token1, data.toString()),
+  } satisfies ReverseMirage<bigint>;
 };
 
-const lendgineFactory = async (
+export const lendgineFactory = (
   publicClient: PublicClient,
   args: { lendgine: Pick<Lendgine, "address"> },
 ) => {
-  const data = await publicClient.readContract({
-    abi: lendgineABI,
-    address: args.lendgine.address,
-    functionName: "factory",
-  });
-
-  return data;
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: lendgineABI,
+        address: args.lendgine.address,
+        functionName: "factory",
+      }),
+    parse: (data) => getAddress(data),
+  } satisfies ReverseMirage<string>;
 };
 
-const lendgineGetInfo = async <TLendgine extends Lendgine>(
+export const lendgineGetInfo = <TLendgine extends Lendgine>(
   publicClient: PublicClient,
   args: { lendgine: TLendgine },
-): Promise<LendgineInfo<TLendgine>> => {
-  const data = await Promise.all([
-    lendgineTotalPositionSize(publicClient, args),
-    lendgineTotalLiquidity(publicClient, args),
-    lendgineRewardPerPositionStored(publicClient, args),
-    lendgineLastUpdate(publicClient, args),
-    lendgineTotalSupply(publicClient, args),
-    lendgineReserve0(publicClient, args),
-    lendgineReserve1(publicClient, args),
-    lendgineTotalLiquidity(publicClient, args),
-  ]);
-
+) => {
   return {
-    totalPositionSize: data[0],
-    totalLiquidityBorrowed: data[1],
-    rewardPerPositionStored: data[2],
-    lastUpdate: data[3],
-    totalSupply: data[4],
-    reserve0: data[5],
-    reserve1: data[6],
-    totalLiquidity: data[7],
-  };
+    read: () =>
+      Promise.all([
+        lendgineTotalPositionSize(publicClient, args).read(),
+        lendgineTotalLiquidityBorrowed(publicClient, args).read(),
+        lendgineRewardPerPositionStored(publicClient, args).read(),
+        lendgineLastUpdate(publicClient, args).read(),
+        lendgineTotalSupply(publicClient, args).read(),
+        lendgineReserve0(publicClient, args).read(),
+        lendgineReserve1(publicClient, args).read(),
+        lendgineTotalLiquidity(publicClient, args).read(),
+      ]),
+    parse: (data) => ({
+      totalPositionSize: lendgineTotalPositionSize(publicClient, args).parse(
+        data[0],
+      ),
+      totalLiquidityBorrowed: lendgineTotalLiquidityBorrowed(
+        publicClient,
+        args,
+      ).parse(data[1]),
+      rewardPerPositionStored: lendgineRewardPerPositionStored(
+        publicClient,
+        args,
+      ).parse(data[2]),
+      lastUpdate: lendgineLastUpdate(publicClient, args).parse(data[3]),
+      totalSupply: lendgineTotalSupply(publicClient, args).parse(data[4]),
+      reserve0: lendgineReserve0(publicClient, args).parse(data[5]),
+      reserve1: lendgineReserve1(publicClient, args).parse(data[6]),
+      totalLiquidity: lendgineTotalLiquidity(publicClient, args).parse(data[7]),
+    }),
+  } satisfies ReverseMirage<
+    [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint],
+    LendgineInfo<TLendgine>
+  >;
 };
-
-export const lendgineMirage = {
-  lendgineTotalPositionSize,
-  lendgineTotalLiquidityBorrowed,
-  lendgineTotalSupply,
-  lendgineTotalLiquidity,
-  lendgineRewardPerPositionStored,
-  lendgineLastUpdate,
-  lendgineReserve0,
-  lendgineReserve1,
-  lendgineFactory,
-  lendgineGetInfo,
-} as const;

@@ -1,6 +1,6 @@
+import { Token } from "./types/currency";
 import type { Lendgine, LendgineInfo } from "./types/lendgine";
-import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
-import { CurrencyAmount, Fraction, Token } from "@uniswap/sdk-core";
+import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
 import { Price } from "@uniswap/sdk-core";
 import { sqrt as jsbiSQRT } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
@@ -41,7 +41,7 @@ export const priceMultiple = <L extends Lendgine>(
 export const nextHighestLendgine = <L extends Lendgine>(
   props: (
     | {
-        price: Price<WrappedTokenInfo, WrappedTokenInfo>;
+        price: Price<Token, Token>;
       }
     | {
         lendgine: L;
@@ -66,7 +66,7 @@ export const nextHighestLendgine = <L extends Lendgine>(
 export const nextLowestLendgine = <L extends Lendgine>(
   props: (
     | {
-        price: Price<WrappedTokenInfo, WrappedTokenInfo>;
+        price: Price<Token, Token>;
       }
     | {
         lendgine: L;

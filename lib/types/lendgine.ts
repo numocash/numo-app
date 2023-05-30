@@ -1,14 +1,14 @@
-import type { WrappedTokenInfo } from "./wrappedTokenInfo";
-import type { CurrencyAmount, Price, Token } from "@uniswap/sdk-core";
+import { Token } from "./currency";
+import type { CurrencyAmount, Price } from "@uniswap/sdk-core";
 import type { Address } from "wagmi";
 
 export type Lendgine = {
-  token0: WrappedTokenInfo;
-  token1: WrappedTokenInfo;
+  token0: Token;
+  token1: Token;
 
   lendgine: Token;
 
-  bound: Price<WrappedTokenInfo, WrappedTokenInfo>;
+  bound: Price<Token, Token>;
 
   token0Exp: number;
   token1Exp: number;

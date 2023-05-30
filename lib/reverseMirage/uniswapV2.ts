@@ -1,10 +1,11 @@
+import { ReverseMirage } from "./types";
 import { uniswapV2PairABI } from "@/abis/uniswapV2Pair";
 import { CurrencyAmount, Token } from "@uniswap/sdk-core";
 import { Pair } from "@uniswap/v2-sdk";
 import { Hex, encodePacked, getCreate2Address, keccak256 } from "viem";
 import { Address, PublicClient } from "wagmi";
 
-export const uniswapV2GetPair = async <TToken extends Token>(
+export const uniswapV2GetPair = <TToken extends Token>(
   publicClient: PublicClient,
   args: {
     tokenA: TToken;
@@ -28,16 +29,24 @@ export const uniswapV2GetPair = async <TToken extends Token>(
     ),
   });
 
-  const data = await publicClient.readContract({
-    abi: uniswapV2PairABI,
-    address,
-    functionName: "getReserves",
-  });
+  return {
+    read: () =>
+      publicClient.readContract({
+        abi: uniswapV2PairABI,
+        address,
+        functionName: "getReserves",
+      }),
+    parse: (data) => {
+      const token0Amount = CurrencyAmount.fromRawAmount(
+        token0,
+        data[0].toString(),
+      );
+      const token1Amount = CurrencyAmount.fromRawAmount(
+        token1,
+        data[1].toString(),
+      );
 
-  const token0Amount = CurrencyAmount.fromRawAmount(token0, data[0].toString());
-  const token1Amount = CurrencyAmount.fromRawAmount(token1, data[1].toString());
-
-  return new Pair(token0Amount, token1Amount);
+      return new Pair(token0Amount, token1Amount);
+    },
+  } satisfies ReverseMirage<readonly [bigint, bigint, number]>;
 };
-
-export const uniswapV2Mirage = { uniswapV2GetPair } as const;

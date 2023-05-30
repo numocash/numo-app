@@ -1,13 +1,13 @@
 import { priceToFraction } from "./price";
+import type { Token } from "./types/currency";
 import type { Lendgine } from "./types/lendgine";
 import type { Market } from "./types/market";
-import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 import type { Fraction } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
 
 export const lendgineToMarket = (
   lendgine: Lendgine,
-  wrappedNative: WrappedTokenInfo,
+  wrappedNative: Token,
   specialtyMarkets?: readonly Market[],
 ): Market => {
   const specialtyMatches = specialtyMarkets?.find((m) =>
@@ -32,7 +32,7 @@ export const marketToLendgines = (
 
 export const isValidLendgine = (
   lendgine: Lendgine,
-  wrappedNative: WrappedTokenInfo,
+  wrappedNative: Token,
   specialtyMarkets?: readonly Market[],
 ) =>
   isValidMarket(
@@ -43,7 +43,7 @@ export const isValidLendgine = (
 
 export const isValidMarket = (
   market: Market,
-  wrappedNative: WrappedTokenInfo,
+  wrappedNative: Token,
   specialtyMarkets?: readonly Market[],
 ) =>
   !![market.base, market.quote].find((t) => t.equals(wrappedNative)) ||
@@ -61,10 +61,6 @@ export const isValidBound = (bound: Fraction) => {
   return true;
 };
 
-const isEqualToMarket = (
-  token0: WrappedTokenInfo,
-  token1: WrappedTokenInfo,
-  market: Market,
-) =>
+const isEqualToMarket = (token0: Token, token1: Token, market: Market) =>
   (market.base.equals(token0) && market.quote.equals(token1)) ||
   (market.base.equals(token1) && market.quote.equals(token0));

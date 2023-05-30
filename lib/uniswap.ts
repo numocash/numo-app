@@ -1,21 +1,19 @@
 import { fractionToPrice, priceToFraction } from "./price";
+import { Token } from "./types/currency";
 import type { Market } from "./types/market";
-import type { WrappedTokenInfo } from "./types/wrappedTokenInfo";
 import type { Price } from "@uniswap/sdk-core";
 
-export const sortTokens = (
-  tokens: readonly [WrappedTokenInfo, WrappedTokenInfo],
-) =>
+export const sortTokens = (tokens: readonly [Token, Token]) =>
   tokens[0].sortsBefore(tokens[1])
     ? ([tokens[0], tokens[1]] as const)
     : ([tokens[1], tokens[0]] as const);
 
 export const calcMedianPrice = (
-  prices: (Price<WrappedTokenInfo, WrappedTokenInfo> | undefined)[],
+  prices: (Price<Token, Token> | undefined)[],
   market: Market,
 ) => {
   const filteredSortedPrices = prices
-    .filter((d): d is Price<WrappedTokenInfo, WrappedTokenInfo> => !!d)
+    .filter((d): d is Price<Token, Token> => !!d)
     .sort((a, b) => (a.greaterThan(b) ? 1 : -1));
 
   if (filteredSortedPrices.length % 2 === 1) {

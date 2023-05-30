@@ -1,4 +1,4 @@
-import type { WrappedTokenInfo } from "./wrappedTokenInfo";
+import { Token } from "./currency";
 
 // base, quote
-export type Market = { base: WrappedTokenInfo; quote: WrappedTokenInfo };
+export type Market = { base: Token; quote: Token };
