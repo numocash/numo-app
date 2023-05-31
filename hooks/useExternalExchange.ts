@@ -36,6 +36,9 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
 
   const { v2Address, v3Addresses } = useMemo(() => {
     if (!market) return {};
+    console.log(
+      market.base.address.toLowerCase() === market.quote.address.toLowerCase(),
+    );
     const [token0, token1] = sortTokens([market.base, market.quote]);
 
     const v2Address = getCreate2Address({

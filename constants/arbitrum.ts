@@ -44,7 +44,7 @@ export const arbitrumConfig = {
       lendgine: {
         token0: allTokens[chainID.arbitrum]!["WETH"]!,
         token0Exp: allTokens[chainID.arbitrum]!["WETH"]!.decimals,
-        token1: allTokens[chainID.arbitrum]!["WETH"]!,
+        token1: wstETH,
         token1Exp: wstETH.decimals,
         bound: new Price(wstETH, allTokens[chainID.arbitrum]!["WETH"]!, 10, 16),
         address: "0x327319fdce6fac0eb1751dc2234cBdA7F5B43E2A",
