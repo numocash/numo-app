@@ -1,5 +1,5 @@
-import { Address } from "abitype";
 import Link from "next/link";
+import { Address } from "wagmi";
 import { useNetwork } from "wagmi";
 
 export default function ContractAddress({ address }: { address: Address }) {

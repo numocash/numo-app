@@ -1,6 +1,6 @@
 import CenterSwitch from "../CenterSwitch";
 import AsyncButton from "../core/asyncButton";
-import CurrencyAmountDisplay from "../currencyAmountDisplay";
+import CurrencyAmountDisplay from "../currencyAmountRow";
 import Slider from "../slider";
 import { useBurnAmount } from "@/hooks/useAmounts";
 import { useBalances } from "@/hooks/useBalances";
@@ -10,6 +10,7 @@ import { useLendgines } from "@/hooks/useLendgines";
 import { useUniswapPositionsGamma } from "@/hooks/useUniswapV3";
 import { calculateAccrual, calculateEstimatedBurnAmount } from "@/lib/amounts";
 import { scale } from "@/lib/constants";
+import { Token } from "@/lib/types/currency";
 import { useHedge } from "@/pages/hedge-uniswap/[token0]/[token1]";
 import { Beet } from "@/utils/beet";
 import { CurrencyAmount, Fraction, Percent } from "@uniswap/sdk-core";
@@ -29,11 +30,15 @@ export default function Remove() {
   const gammaQuery = useUniswapPositionsGamma(address, market);
 
   const { currentGamma, maxSlide } = useMemo(() => {
-    if (!priceQuery.data || !balancesQuery.data || !lendginesQuery.data)
+    if (
+      !priceQuery.data ||
+      balancesQuery.some((b) => !b.data) ||
+      lendginesQuery.some((l) => l.data)
+    )
       return {};
-    const currentGamma = balancesQuery.data!.reduce((acc, cur, i) => {
+    const currentGamma = balancesQuery.reduce((acc, cur, i) => {
       const lendgine = lendgines[i]!;
-      const lendgineInfo = lendginesQuery.data![i]!;
+      const lendgineInfo = lendginesQuery[i]!.data!;
 
       if (priceQuery.data!.price.greaterThan(lendgine.bound)) return acc;
 
@@ -41,7 +46,7 @@ export default function Remove() {
       const { liquidity } = calculateEstimatedBurnAmount(
         lendgine,
         lendgineInfo,
-        cur,
+        cur.data as CurrencyAmount<Token>,
         "pmmp",
       );
 
@@ -61,7 +66,7 @@ export default function Remove() {
       : +hedge.toFixed(0);
 
     return { currentGamma, hedge, maxSlide };
-  }, [priceQuery.data, balancesQuery.data, lendgines]);
+  }, [priceQuery.data, balancesQuery, lendginesQuery, lendgines]);
   const [hedgePercent, setHedgePercent] = useState<number | undefined>(
     undefined,
   );
@@ -71,7 +76,7 @@ export default function Remove() {
     if (
       gammaQuery.status !== "success" ||
       hedgePercent === undefined ||
-      !lendginesQuery.data ||
+      lendginesQuery.some((l) => !l.data) ||
       !currentGamma
     )
       return {};
@@ -92,7 +97,7 @@ export default function Remove() {
     // convert liquidity to balance
     const accruedLendgineInfo = calculateAccrual(
       selectedLendgine,
-      lendginesQuery.data[index]!,
+      lendginesQuery[index]!.data!,
       "pmmp",
     );
 
@@ -125,15 +130,15 @@ export default function Remove() {
       burn.status !== "success" ||
       !withdrawShares ||
       currentGamma === undefined ||
-      !balancesQuery.data
+      balancesQuery.some((b) => !b.data)
         ? "Loading"
         : currentGamma.equalTo(0)
         ? "Insufficient balance"
         : withdrawShares.lessThan(0) ||
           withdrawShares.greaterThan(
-            balancesQuery.data.find((b) =>
-              b.currency.equals(selectedLendgine.lendgine),
-            )!,
+            balancesQuery
+              .map((b) => b.data!)
+              .find((b) => b.currency.equals(selectedLendgine.lendgine))!,
           )
         ? "Slide to amount"
         : null,

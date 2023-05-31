@@ -1,12 +1,12 @@
 import ContractAddress from "@/components/contractAddress";
 import Tab from "@/components/core/tabs";
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
+import CurrencyIcon from "@/components/currencyIcon";
 import Add from "@/components/hedge/Add";
 import Remove from "@/components/hedge/Remove";
 import Stats from "@/components/hedge/stats";
 import LoadingBox from "@/components/loadingBox";
 import LoadingPage from "@/components/loadingPage";
-import TokenAmountDisplay from "@/components/tokenAmountDisplay";
-import TokenIcon from "@/components/tokenIcon";
 import type { Protocol } from "@/constants";
 import { useEnvironment } from "@/contexts/environment";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
@@ -23,9 +23,9 @@ import {
   nextLowestLendgine,
   priceToFraction,
 } from "@/lib/price";
+import { Token } from "@/lib/types/currency";
 import type { Lendgine } from "@/lib/types/lendgine";
 import { Market } from "@/lib/types/market";
-import { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
 import { Price } from "@uniswap/sdk-core";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
@@ -51,7 +51,7 @@ const useHedgeInternal = ({
 }: {
   lendgines?: Lendgine[] | undefined;
   market?: Market | undefined;
-  price?: Price<WrappedTokenInfo, WrappedTokenInfo>;
+  price?: Price<Token, Token>;
 } = {}): IHedge => {
   invariant(lendgines && market && price);
 
@@ -120,7 +120,7 @@ export default function Hedge({
   if (
     !isValidMarket(
       market,
-      environment.interface.wrappedNative,
+      environment.interface.native.wrapped,
       environment.interface.specialtyMarkets,
     )
   )
@@ -192,8 +192,8 @@ function HedgeInner() {
           </div>
         </div>
         <div className="relative left-[16px] top-[-32px] flex w-fit items-center rounded-lg bg-white p-2">
-          <TokenIcon tokenInfo={token0} size={48} />
-          <TokenIcon tokenInfo={token1} size={48} />
+          <CurrencyIcon currency={token0} size={48} />
+          <CurrencyIcon currency={token1} size={48} />
         </div>
 
         <div className="-mt-8 flex flex-col gap-4 p-6 lg:flex-row lg:justify-between">
@@ -202,8 +202,8 @@ function HedgeInner() {
           </h2>
           <div className="grid gap-2">
             <p className="p3 max-w-md">
-              Provide liquidity to an AMM and earn from lending the position
-              out.
+              Match the impermanent gain of Numoen with the impermanent loss of
+              Uniswap.
             </p>
             {/* <p className="p4 underline">View details</p> */}
           </div>
@@ -215,7 +215,7 @@ function HedgeInner() {
           <div className="flex flex-col gap-1 w-full">
             <p className="p5 text-gray-300">Total value</p>
             {positionsValueQuery.status === "success" ? (
-              <TokenAmountDisplay
+              <CurrencyAmountDisplay
                 className="p1 text-white"
                 amount={positionsValueQuery.value}
                 showSymbol

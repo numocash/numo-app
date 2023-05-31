@@ -4,8 +4,8 @@ import { useAllowance } from "./useAllowance";
 import { formatDisplayWithSoftLimit } from "@/utils/format";
 import type { CurrencyAmount, Token } from "@uniswap/sdk-core";
 import { MaxUint256 } from "@uniswap/sdk-core";
-import { BigNumber, utils } from "ethers";
 import { useMemo } from "react";
+import { getAddress } from "viem";
 import type { Address } from "wagmi";
 import { erc20ABI, useAccount } from "wagmi";
 import { prepareWriteContract, writeContract } from "wagmi/actions";
@@ -28,17 +28,17 @@ export const useApprove = <T extends Token>(
 
     const tx = async () => {
       const config = await prepareWriteContract({
-        address: utils.getAddress(tokenAmount.currency.address),
+        address: getAddress(tokenAmount.currency.address),
         abi: erc20ABI,
         functionName: "approve",
         args: [
           spender,
           settings.infiniteApprove
-            ? BigNumber.from(MaxUint256.toString())
-            : BigNumber.from(tokenAmount.multiply(2).quotient.toString()),
+            ? BigInt(MaxUint256.toString())
+            : BigInt(tokenAmount.multiply(2).quotient.toString()),
         ],
       });
-      return await writeContract(config);
+      return await writeContract(config.request);
     };
 
     const title = `Approve  ${

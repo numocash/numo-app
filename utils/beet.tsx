@@ -1,16 +1,16 @@
 import * as Sentry from "@sentry/nextjs";
 import { clsx } from "clsx";
-import type { ContractReceipt } from "ethers";
 import Link from "next/link";
 import React from "react";
 import { toast } from "react-hot-toast";
+import { TransactionReceipt } from "viem";
 import type { Address } from "wagmi";
 import { useNetwork } from "wagmi";
 
 export type BeetTx = {
   title: string;
   description: string;
-  callback: (toast: TxToast) => Promise<ContractReceipt>;
+  callback: (toast: TxToast) => Promise<TransactionReceipt>;
 };
 export type BeetStage = { title: string; parallelTxs: readonly BeetTx[] };
 
@@ -21,7 +21,7 @@ export type TxToast = {
   humanCount: string;
 };
 type TxSending = TxToast & { status: "sending" };
-type TxSuccess = TxToast & { status: "success"; receipt: ContractReceipt };
+type TxSuccess = TxToast & { status: "success"; receipt: TransactionReceipt };
 type TxPending = TxToast & { status: "pending"; hash: string };
 type TxError = TxToast & { status: "error"; error?: string };
 

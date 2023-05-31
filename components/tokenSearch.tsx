@@ -1,6 +1,6 @@
 import Dialog from "./core/dialog";
-import TokenInfo from "./tokenInfo";
-import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import CurrencyInfo from "./currencyInfo";
+import { Token } from "@/lib/types/currency";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { clsx } from "clsx";
 import Fuse from "fuse.js";
@@ -15,9 +15,9 @@ export default function TokenSearch({
   open,
   onClose,
 }: {
-  tokens: readonly WrappedTokenInfo[] | undefined;
-  selectedToken: WrappedTokenInfo | undefined;
-  onSelect: (val: WrappedTokenInfo) => void;
+  tokens: readonly Token[] | undefined;
+  selectedToken: Token | undefined;
+  onSelect: (val: Token) => void;
 } & Omit<React.ComponentProps<typeof Dialog>, "content">) {
   const [query, setQuery] = useState("");
   const [queryDebounced] = useDebounce(query, 200, {
@@ -74,7 +74,7 @@ export default function TokenSearch({
                     type="button"
                     disabled={selectedToken?.equals(r)}
                   >
-                    <TokenInfo token={r} showName />
+                    <CurrencyInfo currency={r} showName />
                     {selectedToken?.equals(r) && (
                       <FiCheck className="text-brand" size={24} />
                     )}

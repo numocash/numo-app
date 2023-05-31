@@ -1,6 +1,6 @@
 import CenterSwitch from "@/components/CenterSwitch";
 import AsyncButton from "@/components/core/asyncButton";
-import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
+import CurrencyAmountDisplay from "@/components/currencyAmountRow";
 import Slider from "@/components/slider";
 import { useWithdrawAmount } from "@/hooks/useAmounts";
 import { useLendgine } from "@/hooks/useLendgine";

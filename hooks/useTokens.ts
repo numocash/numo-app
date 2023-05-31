@@ -1,14 +1,12 @@
 import { useEnvironment } from "../contexts/environment";
-import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { dedupe } from "../utils/dedupe";
 import type { HookArg } from "./internal/types";
 import { useChain } from "./useChain";
+import { Token } from "@/lib/types/currency";
 import NumoenTokens from "@numoen/default-token-list";
-import type { Token } from "@uniswap/sdk-core";
 import type { TokenInfo as UniswapTokenInfo } from "@uniswap/token-lists";
-import { utils } from "ethers";
 import { useCallback } from "react";
-import invariant from "tiny-invariant";
+import { getAddress } from "viem";
 
 export type color = `#${string}` | undefined;
 
@@ -24,25 +22,50 @@ export type TokenInfo = UniswapTokenInfo & {
   >;
 };
 
+export const allTokens = NumoenTokens.tokens.reduce(
+  (
+    acc: Record<TokenInfo["chainId"], Record<TokenInfo["symbol"], Token>>,
+    cur,
+  ) => ({
+    ...acc,
+    [cur.chainId]: {
+      ...acc[cur.chainId],
+      [cur.symbol]: new Token(
+        cur.chainId,
+        cur.address,
+        cur.decimals,
+        cur.symbol,
+        cur.name,
+        cur.logoURI,
+        cur.color as TokenInfo["color"],
+      ),
+    },
+  }),
+  {},
+);
+
 export const useTokens = () => {
   const chain = useChain();
-  const isWrappedNative = useGetIsWrappedNative();
-  const enviroment = useEnvironment();
+  const environment = useEnvironment();
+
+  const chainTokens = Object.values(allTokens[chain]!);
 
   return dedupe(
-    (NumoenTokens.tokens as TokenInfo[]).filter((t) => t.chainId === chain),
+    chainTokens.filter((t) => t.chainId === chain),
     (t) => `${t.address}_${t.chainId}`,
   ).map((t) => {
-    const token = new WrappedTokenInfo(t);
-    if (isWrappedNative(token)) {
-      invariant(enviroment.interface.native);
-      return new WrappedTokenInfo({
-        ...t,
-        name: enviroment.interface.native.name ?? t.name,
-        symbol: enviroment.interface.native.symbol ?? t.symbol,
-      });
+    if (environment.interface.native.wrapped.equals(t)) {
+      return new Token(
+        t.chainId,
+        t.address,
+        t.decimals,
+        environment.interface.native.symbol!,
+        environment.interface.native.name!,
+        t.logoURI,
+        t.color,
+      );
     }
-    return token;
+    return t;
   });
 };
 
@@ -57,24 +80,18 @@ export const useGetAddressToToken = () => {
     (address: HookArg<string>) => {
       if (!address) return null;
       return (
-        tokens.find(
-          (t) => utils.getAddress(t.address) === utils.getAddress(address),
-        ) ?? null
+        tokens.find((t) => getAddress(t.address) === getAddress(address)) ??
+        null
       );
     },
     [tokens],
   );
 };
 
-export const useGetIsWrappedNative = () => {
-  const enviroment = useEnvironment();
-  return <T extends Token>(token: HookArg<T>) => {
-    if (!token) return undefined;
+export const useIsWrappedNative = (token: HookArg<Token>) => {
+  const environment = useEnvironment();
 
-    return !enviroment.interface.native
-      ? false
-      : enviroment.interface.native.wrapped.equals(token);
-  };
+  if (!token) return undefined;
+
+  return environment.interface.native.wrapped.equals(token);
 };
-export const useIsWrappedNative = <T extends Token>(token: HookArg<T>) =>
-  useGetIsWrappedNative()(token);

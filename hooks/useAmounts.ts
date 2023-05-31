@@ -35,13 +35,13 @@ export const useMintAmount = <L extends Lendgine>(
       lendgine
         ? lendgineToMarket(
             lendgine,
-            environment.interface.wrappedNative,
+            environment.interface.native.wrapped,
             environment.interface.specialtyMarkets,
           )
         : undefined,
     [
       environment.interface.specialtyMarkets,
-      environment.interface.wrappedNative,
+      environment.interface.native.wrapped,
       lendgine,
     ],
   );
@@ -126,13 +126,13 @@ export const useBurnAmount = <L extends Lendgine>(
       lendgine
         ? lendgineToMarket(
             lendgine,
-            environment.interface.wrappedNative,
+            environment.interface.native.wrapped,
             environment.interface.specialtyMarkets,
           )
         : undefined,
     [
       environment.interface.specialtyMarkets,
-      environment.interface.wrappedNative,
+      environment.interface.native.wrapped,
       lendgine,
     ],
   );
@@ -216,13 +216,13 @@ export const useDepositAmount = <L extends Lendgine>(
       lendgine
         ? lendgineToMarket(
             lendgine,
-            environment.interface.wrappedNative,
+            environment.interface.native.wrapped,
             environment.interface.specialtyMarkets,
           )
         : undefined,
     [
       environment.interface.specialtyMarkets,
-      environment.interface.wrappedNative,
+      environment.interface.native.wrapped,
       lendgine,
     ],
   );
@@ -362,13 +362,13 @@ export const useCollectAmount = <L extends Lendgine>(
       lendgine
         ? lendgineToMarket(
             lendgine,
-            environment.interface.wrappedNative,
+            environment.interface.native.wrapped,
             environment.interface.specialtyMarkets,
           )
         : undefined,
     [
       environment.interface.specialtyMarkets,
-      environment.interface.wrappedNative,
+      environment.interface.native.wrapped,
       lendgine,
     ],
   );

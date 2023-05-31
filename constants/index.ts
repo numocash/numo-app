@@ -1,11 +1,11 @@
 import type { Lendgine } from "../lib/types/lendgine";
 import type { Market } from "../lib/types/market";
-import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import type { chains } from "../pages/_app";
 import { arbitrumConfig } from "./arbitrum";
 import { celoConfig } from "./celo";
 import { polygonConfig } from "./polygon";
-import type { NativeCurrency, Percent } from "@uniswap/sdk-core";
+import { NativeCurrency } from "@/lib/types/currency";
+import type { Percent } from "@uniswap/sdk-core";
 import type { Address } from "wagmi";
 
 export type SupportedChainIDs = typeof chains[number]["id"];
@@ -36,8 +36,7 @@ export type NumoenInterfaceConfig = {
   uniswapV2: UniswapConfig;
   uniswapV3: UniswapConfig & { positionManagerAddress: Address };
   numoenSubgraph: string;
-  wrappedNative: WrappedTokenInfo;
-  native?: NativeCurrency;
+  native: NativeCurrency;
   liquidStaking?: LiquidStakingConfig;
   specialtyMarkets?: readonly Market[];
   hedgingMarkets?: readonly Market[];

@@ -3,10 +3,10 @@ import AsyncButton from "@/components/core/asyncButton";
 import Button from "@/components/core/button";
 import Dialog from "@/components/core/dialog";
 import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
+import CurrencyAmountRow from "@/components/currencyAmountRow";
+import CurrencyIcon from "@/components/currencyIcon";
 import LoadingBox from "@/components/loadingBox";
 import Slider from "@/components/slider";
-import TokenAmountDisplay from "@/components/tokenAmountDisplay";
-import TokenIcon from "@/components/tokenIcon";
 import type { Protocol } from "@/constants";
 import { useBurnAmount } from "@/hooks/useAmounts";
 import { useBalance } from "@/hooks/useBalance";
@@ -29,18 +29,18 @@ export default function PowerTokens() {
   const { isConnected, address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { lendgines } = usePosition();
-  const lendgineInfoQuery = useLendgines(lendgines);
+  const lendginesQuery = useLendgines(lendgines);
 
   const tokens = useMemo(() => lendgines.map((l) => l.lendgine), [lendgines]);
   const balanceQuery = useBalances(tokens, address);
 
   const validLendgines = useMemo(() => {
-    if (!balanceQuery.data) return undefined;
-    return balanceQuery.data.reduce(
-      (acc, cur, i) => (cur.greaterThan(0) ? acc.concat(i) : acc),
+    if (balanceQuery.some((d) => !d.data)) return undefined;
+    return balanceQuery.reduce(
+      (acc, cur, i) => (cur.data!.greaterThan(0) ? acc.concat(i) : acc),
       new Array<number>(),
     );
-  }, [balanceQuery.data]);
+  }, [balanceQuery]);
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-xl border-2 border-gray-200 bg-white py-6">
@@ -59,7 +59,7 @@ export default function PowerTokens() {
         >
           Connect Wallet
         </Button>
-      ) : !validLendgines || !lendgineInfoQuery.data ? (
+      ) : !validLendgines || lendginesQuery.some((d) => !d.data) ? (
         <div className="mx-2 sm:mx-6 flex w-full flex-col gap-2">
           {[...Array(5).keys()].map((i) => (
             <LoadingBox className="h-12 w-full" key={`${i}load`} />
@@ -83,7 +83,7 @@ export default function PowerTokens() {
                 key={`${lendgines[i]!.address}pt`}
                 lendgine={lendgines[i]!}
                 protocol={"pmmp"}
-                lendgineInfo={lendgineInfoQuery.data![i]!}
+                lendgineInfo={lendginesQuery[i]!.data!}
               />
             ))}
           </div>
@@ -139,13 +139,13 @@ const PowerTokenItem: React.FC<PowerTokenProps> = ({
   return (
     <div className="grid h-[72px] w-full transform grid-cols-3 sm:grid-cols-4 items-center px-2 sm:px-6 duration-300 ease-in-out hover:bg-gray-200">
       <div className="flex items-center">
-        <TokenIcon
-          tokenInfo={lendgine.token0}
+        <CurrencyIcon
+          currency={lendgine.token0}
           size={32}
           className="hidden sm:flex"
         />
-        <TokenIcon
-          tokenInfo={lendgine.token1}
+        <CurrencyIcon
+          currency={lendgine.token1}
           size={32}
           className="hidden sm:flex"
         />
@@ -159,7 +159,7 @@ const PowerTokenItem: React.FC<PowerTokenProps> = ({
       </p>
       <p className="p2 justify-self-end">
         {valueQuery.status === "success" ? (
-          <TokenAmountDisplay
+          <CurrencyAmountDisplay
             amount={valueQuery.value}
             showSymbol={true}
             className="p2"
@@ -182,7 +182,7 @@ const PowerTokenItem: React.FC<PowerTokenProps> = ({
               </div>
               <div className=" w-full border-b-2 border-gray-200" />
               <CenterSwitch icon="arrow" />
-              <CurrencyAmountDisplay
+              <CurrencyAmountRow
                 amount={
                   burnAmount.collateral ??
                   CurrencyAmount.fromRawAmount(lendgine.token1, 0)

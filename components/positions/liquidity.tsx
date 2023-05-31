@@ -1,7 +1,7 @@
 import Button from "@/components/core/button";
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
+import CurrencyIcon from "@/components/currencyIcon";
 import LoadingBox from "@/components/loadingBox";
-import TokenAmountDisplay from "@/components/tokenAmountDisplay";
-import TokenIcon from "@/components/tokenIcon";
 import type { Protocol } from "@/constants";
 import { useLendgines } from "@/hooks/useLendgines";
 import { useLendginesPositions } from "@/hooks/useLendginesPositions";
@@ -19,20 +19,20 @@ export default function Liquidity() {
   const { isConnected, address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { lendgines } = usePosition();
-  const lendgineInfoQuery = useLendgines(lendgines);
+  const lendginesQuery = useLendgines(lendgines);
 
-  const positionQuery = useLendginesPositions(lendgines, address);
+  const positionQuery = useLendginesPositions(lendgines, address, "pmmp");
 
   const validLendgines = useMemo(() => {
-    if (!positionQuery.data) return undefined;
-    return positionQuery.data.reduce(
+    if (positionQuery.some((d) => !d.data)) return undefined;
+    return positionQuery.reduce(
       (acc, cur, i) =>
-        cur.size.greaterThan(0) || cur.tokensOwed.greaterThan(0)
+        cur.data!.size.greaterThan(0) || cur.data!.tokensOwed.greaterThan(0)
           ? acc.concat(i)
           : acc,
       new Array<number>(),
     );
-  }, [positionQuery.data]);
+  }, [positionQuery]);
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-xl border-2 border-gray-200 bg-white py-6">
@@ -51,7 +51,7 @@ export default function Liquidity() {
         >
           Connect Wallet
         </Button>
-      ) : !validLendgines || !lendgineInfoQuery.data ? (
+      ) : !validLendgines || lendginesQuery.some((d) => !d.data) ? (
         <div className="mx-2 sm:mx-6 flex w-full flex-col gap-2">
           {[...Array(5).keys()].map((i) => (
             <LoadingBox className="h-12 w-full" key={`${i}load`} />
@@ -75,7 +75,7 @@ export default function Liquidity() {
                 key={`${lendgines[i]!.address}liq`}
                 lendgine={lendgines[i]!}
                 protocol={"pmmp"}
-                lendgineInfo={lendgineInfoQuery.data![i]!}
+                lendgineInfo={lendginesQuery[i]!.data!}
               />
             ))}
           </div>
@@ -101,13 +101,13 @@ const LiquidityItem: React.FC<LiquidityProps> = ({
   return (
     <div className="grid h-[72px] w-full transform grid-cols-3 sm:grid-cols-4 items-center px-2 sm:px-6 duration-300 ease-in-out hover:bg-gray-200">
       <div className="flex items-center">
-        <TokenIcon
-          tokenInfo={lendgine.token0}
+        <CurrencyIcon
+          currency={lendgine.token0}
           size={32}
           className="hidden sm:flex"
         />
-        <TokenIcon
-          tokenInfo={lendgine.token1}
+        <CurrencyIcon
+          currency={lendgine.token1}
           size={32}
           className="hidden sm:flex"
         />
@@ -121,7 +121,7 @@ const LiquidityItem: React.FC<LiquidityProps> = ({
       </p>
       <p className="p2 justify-self-end">
         {valueQuery.status === "success" ? (
-          <TokenAmountDisplay
+          <CurrencyAmountDisplay
             amount={valueQuery.value}
             showSymbol={true}
             className="p2"

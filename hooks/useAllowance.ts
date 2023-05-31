@@ -1,43 +1,21 @@
-import type { HookArg, ReadConfig } from "./internal/types";
-import { useContractRead } from "./internal/useContractRead";
+import type { HookArg } from "./internal/types";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { userRefectchInterval } from "./internal/utils";
-import type { Token } from "@uniswap/sdk-core";
-import { CurrencyAmount } from "@uniswap/sdk-core";
-import { utils } from "ethers";
-import type { Address } from "wagmi";
-import { erc20ABI } from "wagmi";
+import { Token } from "@/lib/types/currency";
 
-export const useAllowance = <T extends Token>(
-  token: HookArg<T>,
+import { erc20Allowance } from "@/lib/reverseMirage/token";
+import { useQuery } from "@tanstack/react-query";
+import { Address } from "wagmi";
+
+export const useAllowance = (
+  token: HookArg<Token>,
   address: HookArg<Address>,
   spender: HookArg<Address>,
 ) => {
-  const config =
-    !!token && !!address && !!spender
-      ? getAllowanceRead(token, address, spender)
-      : {
-          address: undefined,
-          abi: undefined,
-          functionName: undefined,
-          args: undefined,
-        };
-  return useContractRead({
-    ...config,
-    staleTime: Infinity,
-    enabled: !!token && !!address && !!spender,
-    select: (data) => CurrencyAmount.fromRawAmount(token!, data.toString()),
+  const allowanceQuery = useQueryGenerator(erc20Allowance);
+
+  return useQuery({
+    ...allowanceQuery({ token, address, spender }),
     refetchInterval: userRefectchInterval,
   });
 };
-
-export const getAllowanceRead = <T extends Token>(
-  token: T,
-  address: Address,
-  spender: Address,
-) =>
-  ({
-    address: utils.getAddress(token.address),
-    args: [address, spender],
-    abi: erc20ABI,
-    functionName: "allowance",
-  }) as const satisfies ReadConfig<typeof erc20ABI, "allowance">;

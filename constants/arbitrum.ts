@@ -1,37 +1,18 @@
 import type { Config } from ".";
 import { chainID } from "../lib/constants";
-import { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
-import { Stable, WrappedNative } from "./tokens";
-import { Ether, Percent, Price, Token } from "@uniswap/sdk-core";
-import { utils } from "ethers";
+import { allTokens } from "@/hooks/useTokens";
+import { NativeCurrency, Token } from "@/lib/types/currency";
+import { Percent, Price } from "@uniswap/sdk-core";
+import { getAddress } from "viem";
 
-const USDT = new WrappedTokenInfo({
-  name: "Tether USD",
-  address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-  symbol: "USDT",
-  decimals: 6,
-  chainId: 42161,
-  logoURI:
-    "https://assets.coingecko.com/coins/images/325/small/Tether.png?1668148663",
-  color: {
-    muted: undefined,
-    vibrant: undefined,
-    lightMuted: undefined,
-    lightVibrant: undefined,
-    darkMuted: undefined,
-    darkVibrant: undefined,
-  },
-});
-
-const wstETH = new WrappedTokenInfo({
-  name: "Wrapped liquid staked Ether 2.0",
-  symbol: "wstETH",
-  decimals: 18,
-  address: "0x5979D7b546E38E414F7E9822514be443A4800529",
-  chainId: 42161,
-  logoURI:
-    "https://assets.coingecko.com/coins/images/18834/small/wstETH.png?1633565443",
-  color: {
+const wstETH = new Token(
+  42161,
+  "0x5979D7b546E38E414F7E9822514be443A4800529",
+  18,
+  "wstETH",
+  "Wrapped liquid staked Ether 2.0",
+  "https://assets.coingecko.com/coins/images/18834/small/wstETH.png?1633565443",
+  {
     muted: "#00a3ff",
     vibrant: "#00a3ff",
     lightMuted: "#00a3ff",
@@ -39,7 +20,7 @@ const wstETH = new WrappedTokenInfo({
     darkMuted: "#00a3ff",
     darkVibrant: "#00a3ff",
   },
-});
+);
 
 export const arbitrumConfig = {
   interface: {
@@ -61,45 +42,47 @@ export const arbitrumConfig = {
     liquidStaking: {
       return: new Percent(45, 1000),
       lendgine: {
-        token0: WrappedNative[chainID.arbitrum],
-        token0Exp: WrappedNative[chainID.arbitrum].decimals,
+        token0: allTokens[chainID.arbitrum]!["WETH"]!,
+        token0Exp: allTokens[chainID.arbitrum]!["WETH"]!.decimals,
         token1: wstETH,
         token1Exp: wstETH.decimals,
-        bound: new Price(wstETH, WrappedNative[chainID.arbitrum], 10, 16),
+        bound: new Price(wstETH, allTokens[chainID.arbitrum]!["WETH"]!, 10, 16),
         address: "0x327319fdce6fac0eb1751dc2234cBdA7F5B43E2A",
         lendgine: new Token(
           42161,
           "0x327319fdce6fac0eb1751dc2234cBdA7F5B43E2A",
           18,
+          "NRD",
+          "Numoen Replicating Derivative",
         ),
       },
       color: "#00a3ff",
     },
     numoenSubgraph:
       "https://api.thegraph.com/subgraphs/name/kyscott18/numoen-arbitrum",
-    wrappedNative: WrappedNative[chainID.arbitrum],
-    native: Ether.onChain(chainID.arbitrum),
+    native: new NativeCurrency(42161, 18, "ETH", "Ether", "/eth.png"),
     specialtyMarkets: [
-      { base: Stable[chainID.arbitrum], quote: USDT },
       {
-        base: WrappedNative[chainID.arbitrum],
-        quote: Stable[chainID.arbitrum],
+        base: allTokens[chainID.arbitrum]!["USDC"]!,
+        quote: allTokens[chainID.arbitrum]!["USDT"]!,
+      },
+      {
+        base: allTokens[chainID.arbitrum]!["WETH"]!,
+        quote: allTokens[chainID.arbitrum]!["USDC"]!,
       },
     ],
     hedgingMarkets: [
       {
-        base: WrappedNative[chainID.arbitrum],
-        quote: Stable[chainID.arbitrum],
+        base: allTokens[chainID.arbitrum]!["WETH"]!,
+        quote: allTokens[chainID.arbitrum]!["USDC"]!,
       },
     ],
   },
   procotol: {
     pmmp: {
-      factory: utils.getAddress("0x8396a792510a402681812ece6ad3ff19261928ba"),
-      lendgineRouter: utils.getAddress(
-        "0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0",
-      ),
-      liquidityManager: utils.getAddress(
+      factory: getAddress("0x8396a792510a402681812ece6ad3ff19261928ba"),
+      lendgineRouter: getAddress("0x6a931466f6C79724CB5E78EaB6E493b6AF189FF0"),
+      liquidityManager: getAddress(
         "0x6b0c66824c39766f554F07481B66ca24A54A90E0",
       ),
     },

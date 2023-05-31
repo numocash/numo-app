@@ -2,29 +2,25 @@ import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
 import { useSettings } from "../contexts/settings";
-import { ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
+import { AddressZero, ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
 import { priceToFraction } from "../lib/price";
 import type { Lendgine, LendginePosition } from "../lib/types/lendgine";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
 import type { HookArg } from "./internal/types";
-import { useInvalidateCall } from "./internal/useInvalidateCall";
+import { useFastClient } from "./internal/useFastClient";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { useWithdrawAmount } from "./useAmounts";
-import { useAwaitTX } from "./useAwaitTX";
-import { getBalanceRead } from "./useBalance";
-import { getLendginePositionRead } from "./useLendginePosition";
 import { useIsWrappedNative } from "./useTokens";
-import { useMutation } from "@tanstack/react-query";
+import { liquidityManagerPosition } from "@/lib/reverseMirage/liquidityManager";
+import { erc20BalanceOf } from "@/lib/reverseMirage/token";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
-import type { Address } from "abitype";
-import { BigNumber, constants, utils } from "ethers";
 import { useMemo } from "react";
+import { encodeFunctionData, getAddress } from "viem";
+import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
-import {
-  getContract,
-  prepareWriteContract,
-  writeContract,
-} from "wagmi/actions";
+import { prepareWriteContract, writeContract } from "wagmi/actions";
 
 export const useWithdraw = <L extends Lendgine>(
   lendgine: HookArg<L>,
@@ -36,8 +32,11 @@ export const useWithdraw = <L extends Lendgine>(
   const protocolConfig = environment.procotol[protocol]!;
 
   const { address } = useAccount();
-  const awaitTX = useAwaitTX();
-  const invalidate = useInvalidateCall();
+
+  const queryClient = useQueryClient();
+  const client = useFastClient();
+  const balanceQuery = useQueryGenerator(erc20BalanceOf);
+  const positionQuery = useQueryGenerator(liquidityManagerPosition);
 
   const native0 = useIsWrappedNative(lendgine?.token0);
   const native1 = useIsWrappedNative(lendgine?.token1);
@@ -65,46 +64,43 @@ export const useWithdraw = <L extends Lendgine>(
     } & { toast: TxToast }) => {
       const args = [
         {
-          token0: utils.getAddress(lendgine.token0.address),
-          token1: utils.getAddress(lendgine.token1.address),
-          token0Exp: BigNumber.from(lendgine.token0.decimals),
-          token1Exp: BigNumber.from(lendgine.token1.decimals),
-          upperBound: BigNumber.from(
+          token0: getAddress(lendgine.token0.address),
+          token1: getAddress(lendgine.token1.address),
+          token0Exp: BigInt(lendgine.token0.decimals),
+          token1Exp: BigInt(lendgine.token1.decimals),
+          upperBound: BigInt(
             priceToFraction(lendgine.bound).multiply(scale).quotient.toString(),
           ),
-          amount0Min: BigNumber.from(
+          amount0Min: BigInt(
             amount0
               .multiply(
                 ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
               .quotient.toString(),
           ),
-          amount1Min: BigNumber.from(
+          amount1Min: BigInt(
             amount1
               .multiply(
                 ONE_HUNDRED_PERCENT.subtract(settings.maxSlippagePercent),
               )
               .quotient.toString(),
           ),
-          size: BigNumber.from(size.quotient.toString()),
+          size: BigInt(size.quotient.toString()),
 
-          recipient: native0 || native1 ? constants.AddressZero : address,
-          deadline: BigNumber.from(
+          recipient: native0 || native1 ? AddressZero : address,
+          deadline: BigInt(
             Math.round(Date.now() / 1000) + settings.timeout * 60,
           ),
         },
       ] as const;
-      const unwrapArgs = [BigNumber.from(0), address] as const; // safe to be zero because the withdraw estimation will fail
+      const unwrapArgs = [BigInt(0), address] as const; // safe to be zero because the withdraw estimation will fail
       const sweepArgs = [
-        native0 ? lendgine.token1.address : lendgine.token0.address,
-        BigNumber.from(0),
+        native0
+          ? (lendgine.token1.address as Address)
+          : (lendgine.token0.address as Address),
+        BigInt(0),
         address,
       ] as const; // safe to be zero because the withdraw estimation will fail
-
-      const liquidityManagerContract = getContract({
-        abi: liquidityManagerABI,
-        address: protocolConfig.liquidityManager,
-      });
 
       const tx =
         native0 || native1
@@ -113,24 +109,28 @@ export const useWithdraw = <L extends Lendgine>(
                 abi: liquidityManagerABI,
                 functionName: "multicall",
                 address: protocolConfig.liquidityManager,
+                value: BigInt(0),
                 args: [
                   [
-                    liquidityManagerContract.interface.encodeFunctionData(
-                      "removeLiquidity",
+                    encodeFunctionData({
+                      abi: liquidityManagerABI,
+                      functionName: "removeLiquidity",
                       args,
-                    ),
-                    liquidityManagerContract.interface.encodeFunctionData(
-                      "unwrapWETH",
-                      unwrapArgs,
-                    ),
-                    liquidityManagerContract.interface.encodeFunctionData(
-                      "sweepToken",
-                      sweepArgs,
-                    ),
-                  ] as `0x${string}`[],
+                    }),
+                    encodeFunctionData({
+                      abi: liquidityManagerABI,
+                      functionName: "unwrapWETH",
+                      args: unwrapArgs,
+                    }),
+                    encodeFunctionData({
+                      abi: liquidityManagerABI,
+                      functionName: "sweepToken",
+                      args: sweepArgs,
+                    }),
+                  ],
                 ],
               });
-              const data = await writeContract(config);
+              const data = await writeContract(config.request);
               return data;
             }
           : async () => {
@@ -139,8 +139,9 @@ export const useWithdraw = <L extends Lendgine>(
                 functionName: "removeLiquidity",
                 address: protocolConfig.liquidityManager,
                 args,
+                value: BigInt(0),
               });
-              const data = await writeContract(config);
+              const data = await writeContract(config.request);
               return data;
             };
 
@@ -150,24 +151,35 @@ export const useWithdraw = <L extends Lendgine>(
         hash: transaction.hash,
       });
 
-      return await awaitTX(transaction);
+      return await client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
-      lendgine &&
-        (await Promise.all([
-          invalidate(
-            getLendginePositionRead(
+      await Promise.all([
+        lendgine &&
+          queryClient.invalidateQueries({
+            queryKey: positionQuery({
               lendgine,
-              input.address,
-              protocolConfig.liquidityManager,
-            ),
-          ),
-          invalidate(getBalanceRead(input.amount0.currency, input.address)),
-          invalidate(getBalanceRead(input.amount1.currency, input.address)),
-        ]));
+              address: input.address,
+              liquidityManagerAddress: protocolConfig.liquidityManager,
+            }).queryKey,
+          }),
+
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
+            token: input.amount0.currency,
+            address: input.address,
+          }).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
+            token: input.amount1.currency,
+            address: input.address,
+          }).queryKey,
+        }),
+      ]);
     },
   });
 

@@ -1,7 +1,7 @@
 import EarnCard from "./earnCard";
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
+import CurrencyIcon from "@/components/currencyIcon";
 import LoadingBox from "@/components/loadingBox";
-import TokenAmountDisplay from "@/components/tokenAmountDisplay";
-import TokenIcon from "@/components/tokenIcon";
 import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
 import { useLendgines } from "@/hooks/useLendgines";
 import {
@@ -34,7 +34,8 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
   const priceQuery = useMostLiquidMarket(market);
 
   const borrowRate = useMemo(() => {
-    if (!priceQuery.data?.price || !lendginesQuery.data) return undefined;
+    if (!priceQuery.data?.price || lendginesQuery.some((d) => !d.data))
+      return undefined;
 
     const lh = nextHighestLendgine({
       price: fractionToPrice(
@@ -60,7 +61,7 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
 
     const accruedInfo = calculateAccrual(
       selectedLendgine,
-      lendginesQuery.data[index]!,
+      lendginesQuery[index]!.data!,
       "pmmp",
     );
 
@@ -70,21 +71,22 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
     });
 
     return borrowRate;
-  }, [priceQuery.data?.price, lendginesQuery.data, lendgines]);
+  }, [priceQuery.data?.price, lendginesQuery, lendgines]);
 
   const tvl = useMemo(() => {
-    if (!priceQuery.data?.price || !lendginesQuery.data) return undefined;
+    if (!priceQuery.data?.price || lendginesQuery.some((d) => !d.data))
+      return undefined;
     return lendgines.reduce((acc, cur, i) => {
       const inverse = !cur.token0.equals(market.quote);
       const { collateral, liquidity } = calculateEstimatedBurnAmount(
         cur,
-        lendginesQuery.data![i]!,
-        lendginesQuery.data![i]!.totalSupply,
+        lendginesQuery[i]!.data!,
+        lendginesQuery[i]!.data!.totalSupply,
         "pmmp",
       );
       const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
         cur,
-        lendginesQuery.data![i]!,
+        lendginesQuery[i]!.data!,
         liquidity,
       );
 
@@ -100,7 +102,7 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
 
       return acc.add(inverse ? priceQuery.data.price.quote(value) : value);
     }, CurrencyAmount.fromRawAmount(market.quote, 0));
-  }, [lendgines, lendginesQuery.data, market.quote, priceQuery.data]);
+  }, [lendgines, lendginesQuery, market.quote, priceQuery.data]);
 
   return (
     <EarnCard
@@ -121,8 +123,8 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
         </div>
       </div>
       <div className="relative left-[8px] top-[-32px] flex w-fit items-center rounded-lg bg-white p-2">
-        <TokenIcon tokenInfo={market.quote} size={48} />
-        <TokenIcon tokenInfo={market.base} size={48} />
+        <CurrencyIcon currency={market.quote} size={48} />
+        <CurrencyIcon currency={market.base} size={48} />
       </div>
 
       <div className="-mt-8 flex flex-col gap-4  p-4">
@@ -139,7 +141,7 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
           <p className="p5">TVL</p>
           <p className="p1">
             {tvl ? (
-              <TokenAmountDisplay amount={tvl} showSymbol />
+              <CurrencyAmountDisplay amount={tvl} showSymbol />
             ) : (
               <LoadingBox />
             )}

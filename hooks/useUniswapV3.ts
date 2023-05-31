@@ -1,53 +1,43 @@
-import type { HookArg, ReadConfig } from "./internal/types";
-import { useContractRead } from "./internal/useContractRead";
-import { useContractReads } from "./internal/useContractReads";
+import type { HookArg } from "./internal/types";
 import { userRefectchInterval } from "./internal/utils";
 import { useMostLiquidMarket } from "./useExternalExchange";
-import { nonfungiblePositionManagerABI } from "@/abis/nonfungiblePositionManager";
 import { useEnvironment } from "@/contexts/environment";
-import { feeTiers } from "@/graphql/uniswapV3";
 import { scale } from "@/lib/constants";
 import { invert, priceToFraction, sqrt } from "@/lib/price";
-import { Market } from "@/lib/types/market";
-import { sqrt as JSBIsqrt } from "@uniswap/sdk-core";
-import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
+
+import { useQueryGenerator } from "./internal/useQueryGenerator";
+import { Q96 } from "@/graphql/uniswapV3";
 import {
+  uniswapV3BalanceOf,
+  uniswapV3Position,
+  uniswapV3TokenOfOwnerByIndex,
+} from "@/lib/reverseMirage/uniswapV3";
+import { Market } from "@/lib/types/market";
+import { sortTokens } from "@/lib/uniswap";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { sqrt as JSBIsqrt } from "@uniswap/sdk-core";
+import { CurrencyAmount, Fraction } from "@uniswap/sdk-core";
+import {
+  FeeAmount,
   Pool,
-  Position,
   TickMath,
   priceToClosestTick,
   tickToPrice,
 } from "@uniswap/v3-sdk";
-import { BigNumber, utils } from "ethers";
 import JSBI from "jsbi";
 import { useMemo } from "react";
-import type { Address } from "wagmi";
+import { getAddress } from "viem";
+import { Address } from "wagmi";
 
 export const usePositionManagerBalanceOf = (address: HookArg<Address>) => {
   const {
     interface: { uniswapV3: { positionManagerAddress } },
   } = useEnvironment();
-  const config = address
-    ? ({
-        address: positionManagerAddress,
-        args: [address],
-        abi: nonfungiblePositionManagerABI,
-        functionName: "balanceOf",
-      } as const satisfies ReadConfig<
-        typeof nonfungiblePositionManagerABI,
-        "balanceOf"
-      >)
-    : {
-        address: undefined,
-        abi: undefined,
-        functionName: undefined,
-        args: undefined,
-      };
-  return useContractRead({
-    ...config,
-    staleTime: Infinity,
-    enabled: !!address,
-    select: (data) => +data.toString(),
+
+  const balanceQuery = useQueryGenerator(uniswapV3BalanceOf);
+
+  return useQuery({
+    ...balanceQuery({ positionManagerAddress, address }),
     refetchInterval: userRefectchInterval,
   });
 };
@@ -59,98 +49,33 @@ export const useTokenIDsByIndex = (
   const {
     interface: { uniswapV3: { positionManagerAddress } },
   } = useEnvironment();
-  const contracts = useMemo(
-    () =>
-      !!balance && !!address
-        ? [...Array(balance).keys()].map((i) =>
-            getTokenOfOwnerByIndexRead(address, i, positionManagerAddress),
-          )
-        : undefined,
-    [address, balance, positionManagerAddress],
-  );
 
-  return useContractReads({
-    contracts,
-    staleTime: Infinity,
-    allowFailure: false,
-    enabled: !!contracts,
-    select: (data) => {
-      return data.map((p) => +p.toString());
-    },
+  const tokenIDQuery = useQueryGenerator(uniswapV3TokenOfOwnerByIndex);
+
+  return useQuery({
+    ...tokenIDQuery({ positionManagerAddress, address, balance }),
     refetchInterval: userRefectchInterval,
   });
 };
 
-const getTokenOfOwnerByIndexRead = (
-  address: Address,
-  index: number,
-  nonfungiblePositionManager: Address,
-) =>
-  ({
-    address: nonfungiblePositionManager,
-    args: [address, BigNumber.from(index)],
-    abi: nonfungiblePositionManagerABI,
-    functionName: "tokenOfOwnerByIndex",
-  }) as const satisfies ReadConfig<
-    typeof nonfungiblePositionManagerABI,
-    "tokenOfOwnerByIndex"
-  >;
-
-export const usePositionFromTokenID = (tokenID: HookArg<number>) => {
+export const usePositionsFromTokenIDs = (
+  pool: HookArg<Pool>,
+  tokenIDs: HookArg<number[]>,
+) => {
   const {
     interface: { uniswapV3: { positionManagerAddress } },
   } = useEnvironment();
-  const config = tokenID
-    ? getPositionFromTokenIDRead(tokenID, positionManagerAddress)
-    : {
-        address: undefined,
-        abi: undefined,
-        functionName: undefined,
-        args: undefined,
-      };
-  return useContractRead({
-    ...config,
-    staleTime: Infinity,
-    enabled: !!tokenID,
-    refetchInterval: userRefectchInterval,
+
+  const positionQuery = useQueryGenerator(uniswapV3Position);
+
+  return useQueries({
+    queries:
+      tokenIDs?.map((tid) => ({
+        ...positionQuery({ positionManagerAddress, pool, tokenID: tid }),
+        refetchInterval: userRefectchInterval,
+      })) ?? [],
   });
 };
-
-export const usePositionsFromTokenIDs = (tokenIDs: HookArg<number[]>) => {
-  const {
-    interface: { uniswapV3: { positionManagerAddress } },
-  } = useEnvironment();
-  const contracts = useMemo(
-    () =>
-      tokenIDs
-        ? tokenIDs.map((i) =>
-            getPositionFromTokenIDRead(i, positionManagerAddress),
-          )
-        : undefined,
-    [tokenIDs, positionManagerAddress],
-  );
-  return useContractReads({
-    contracts,
-    staleTime: Infinity,
-    allowFailure: false,
-    enabled: !!contracts,
-    refetchInterval: userRefectchInterval,
-  });
-};
-
-const getPositionFromTokenIDRead = (
-  tokenID: number,
-  nonfungiblePositionManager: Address,
-) =>
-  ({
-    address: nonfungiblePositionManager,
-    args: [BigNumber.from(tokenID)],
-    abi: nonfungiblePositionManagerABI,
-    functionName: "positions",
-  }) as const satisfies ReadConfig<
-    typeof nonfungiblePositionManagerABI,
-    "positions"
-  >;
 
 export const useNumberOfPositions = (
   address: HookArg<Address>,
@@ -161,7 +86,15 @@ export const useNumberOfPositions = (
     address,
     balanceQuery.data ?? undefined,
   );
-  const positionsQuery = usePositionsFromTokenIDs(tokenIDQuery.data);
+  const dummyPool = new Pool(
+    market.base,
+    market.quote,
+    FeeAmount.MEDIUM,
+    Q96,
+    0,
+    0,
+  );
+  const positionsQuery = usePositionsFromTokenIDs(dummyPool, tokenIDQuery.data);
 
   return useMemo(() => {
     if (balanceQuery.data === 0)
@@ -169,7 +102,7 @@ export const useNumberOfPositions = (
     if (
       balanceQuery.isLoading ||
       tokenIDQuery.isLoading ||
-      positionsQuery.isLoading
+      positionsQuery.some((p) => p.isLoading)
     )
       return { status: "loading" } as const;
 
@@ -177,12 +110,15 @@ export const useNumberOfPositions = (
       !address ||
       !balanceQuery.data ||
       !tokenIDQuery.data ||
-      !positionsQuery.data
+      !positionsQuery.some((p) => !p.data)
     )
       return { status: "error" } as const;
     return {
       status: "success",
-      amount: filterUniswapPositions(positionsQuery.data, market).length,
+      amount: filterUniswapPositions(
+        positionsQuery.map((p) => p.data!),
+        market,
+      ).length,
     } as const;
   }, [
     address,
@@ -191,8 +127,7 @@ export const useNumberOfPositions = (
     balanceQuery.data,
     balanceQuery.isLoading,
     tokenIDQuery.isLoading,
-    positionsQuery.isLoading,
-    positionsQuery.data,
+    positionsQuery,
   ]);
 };
 
@@ -205,8 +140,29 @@ export const useUniswapPositionsValue = (
     address,
     balanceQuery.data ?? undefined,
   );
-  const positionsQuery = usePositionsFromTokenIDs(tokenIDQuery.data);
+
   const priceQuery = useMostLiquidMarket(market);
+
+  const pool = useMemo(() => {
+    if (!priceQuery.data?.price) return undefined;
+    const [token0] = sortTokens([market.quote, market.base]);
+
+    const closestTick = priceToClosestTick(
+      market.quote.equals(token0)
+        ? priceQuery.data.price
+        : invert(priceQuery.data.price),
+    );
+    return new Pool(
+      market.base,
+      market.quote,
+      FeeAmount.MEDIUM,
+      TickMath.getSqrtRatioAtTick(closestTick),
+      scale,
+      closestTick,
+    );
+  }, [priceQuery]);
+
+  const positionsQuery = usePositionsFromTokenIDs(pool, tokenIDQuery.data);
 
   return useMemo(() => {
     if (balanceQuery.data === 0)
@@ -217,21 +173,22 @@ export const useUniswapPositionsValue = (
     if (
       balanceQuery.isLoading ||
       tokenIDQuery.isLoading ||
-      positionsQuery.isLoading ||
-      priceQuery.status === "loading"
+      positionsQuery.some((p) => p.isLoading)
     )
       return { status: "loading" } as const;
     if (
       !address ||
       !balanceQuery.data ||
       !tokenIDQuery.data ||
-      !positionsQuery.data ||
-      priceQuery.status === "error"
+      !positionsQuery.some((p) => !p.data)
     )
       return { status: "error" } as const;
 
-    const value = filterUniswapPositions(positionsQuery.data, market).reduce(
-      (acc, cur) => acc.add(positionValue(cur, market, priceQuery.data.price)),
+    const value = filterUniswapPositions(
+      positionsQuery.map((p) => p.data!),
+      market,
+    ).reduce(
+      (acc, cur) => acc.add(positionValue(cur, market)),
       CurrencyAmount.fromRawAmount(market.quote, 0),
     );
     return {
@@ -245,10 +202,7 @@ export const useUniswapPositionsValue = (
     balanceQuery.data,
     tokenIDQuery.data,
     tokenIDQuery.isLoading,
-    positionsQuery.isLoading,
-    positionsQuery.data,
-    priceQuery.status,
-    priceQuery.data,
+    positionsQuery,
   ]);
 };
 
@@ -261,8 +215,28 @@ export const useUniswapPositionsGamma = (
     address,
     balanceQuery.data ?? undefined,
   );
-  const positionsQuery = usePositionsFromTokenIDs(tokenIDQuery.data);
+
   const priceQuery = useMostLiquidMarket(market);
+
+  const pool = useMemo(() => {
+    if (!priceQuery.data?.price) return undefined;
+    const [token0] = sortTokens([market.quote, market.base]);
+
+    const closestTick = priceToClosestTick(
+      market.quote.equals(token0)
+        ? priceQuery.data.price
+        : invert(priceQuery.data.price),
+    );
+    return new Pool(
+      market.base,
+      market.quote,
+      FeeAmount.MEDIUM,
+      TickMath.getSqrtRatioAtTick(closestTick),
+      scale,
+      closestTick,
+    );
+  }, [priceQuery]);
+  const positionsQuery = usePositionsFromTokenIDs(pool, tokenIDQuery.data);
 
   return useMemo(() => {
     if (balanceQuery.data === 0)
@@ -270,21 +244,22 @@ export const useUniswapPositionsGamma = (
     if (
       balanceQuery.isLoading ||
       tokenIDQuery.isLoading ||
-      positionsQuery.isLoading ||
-      priceQuery.status === "loading"
+      positionsQuery.some((p) => p.isLoading)
     )
       return { status: "loading" } as const;
     if (
       !address ||
       !balanceQuery.data ||
       !tokenIDQuery.data ||
-      !positionsQuery.data ||
-      priceQuery.status === "error"
+      !positionsQuery.some((p) => !p.data)
     )
       return { status: "error" } as const;
 
-    const gamma = filterUniswapPositions(positionsQuery.data, market).reduce(
-      (acc, cur) => acc.add(positionGamma(cur, market, priceQuery.data.price)),
+    const gamma = filterUniswapPositions(
+      positionsQuery.map((p) => p.data!),
+      market,
+    ).reduce(
+      (acc, cur) => acc.add(positionGamma(cur, market)),
       new Fraction(0),
     );
     return {
@@ -298,88 +273,45 @@ export const useUniswapPositionsGamma = (
     balanceQuery.data,
     tokenIDQuery.data,
     tokenIDQuery.isLoading,
-    positionsQuery.isLoading,
-    positionsQuery.data,
-    priceQuery.status,
-    priceQuery.data,
+    positionsQuery,
   ]);
 };
 
 const filterUniswapPositions = (
-  positions: NonNullable<ReturnType<typeof usePositionsFromTokenIDs>["data"]>,
+  positions: NonNullable<
+    ReturnType<typeof usePositionsFromTokenIDs>[number]["data"]
+  >[],
   market: Market,
 ) => {
-  return positions
-    .filter(
-      (p) =>
-        (utils.getAddress(market.base.address) === utils.getAddress(p.token0) &&
-          utils.getAddress(market.quote.address) ===
-            utils.getAddress(p.token1)) ||
-        (utils.getAddress(market.base.address) === utils.getAddress(p.token1) &&
-          utils.getAddress(market.quote.address) ===
-            utils.getAddress(p.token0)),
-    )
-    .map((p) => ({
-      feeTier: p.fee.toString() as typeof feeTiers[keyof typeof feeTiers],
-      token0:
-        utils.getAddress(market.base.address) === utils.getAddress(p.token0)
-          ? market.base
-          : market.quote,
-      token1:
-        utils.getAddress(market.base.address) === utils.getAddress(p.token0)
-          ? market.quote
-          : market.base,
-      tickLower: p.tickLower,
-      tickUpper: p.tickUpper,
-      liquidity: JSBI.BigInt(p.liquidity.toString()),
-    }));
+  return positions.filter(
+    (p) =>
+      (getAddress(market.base.address) === getAddress(p.pool.token0.address) &&
+        getAddress(market.quote.address) ===
+          getAddress(p.pool.token1.address)) ||
+      (getAddress(market.base.address) === getAddress(p.pool.token1.address) &&
+        getAddress(market.quote.address) === getAddress(p.pool.token0.address)),
+  );
 };
 
 const positionValue = (
   position: ReturnType<typeof filterUniswapPositions>[number],
   market: Market,
-  price: Price<Market["quote"], Market["base"]>,
 ) => {
-  // convert price to current tick
-  const closestTick = priceToClosestTick(
-    market.quote.equals(position.token0) ? price : invert(price),
-  );
-  const pool = new Pool(
-    position.token0,
-    position.token1,
-    +position.feeTier,
-    TickMath.getSqrtRatioAtTick(closestTick),
-    position.liquidity,
-    closestTick,
-  );
-  const uniswapPosition = new Position({
-    pool,
-    tickLower: position.tickLower,
-    tickUpper: position.tickUpper,
-    liquidity: position.liquidity,
-  });
-
-  const amount0 = CurrencyAmount.fromRawAmount(
-    position.token0,
-    uniswapPosition.amount0.quotient,
-  );
-  const amount1 = CurrencyAmount.fromRawAmount(
-    position.token1,
-    uniswapPosition.amount1.quotient,
-  );
-
-  return market.quote.equals(position.token0)
-    ? amount0.add(price.quote(amount1))
-    : amount1.add(price.quote(amount0));
+  return market.quote.equals(position.pool.token0)
+    ? position.amount0.add(position.pool.token1Price.quote(position.amount1))
+    : position.amount1.add(position.pool.token0Price.quote(position.amount0));
 };
 
 const positionGamma = (
   position: ReturnType<typeof filterUniswapPositions>[number],
   market: Market,
-  price: Price<Market["quote"], Market["base"]>,
 ) => {
   const lowerPrice = tickToPrice(market.base, market.quote, position.tickLower);
   const upperPrice = tickToPrice(market.base, market.quote, position.tickUpper);
+
+  const price = position.pool.token0.equals(market.quote)
+    ? position.pool.token1Price
+    : position.pool.token0Price;
 
   const priceFraction = priceToFraction(price);
 
@@ -392,7 +324,8 @@ const positionGamma = (
 
   // TODO: test to make sure liqudity is 18 decimals
   // liquidity is off by 10^6
-  const decimalsAdjust = position.token0.decimals - position.token1.decimals;
+  const decimalsAdjust =
+    position.pool.token0.decimals - position.pool.token1.decimals;
   return g
     .multiply(position.liquidity)
     .multiply(

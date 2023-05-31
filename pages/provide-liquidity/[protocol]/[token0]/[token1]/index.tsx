@@ -2,11 +2,11 @@ import ContractAddress from "@/components/contractAddress";
 import Popover from "@/components/core/popover";
 import Tab from "@/components/core/tabs";
 import Toggle from "@/components/core/toggle";
+import CurrencyIcon from "@/components/currencyIcon";
 import LoadingPage from "@/components/loadingPage";
 import Deposit from "@/components/provide-liquidity/Deposit";
 import Stats from "@/components/provide-liquidity/Stats";
 import Withdraw from "@/components/provide-liquidity/Withdraw";
-import TokenIcon from "@/components/tokenIcon";
 import type { Protocol } from "@/constants";
 import { useEnvironment } from "@/contexts/environment";
 import { useAllLendgines } from "@/hooks/useAllLendgines";
@@ -20,21 +20,21 @@ import {
   priceMultiple,
   priceToFraction,
 } from "@/lib/price";
+import { Token } from "@/lib/types/currency";
 import type { Lendgine } from "@/lib/types/lendgine";
-import { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
 import { Price } from "@uniswap/sdk-core";
-import { utils } from "ethers";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useMemo, useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import invariant from "tiny-invariant";
 import { createContainer } from "unstated-next";
+import { getAddress } from "viem";
 
 interface IProvideLiquidity {
   lendgines: readonly Lendgine[];
   protocol: Protocol;
-  price?: Price<WrappedTokenInfo, WrappedTokenInfo>;
+  price?: Price<Token, Token>;
 
   selectedLendgine: Lendgine;
   setSelectedLendgine: (val: Lendgine) => void;
@@ -47,7 +47,7 @@ const useProvideLiquidityInternal = ({
 }: {
   protocol?: Protocol;
   lendgines?: Lendgine[] | undefined;
-  price?: Price<WrappedTokenInfo, WrappedTokenInfo>;
+  price?: Price<Token, Token>;
 } = {}): IProvideLiquidity => {
   invariant(lendgines && protocol);
 
@@ -120,12 +120,12 @@ export default function ProvideLiquidity({
   if (protocol === "stpmmp") {
     if (environment.interface.liquidStaking) {
       if (
-        utils.getAddress(token0 as string) ===
-          utils.getAddress(
+        getAddress(token0 as string) ===
+          getAddress(
             environment.interface.liquidStaking.lendgine.token0.address,
           ) &&
-        utils.getAddress(token1 as string) ===
-          utils.getAddress(
+        getAddress(token1 as string) ===
+          getAddress(
             environment.interface.liquidStaking.lendgine.token1.address,
           )
       ) {
@@ -153,7 +153,7 @@ export default function ProvideLiquidity({
   if (
     !isValidMarket(
       market,
-      environment.interface.wrappedNative,
+      environment.interface.native.wrapped,
       environment.interface.specialtyMarkets,
     )
   )
@@ -266,8 +266,8 @@ function ProvideLiquidityInner() {
           </div>
         </div>
         <div className="relative left-[16px] top-[-32px] flex w-fit items-center rounded-lg bg-white p-2">
-          <TokenIcon tokenInfo={token0} size={48} />
-          <TokenIcon tokenInfo={token1} size={48} />
+          <CurrencyIcon currency={token0} size={48} />
+          <CurrencyIcon currency={token1} size={48} />
         </div>
 
         <div className="-mt-8 flex flex-col gap-4 p-6 lg:flex-row lg:justify-between">
