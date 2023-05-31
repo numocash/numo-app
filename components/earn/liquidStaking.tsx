@@ -1,6 +1,6 @@
 import EarnCard from "./earnCard";
+import CurrencyIcon from "@/components/currencyIcon";
 import LoadingSpinner from "@/components/loadingSpinner";
-import TokenIcon from "@/components/tokenIcon";
 import { useEnvironment } from "@/contexts/environment";
 import { useLiquidStakingReturns } from "@/hooks/useLiquidStakingReturns";
 import { formatPercent } from "@/utils/format";
@@ -21,8 +21,8 @@ export default function LiquidStaking() {
       }}
     >
       <h2 className="text-center">Liquid Staking Boost</h2>
-      <TokenIcon
-        tokenInfo={environment.interface.liquidStaking!.lendgine.token1}
+      <CurrencyIcon
+        currency={environment.interface.liquidStaking!.lendgine.token1}
         size={48}
       />
       <span className="shaked flex items-center gap-1">

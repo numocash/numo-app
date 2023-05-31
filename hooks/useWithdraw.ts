@@ -8,22 +8,19 @@ import type { Lendgine, LendginePosition } from "../lib/types/lendgine";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
 import type { HookArg } from "./internal/types";
-import { useInvalidateCall } from "./internal/useInvalidateCall";
+import { useFastClient } from "./internal/useFastClient";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { useWithdrawAmount } from "./useAmounts";
 import { useIsWrappedNative } from "./useTokens";
-import { position as positionRead } from "@/lib/reverseMirage/liquidityManager";
-import { balanceOf } from "@/lib/reverseMirage/token";
-import { useMutation } from "@tanstack/react-query";
+import { liquidityManagerPosition } from "@/lib/reverseMirage/liquidityManager";
+import { erc20BalanceOf } from "@/lib/reverseMirage/token";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
 import { useMemo } from "react";
 import { encodeFunctionData, getAddress } from "viem";
 import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
-import {
-  prepareWriteContract,
-  waitForTransaction,
-  writeContract,
-} from "wagmi/actions";
+import { prepareWriteContract, writeContract } from "wagmi/actions";
 
 export const useWithdraw = <L extends Lendgine>(
   lendgine: HookArg<L>,
@@ -35,7 +32,11 @@ export const useWithdraw = <L extends Lendgine>(
   const protocolConfig = environment.procotol[protocol]!;
 
   const { address } = useAccount();
-  const invalidate = useInvalidateCall();
+
+  const queryClient = useQueryClient();
+  const client = useFastClient();
+  const balanceQuery = useQueryGenerator(erc20BalanceOf);
+  const positionQuery = useQueryGenerator(liquidityManagerPosition);
 
   const native0 = useIsWrappedNative(lendgine?.token0);
   const native1 = useIsWrappedNative(lendgine?.token1);
@@ -150,28 +151,35 @@ export const useWithdraw = <L extends Lendgine>(
         hash: transaction.hash,
       });
 
-      return await waitForTransaction(transaction);
+      return await client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
-      lendgine &&
-        (await Promise.all([
-          invalidate(positionRead, {
-            lendgine,
-            address: input.address,
-            liquidityManagerAddress: protocolConfig.liquidityManager,
+      await Promise.all([
+        lendgine &&
+          queryClient.invalidateQueries({
+            queryKey: positionQuery({
+              lendgine,
+              address: input.address,
+              liquidityManagerAddress: protocolConfig.liquidityManager,
+            }).queryKey,
           }),
-          invalidate(balanceOf, {
+
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
             token: input.amount0.currency,
             address: input.address,
-          }),
-          invalidate(balanceOf, {
+          }).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
             token: input.amount1.currency,
             address: input.address,
-          }),
-        ]));
+          }).queryKey,
+        }),
+      ]);
     },
   });
 

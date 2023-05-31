@@ -1,5 +1,5 @@
 import Dialog from "./core/dialog";
-import TokenInfo from "./tokenInfo";
+import CurrencyInfo from "./currencyInfo";
 import { Token } from "@/lib/types/currency";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { clsx } from "clsx";
@@ -74,7 +74,7 @@ export default function TokenSearch({
                     type="button"
                     disabled={selectedToken?.equals(r)}
                   >
-                    <TokenInfo currency={r} showName />
+                    <CurrencyInfo currency={r} showName />
                     {selectedToken?.equals(r) && (
                       <FiCheck className="text-brand" size={24} />
                     )}

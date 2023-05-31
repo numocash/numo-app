@@ -15,7 +15,7 @@ import { useTokens } from "@/hooks/useTokens";
 import { AddressZero } from "@/lib/constants";
 import { isValidLendgine } from "@/lib/lendgineValidity";
 import { fractionToPrice, priceToFraction } from "@/lib/price";
-import type { WrappedTokenInfo } from "@/lib/types/wrappedTokenInfo";
+import { Token } from "@/lib/types/currency";
 import { Beet } from "@/utils/beet";
 import {
   formatDisplayWithSoftLimit,
@@ -23,7 +23,7 @@ import {
   fractionToFloat,
 } from "@/utils/format";
 import tryParseCurrencyAmount from "@/utils/tryParseCurrencyAmount";
-import { Fraction, Token } from "@uniswap/sdk-core";
+import { Fraction } from "@uniswap/sdk-core";
 import Head from "next/head";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -40,8 +40,8 @@ export default function Create() {
   const tokens = useTokens();
   const lendginesQuery = useAllLendgines();
 
-  const [token0, setToken0] = useState<WrappedTokenInfo | undefined>(undefined);
-  const [token1, setToken1] = useState<WrappedTokenInfo | undefined>(undefined);
+  const [token0, setToken0] = useState<Token | undefined>(undefined);
+  const [token1, setToken1] = useState<Token | undefined>(undefined);
 
   const [token0Input, setToken0Input] = useState("");
   const [token1Input, setToken1Input] = useState("");
@@ -51,7 +51,7 @@ export default function Create() {
   const token1Balance = useBalance(token1, address);
 
   const priceQuery = useMostLiquidMarket(
-    !!token0 && !!token1 ? { quote: token0, base: token1 } : null,
+    !!token0 && !!token1 ? { quote: token0, base: token1 } : undefined,
   );
 
   const lendgine = useMemo(
@@ -64,7 +64,13 @@ export default function Create() {
             token1Exp: token1.decimals,
             bound: fractionToPrice(bound, token1, token0),
             address: AddressZero as Address,
-            lendgine: new Token(chainID, AddressZero, 18),
+            lendgine: new Token(
+              chainID,
+              AddressZero,
+              18,
+              "NRD",
+              "Numoen Replating Derivative",
+            ),
           }
         : undefined,
     [bound, chainID, token0, token1],
@@ -109,7 +115,7 @@ export default function Create() {
         : !lendgine ||
           !isValidLendgine(
             lendgine,
-            environment.interface.wrappedNative,
+            environment.interface.native.wrapped,
             environment.interface.specialtyMarkets,
           )
         ? "Does not conform to the rules of valid markets"
@@ -143,7 +149,7 @@ export default function Create() {
       depositAmount.amount1,
       depositAmount.status,
       environment.interface.specialtyMarkets,
-      environment.interface.wrappedNative,
+      environment.interface.native,
       lendgine,
       lendginesQuery.lendgines,
       lendginesQuery.status,

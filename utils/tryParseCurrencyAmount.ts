@@ -1,17 +1,17 @@
 import { CurrencyAmount } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
 
-import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
+import type { Currency } from "@/lib/types/currency";
 import { parseUnits } from "viem";
 
 /**
  * Parses a CurrencyAmount from the passed string.
  * Returns the CurrencyAmount, or undefined if parsing fails.
  */
-export default function tryParseCurrencyAmount<T extends WrappedTokenInfo>(
+export default function tryParseCurrencyAmount<TCurrency extends Currency>(
   value?: string,
-  currency?: T,
-): CurrencyAmount<T> | undefined {
+  currency?: TCurrency,
+): CurrencyAmount<TCurrency> | undefined {
   if (!value || !currency) {
     return undefined;
   }

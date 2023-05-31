@@ -1,6 +1,6 @@
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
 import LoadingBox from "@/components/loadingBox";
 import MainStats from "@/components/mainStats";
-import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import { useEnvironment } from "@/contexts/environment";
 import { useLiquidStakingReturns } from "@/hooks/useLiquidStakingReturns";
 import { useTotalValue, useValue } from "@/hooks/useValue";
@@ -22,7 +22,10 @@ export default function Stats() {
           {
             label: "Total deposited",
             item: totalValueQuery.value ? (
-              <TokenAmountDisplay amount={totalValueQuery.value} showSymbol />
+              <CurrencyAmountDisplay
+                amount={totalValueQuery.value}
+                showSymbol
+              />
             ) : (
               <LoadingBox className="h-10 w-20 bg-gray-300" />
             ),
@@ -40,7 +43,10 @@ export default function Stats() {
             label: "Balance",
             item:
               userValueQuery.status === "success" ? (
-                <TokenAmountDisplay amount={userValueQuery.value} showSymbol />
+                <CurrencyAmountDisplay
+                  amount={userValueQuery.value}
+                  showSymbol
+                />
               ) : (
                 <LoadingBox className="h-10 w-20 bg-gray-300" />
               ),

@@ -77,7 +77,7 @@ export const useAllLendgines = () => {
           if (
             !isValidLendgine(
               lendgine,
-              environment.interface.wrappedNative,
+              environment.interface.native.wrapped,
               environment.interface.specialtyMarkets,
             )
           )
@@ -91,7 +91,7 @@ export const useAllLendgines = () => {
     addressToToken,
     chainID,
     environment.interface.specialtyMarkets,
-    environment.interface.wrappedNative,
+    environment.interface.native.wrapped,
     lendginesQuery.data,
     lendginesQuery.isLoading,
   ]);

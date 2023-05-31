@@ -4,30 +4,31 @@ import { useEnvironment } from "../contexts/environment";
 import { useSettings } from "../contexts/settings";
 import type { UniswapV2Pool } from "../graphql/uniswapV2";
 import type { UniswapV3Pool } from "../graphql/uniswapV3";
-import { AddressZero, ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
+import { ONE_HUNDRED_PERCENT, scale } from "../lib/constants";
 import { priceToFraction } from "../lib/price";
 import type { Lendgine } from "../lib/types/lendgine";
-import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
 import type { HookArg } from "./internal/types";
-import { useInvalidateCall } from "./internal/useInvalidateCall";
+import { useFastClient } from "./internal/useFastClient";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { useMintAmount } from "./useAmounts";
 import { useApprove } from "./useApprove";
 import { isV3, useMostLiquidMarket } from "./useExternalExchange";
 import { useIsWrappedNative } from "./useTokens";
-import { allowance, balanceOf } from "@/lib/reverseMirage/token";
-import { useMutation } from "@tanstack/react-query";
+import { erc20Allowance, erc20BalanceOf } from "@/lib/reverseMirage/token";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CurrencyAmount, Token } from "@uniswap/sdk-core";
 import { useMemo } from "react";
 import {
   encodeAbiParameters,
   encodeFunctionData,
+  getAddress,
   parseAbiParameters,
 } from "viem";
 import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
-import { SendTransactionResult, waitForTransaction } from "wagmi/actions";
+import { SendTransactionResult } from "wagmi/actions";
 import { prepareWriteContract, writeContract } from "wagmi/actions";
 
 export const useMint = <L extends Lendgine>(
@@ -40,7 +41,10 @@ export const useMint = <L extends Lendgine>(
   const settings = useSettings();
   const { address } = useAccount();
 
-  const invalidate = useInvalidateCall();
+  const queryClient = useQueryClient();
+  const client = useFastClient();
+  const allowanceQuery = useQueryGenerator(erc20Allowance);
+  const balanceQuery = useQueryGenerator(erc20BalanceOf);
 
   const mintAmounts = useMintAmount(lendgine, amountIn, protocol);
   const mostLiquid = useMostLiquidMarket(
@@ -67,17 +71,20 @@ export const useMint = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await waitForTransaction(transaction);
+      return await client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
       lendgine &&
-        (await invalidate(allowance, {
-          token: lendgine.token1,
-          address: address ?? AddressZero,
-          spender: protocolConfig.lendgineRouter,
+        address &&
+        (await queryClient.invalidateQueries({
+          queryKey: allowanceQuery({
+            token: lendgine.lendgine,
+            address: getAddress(address),
+            spender: getAddress(protocolConfig.lendgineRouter),
+          }).queryKey,
         }));
     },
   });
@@ -93,10 +100,10 @@ export const useMint = <L extends Lendgine>(
       toast,
     }: {
       lendgine: Lendgine;
-      borrowAmount: CurrencyAmount<WrappedTokenInfo>;
+      borrowAmount: CurrencyAmount<Token>;
       shares: CurrencyAmount<Token>;
       address: Address;
-      amountIn: CurrencyAmount<WrappedTokenInfo>;
+      amountIn: CurrencyAmount<Token>;
       mostLiquidPool: UniswapV2Pool | UniswapV3Pool;
     } & { toast: TxToast }) => {
       const args = [
@@ -168,25 +175,31 @@ export const useMint = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await waitForTransaction(transaction);
+      return await client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
       await Promise.all([
-        invalidate(allowance, {
-          token: input.amountIn.currency,
-          address: input.address,
-          spender: protocolConfig.lendgineRouter,
+        queryClient.invalidateQueries({
+          queryKey: allowanceQuery({
+            token: input.amountIn.currency,
+            address: input.address,
+            spender: protocolConfig.lendgineRouter,
+          }).queryKey,
         }),
-        invalidate(balanceOf, {
-          token: input.amountIn.currency,
-          address: input.address,
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
+            token: input.amountIn.currency,
+            address: input.address,
+          }).queryKey,
         }),
-        invalidate(balanceOf, {
-          token: input.shares.currency,
-          address: input.address,
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
+            token: input.shares.currency,
+            address: input.address,
+          }).queryKey,
         }),
       ]);
     },

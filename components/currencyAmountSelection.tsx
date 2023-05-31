@@ -1,7 +1,7 @@
 import Button from "./core/button";
 import NumberInput from "./core/numberInput";
-import TokenAmountDisplay from "./tokenAmountDisplay";
-import TokenInfo from "./tokenInfo";
+import CurrencyAmountDisplay from "./currencyAmountDisplay";
+import CurrencyInfo from "./currencyInfo";
 import TokenSearch from "./tokenSearch";
 import { CurrencyAmount, Token } from "@uniswap/sdk-core";
 import { useState } from "react";
@@ -15,7 +15,7 @@ type LabelProps = {
   label?: string;
 };
 type DisplayTokenProps = {
-  selectedToken: React.ComponentProps<typeof TokenInfo>["token"];
+  selectedToken: React.ComponentProps<typeof CurrencyInfo>["currency"];
 };
 type SelectTokenProps = Pick<
   React.ComponentProps<typeof TokenSearch>,
@@ -59,14 +59,14 @@ export default function CurrencyAmountSelection(
                 className="p4 hover:underline focus:underline"
                 onClick={() => props.onChange(props.amount!.toExact())}
               >
-                <TokenAmountDisplay amount={props.amount} showSymbol />
+                <CurrencyAmountDisplay amount={props.amount} showSymbol />
               </button>
             </p>
           )}
         </div>
         <div className="flex  w-full items-center justify-between gap-1 px-2 pl-4">
           {props.type === "display" ? (
-            <TokenInfo token={props.selectedToken} showName={false} />
+            <CurrencyInfo currency={props.selectedToken} showName={false} />
           ) : !props.selectedToken ? (
             <Button
               variant="primary"
@@ -82,7 +82,7 @@ export default function CurrencyAmountSelection(
               onClick={() => setOpen(true)}
               className="flex items-center space-x-2 rounded-xl p-1 text-left"
             >
-              <TokenInfo token={props.selectedToken} showName={false} />
+              <CurrencyInfo currency={props.selectedToken} showName={false} />
               <FaChevronDown />
             </button>
           )}

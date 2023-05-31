@@ -2,16 +2,17 @@ import { liquidityManagerABI } from "../abis/liquidityManager";
 import type { Protocol } from "../constants";
 import { useEnvironment } from "../contexts/environment";
 import type { Lendgine, LendginePosition } from "../lib/types/lendgine";
-import type { WrappedTokenInfo } from "../lib/types/wrappedTokenInfo";
 import { toaster } from "../pages/_app";
 import type { BeetStage, TxToast } from "../utils/beet";
 import type { HookArg } from "./internal/types";
 import { useFastClient } from "./internal/useFastClient";
-import { useQueryFactory } from "./internal/useQueryFactory";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { useCollectAmount } from "./useAmounts";
 import { useIsWrappedNative } from "./useTokens";
 import { AddressZero } from "@/lib/constants";
-
+import { liquidityManagerPosition } from "@/lib/reverseMirage/liquidityManager";
+import { erc20BalanceOf } from "@/lib/reverseMirage/token";
+import { Token } from "@/lib/types/currency";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
 import { useMemo } from "react";
@@ -26,8 +27,9 @@ export const useCollect = <L extends Lendgine>(
   protocol: Protocol,
 ) => {
   const queryClient = useQueryClient();
-  const queries = useQueryFactory();
   const client = useFastClient();
+  const balanceQuery = useQueryGenerator(erc20BalanceOf);
+  const positionQuery = useQueryGenerator(liquidityManagerPosition);
 
   const environment = useEnvironment();
   const protocolConfig = environment.procotol[protocol]!;
@@ -46,7 +48,7 @@ export const useCollect = <L extends Lendgine>(
       toast,
     }: {
       lendgine: Lendgine;
-      tokensOwed: CurrencyAmount<WrappedTokenInfo>;
+      tokensOwed: CurrencyAmount<Token>;
       address: Address;
     } & {
       toast: TxToast;
@@ -107,19 +109,23 @@ export const useCollect = <L extends Lendgine>(
     onSuccess: async (data, input) => {
       toaster.txSuccess({ ...input.toast, receipt: data });
 
-      queryClient.invalidateQueries({
-        queryKey: queries.reverseMirage.liquidityManagerPosition({
-          lendgine,
-          address: getAddress(input.address),
-          liquidityManagerAddress: getAddress(protocolConfig.liquidityManager),
-        }).queryKey,
-      });
-      queryClient.invalidateQueries({
-        queryKey: queries.reverseMirage.erc20BalanceOf({
-          token: lendgine?.token1,
-          address: getAddress(input.address),
-        }).queryKey,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: positionQuery({
+            lendgine,
+            address: getAddress(input.address),
+            liquidityManagerAddress: getAddress(
+              protocolConfig.liquidityManager,
+            ),
+          }).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
+            token: lendgine?.token1,
+            address: getAddress(input.address),
+          }).queryKey,
+        }),
+      ]);
     },
   });
 

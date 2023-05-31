@@ -1,6 +1,6 @@
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
 import LoadingBox from "@/components/loadingBox";
 import MainStats from "@/components/mainStats";
-import TokenAmountDisplay from "@/components/tokenAmountDisplay";
 import { useCollect } from "@/hooks/useCollect";
 import { useLendgine } from "@/hooks/useLendgine";
 import { useLendginePosition } from "@/hooks/useLendginePosition";
@@ -62,7 +62,10 @@ export default function Stats() {
           {
             label: "Total deposited",
             item: totalValueQuery.value ? (
-              <TokenAmountDisplay amount={totalValueQuery.value} showSymbol />
+              <CurrencyAmountDisplay
+                amount={totalValueQuery.value}
+                showSymbol
+              />
             ) : (
               <LoadingBox className="h-10 w-20 bg-gray-300" />
             ),
@@ -79,7 +82,10 @@ export default function Stats() {
             label: "Balance",
             item:
               userValueQuery.status === "success" ? (
-                <TokenAmountDisplay amount={userValueQuery.value} showSymbol />
+                <CurrencyAmountDisplay
+                  amount={userValueQuery.value}
+                  showSymbol
+                />
               ) : (
                 <LoadingBox className="h-10 w-20 bg-gray-300" />
               ),
@@ -89,7 +95,7 @@ export default function Stats() {
             item:
               tokensOwedQuery.status === "success" ? (
                 <div className="flex flex-col gap-1 sm:items-center">
-                  <TokenAmountDisplay
+                  <CurrencyAmountDisplay
                     amount={tokensOwedQuery.tokensOwed}
                     showSymbol
                   />

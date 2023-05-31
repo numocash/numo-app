@@ -1,6 +1,6 @@
 import CenterSwitch from "../CenterSwitch";
 import AsyncButton from "../core/asyncButton";
-import CurrencyAmountDisplay from "../currencyAmountDisplay";
+import CurrencyAmountDisplay from "../currencyAmountRow";
 import Slider from "../slider";
 import { useSettings } from "@/contexts/settings";
 import { useMintAmount } from "@/hooks/useAmounts";
@@ -16,6 +16,7 @@ import {
 import { calculateAccrual } from "@/lib/amounts";
 import { ONE_HUNDRED_PERCENT, scale } from "@/lib/constants";
 import { fractionToPrice, priceToFraction } from "@/lib/price";
+import { Token } from "@/lib/types/currency";
 import { useHedge } from "@/pages/hedge-uniswap/[token0]/[token1]";
 import { Beet } from "@/utils/beet";
 import { CurrencyAmount, Fraction, Percent } from "@uniswap/sdk-core";
@@ -36,11 +37,15 @@ export default function Add() {
   const gammaQuery = useUniswapPositionsGamma(address, market);
 
   const { currentGamma, hedge, maxSlide, minSlide } = useMemo(() => {
-    if (!priceQuery.data || !balancesQuery.data || !lendginesQuery.data)
+    if (
+      !priceQuery.data ||
+      balancesQuery.some((b) => !b.data) ||
+      lendginesQuery.some((l) => !l.data)
+    )
       return {};
-    const currentGamma = balancesQuery.data!.reduce((acc, cur, i) => {
+    const currentGamma = balancesQuery.reduce((acc, cur, i) => {
       const lendgine = lendgines[i]!;
-      const lendgineInfo = lendginesQuery.data![i]!;
+      const lendgineInfo = lendginesQuery[i]!.data!;
 
       if (priceQuery.data!.price.greaterThan(lendgine.bound)) return acc;
 
@@ -48,7 +53,7 @@ export default function Add() {
       const { liquidity } = calculateEstimatedBurnAmount(
         lendgine,
         lendgineInfo,
-        cur,
+        cur.data! as CurrencyAmount<Token>,
         "pmmp",
       );
 
@@ -72,7 +77,7 @@ export default function Add() {
       : 0;
 
     return { currentGamma, hedge, maxSlide, minSlide };
-  }, [priceQuery.data, balancesQuery.data, lendgines]);
+  }, [priceQuery.data, balancesQuery, lendginesQuery, lendgines]);
   const [hedgePercent, setHedgePercent] = useState<number | undefined>(
     undefined,
   );
@@ -86,7 +91,7 @@ export default function Add() {
     if (
       gammaQuery.status !== "success" ||
       hedgePercent === undefined ||
-      !lendginesQuery.data ||
+      lendginesQuery.some((l) => !l.data) ||
       !currentGamma ||
       !priceQuery.data ||
       hedgePercent > 100 ||
@@ -110,7 +115,7 @@ export default function Add() {
     // convert liquidity to balance
     const accruedLendgineInfo = calculateAccrual(
       selectedLendgine,
-      lendginesQuery.data[index]!,
+      lendginesQuery[index]!.data!,
       "pmmp",
     );
 
@@ -128,7 +133,7 @@ export default function Add() {
 
     const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
       lendgines[index]!,
-      lendginesQuery.data[index]!,
+      lendginesQuery[index]!.data!,
       liquidity,
     );
 
@@ -173,10 +178,10 @@ export default function Add() {
         ? "Remove hedge"
         : mintAmounts.status !== "success" ||
           mint.status !== "success" ||
-          !lendginesQuery.data
+          lendginesQuery.some((d) => !d.data)
         ? "Loading"
         : mintAmounts.liquidity.greaterThan(
-            lendginesQuery.data[
+            lendginesQuery.map((l) => l.data)[
               lendgines.findIndex(
                 (l) => l.address === selectedLendgine.address,
               )!

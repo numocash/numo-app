@@ -9,19 +9,20 @@ import type { Lendgine } from "../lib/types/lendgine";
 import { toaster } from "../pages/_app";
 import type { BeetStage, BeetTx, TxToast } from "../utils/beet";
 import type { HookArg } from "./internal/types";
-import { useInvalidateCall } from "./internal/useInvalidateCall";
+import { useFastClient } from "./internal/useFastClient";
+import { useQueryGenerator } from "./internal/useQueryGenerator";
 import { useDepositAmount } from "./useAmounts";
 import { useApprove } from "./useApprove";
 import { useIsWrappedNative } from "./useTokens";
-import { position as positionRead } from "@/lib/reverseMirage/liquidityManager";
-import { allowance, balanceOf } from "@/lib/reverseMirage/token";
+import { liquidityManagerPosition } from "@/lib/reverseMirage/liquidityManager";
+import { erc20Allowance, erc20BalanceOf } from "@/lib/reverseMirage/token";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CurrencyAmount } from "@uniswap/sdk-core";
 import { useMemo } from "react";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, getAddress } from "viem";
 import type { Address } from "wagmi";
 import { useAccount } from "wagmi";
-import { SendTransactionResult, waitForTransaction } from "wagmi/actions";
+import { SendTransactionResult } from "wagmi/actions";
 import { prepareWriteContract, writeContract } from "wagmi/actions";
 
 export const useCreate = <L extends Lendgine>(
@@ -37,8 +38,11 @@ export const useCreate = <L extends Lendgine>(
   const settings = useSettings();
   const { address } = useAccount();
 
-  const invalidate = useInvalidateCall();
   const queryClient = useQueryClient();
+  const client = useFastClient();
+  const allowanceQuery = useQueryGenerator(erc20Allowance);
+  const balanceQuery = useQueryGenerator(erc20BalanceOf);
+  const positionQuery = useQueryGenerator(liquidityManagerPosition);
 
   const native0 = useIsWrappedNative(lendgine?.token0);
   const native1 = useIsWrappedNative(lendgine?.token1);
@@ -73,7 +77,7 @@ export const useCreate = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await waitForTransaction(transaction);
+      return await client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
@@ -81,10 +85,12 @@ export const useCreate = <L extends Lendgine>(
       toaster.txSuccess({ ...input.toast, receipt: data });
       lendgine &&
         address &&
-        (await invalidate(allowance, {
-          token: lendgine.token0,
-          address: address,
-          spender: protocolConfig.liquidityManager,
+        (await queryClient.invalidateQueries({
+          queryKey: allowanceQuery({
+            token: lendgine.token0,
+            address: getAddress(address),
+            spender: getAddress(protocolConfig.liquidityManager),
+          }).queryKey,
         }));
     },
   });
@@ -100,7 +106,7 @@ export const useCreate = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await waitForTransaction(transaction);
+      return await client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
@@ -108,10 +114,12 @@ export const useCreate = <L extends Lendgine>(
       toaster.txSuccess({ ...input.toast, receipt: data });
       lendgine &&
         address &&
-        (await invalidate(allowance, {
-          token: lendgine.token1,
-          address: address,
-          spender: protocolConfig.liquidityManager,
+        (await queryClient.invalidateQueries({
+          queryKey: allowanceQuery({
+            token: lendgine.token1,
+            address: getAddress(address),
+            spender: getAddress(protocolConfig.liquidityManager),
+          }).queryKey,
         }));
     },
   });
@@ -141,7 +149,7 @@ export const useCreate = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return await waitForTransaction(transaction);
+      return await client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
@@ -244,7 +252,7 @@ export const useCreate = <L extends Lendgine>(
 
       toaster.txPending({ ...toast, hash: transaction.hash });
 
-      return waitForTransaction(transaction);
+      return client.waitForTransactionReceipt(transaction);
     },
     onMutate: ({ toast }) => toaster.txSending(toast),
     onError: (_, { toast }) => toaster.txError(toast),
@@ -252,28 +260,39 @@ export const useCreate = <L extends Lendgine>(
       toaster.txSuccess({ ...input.toast, receipt: data });
       await Promise.all([
         lendgine &&
-          invalidate(positionRead, {
-            lendgine,
-            address: input.address,
-            liquidityManagerAddress: protocolConfig.liquidityManager,
+          queryClient.invalidateQueries({
+            queryKey: positionQuery({
+              lendgine,
+              address: input.address,
+              liquidityManagerAddress: protocolConfig.liquidityManager,
+            }).queryKey,
           }),
-        invalidate(allowance, {
-          token: input.amount0.currency,
-          address: input.address,
-          spender: protocolConfig.liquidityManager,
+        queryClient.invalidateQueries({
+          queryKey: allowanceQuery({
+            token: input.amount0.currency,
+            address: input.address,
+            spender: protocolConfig.liquidityManager,
+          }).queryKey,
         }),
-        invalidate(allowance, {
-          token: input.amount1.currency,
-          address: input.address,
-          spender: protocolConfig.liquidityManager,
+        queryClient.invalidateQueries({
+          queryKey: allowanceQuery({
+            token: input.amount1.currency,
+            address: input.address,
+            spender: protocolConfig.liquidityManager,
+          }).queryKey,
         }),
-        invalidate(balanceOf, {
-          token: input.amount0.currency,
-          address: input.address,
+
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
+            token: input.amount0.currency,
+            address: input.address,
+          }).queryKey,
         }),
-        invalidate(balanceOf, {
-          token: input.amount1.currency,
-          address: input.address,
+        queryClient.invalidateQueries({
+          queryKey: balanceQuery({
+            token: input.amount1.currency,
+            address: input.address,
+          }).queryKey,
         }),
       ]);
     },

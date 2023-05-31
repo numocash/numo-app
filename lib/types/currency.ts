@@ -45,21 +45,29 @@ export class Token extends UniswapToken {
 }
 
 export const WrappedNative: { [chainId in SupportedChainIDs]: Token } = {
-  [11155111]: new Token(
-    11155111,
-    "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-    18,
-    "WSEP",
-    "Wrapped Sepolia Ether",
-    "/eth.png",
-  ),
-  [5]: new Token(
-    5,
-    "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+  [42161]: new Token(
+    42161,
+    "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
     18,
     "WETH",
-    "Wrapped Goerli Ether",
+    "Wrapped Ether",
     "/eth.png",
+  ),
+  [42220]: new Token(
+    42220,
+    "0x471EcE3750Da237f93B8E339c536989b8978a438",
+    18,
+    "CELO",
+    "Celo Native Asset",
+    "https://assets.coingecko.com/coins/images/11090/small/InjXBNx9_400x400.jpg?1674707499",
+  ),
+  [137]: new Token(
+    137,
+    "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    18,
+    "WMATIC",
+    "Wrapped Matic",
+    "https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png?1624446912",
   ),
 };
 

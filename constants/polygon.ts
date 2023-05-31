@@ -1,81 +1,30 @@
 import type { Config } from ".";
 import { chainID } from "../lib/constants";
-import { WrappedNative } from "./tokens";
 import { allTokens } from "@/hooks/useTokens";
 import { NativeCurrency, Token } from "@/lib/types/currency";
-import type { Currency } from "@uniswap/sdk-core";
 import { Percent, Price } from "@uniswap/sdk-core";
 import { getAddress } from "viem";
 
-const USDC = new WrappedTokenInfo({
-  name: "USDCoin",
-  address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-  symbol: "USDC",
-  decimals: 6,
-  chainId: 137,
-  logoURI:
-    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
-});
+const stMATIC = new Token(
+  chainID.polygon,
+  "0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4",
+  18,
+  "stMATIC",
+  "Staked Matic",
+  "https://assets.coingecko.com/coins/images/24185/small/stMATIC.png?1646789287",
+);
 
-const WETH = new WrappedTokenInfo({
-  name: "Wrapped Ether",
-  address: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
-  symbol: "WETH",
-  decimals: 18,
-  chainId: 137,
-  logoURI:
-    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
-});
+export const Matic = new NativeCurrency(
+  137,
+  18,
+  "MATIC",
+  "Matic",
+  "https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png?1624446912",
+);
 
-const BOB = new WrappedTokenInfo({
-  name: "BOB",
-  address: "0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B",
-  symbol: "BOB",
-  decimals: 18,
-  chainId: 137,
-  logoURI:
-    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/assets/0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B/logo.png",
-});
-const USDT = new WrappedTokenInfo({
-  name: "Tether USD",
-  address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-  symbol: "USDT",
-  decimals: 6,
-  chainId: 137,
-  logoURI:
-    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png",
-});
-const WBTC = new WrappedTokenInfo({
-  name: "Wrapped BTC",
-  address: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
-  symbol: "WBTC",
-  decimals: 8,
-  chainId: 137,
-  logoURI:
-    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png",
-});
-const GHST = new WrappedTokenInfo({
-  name: "Aavegotchi",
-  address: "0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7",
-  symbol: "GHST",
-  decimals: 18,
-  chainId: 137,
-  logoURI:
-    "https://assets.coingecko.com/coins/images/12467/small/ghst_200.png?1600750321",
-});
-const stMATIC = new WrappedTokenInfo({
-  name: "Staked MATIC",
-  symbol: "stMATIC",
-  address: "0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4",
-  decimals: 18,
-  chainId: 137,
-  logoURI:
-    "https://assets.coingecko.com/coins/images/24185/small/stMATIC.png?1646789287",
-});
-
-const polygonTokens = allTokens[137]!;
-
-export const Matic = new NativeCurrency(137, 18, "MATIC", "Matic");
+const WMATIC = allTokens[chainID.polygon]!["WMATIC"]!;
+const WETH = allTokens[chainID.polygon]!["WETH"]!;
+const USDC = allTokens[chainID.polygon]!["USDC"]!;
 
 export const polygonConfig = {
   interface: {
@@ -96,11 +45,11 @@ export const polygonConfig = {
     liquidStaking: {
       return: new Percent(42, 1000),
       lendgine: {
-        token0: WrappedNative[chainID.polygon],
-        token0Exp: WrappedNative[chainID.polygon].decimals,
+        token0: WMATIC,
+        token0Exp: WMATIC.decimals,
         token1: stMATIC,
         token1Exp: stMATIC.decimals,
-        bound: new Price(stMATIC, WrappedNative[chainID.polygon], 10, 16),
+        bound: new Price(stMATIC, WMATIC, 10, 16),
         address: "0x0A435BC2488c85A7C87fA3dac0CD4fA538DDe4Ce",
         lendgine: new Token(
           137,
@@ -117,14 +66,14 @@ export const polygonConfig = {
     native: Matic,
     specialtyMarkets: [
       {
-        base: WrappedNative[chainID.polygon],
+        base: WMATIC,
         quote: WETH,
       },
-      { base: USDC, quote: USDT },
+      { base: USDC, quote: allTokens[chainID.polygon]!["USDT"]! },
       { base: WETH, quote: USDC },
-      { base: WBTC, quote: USDC },
-      { base: BOB, quote: USDC },
-      { base: GHST, quote: USDC },
+      { base: allTokens[chainID.polygon]!["WBTC"]!, quote: USDC },
+      { base: allTokens[chainID.polygon]!["BOB"]!, quote: USDC },
+      { base: allTokens[chainID.polygon]!["GHST"]!, quote: USDC },
     ],
   },
   procotol: {

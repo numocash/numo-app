@@ -1,6 +1,7 @@
 import type { Config } from ".";
-import { chainID } from "../lib/constants";
-import { Stable, WrappedNative } from "./tokens";
+import { allTokens } from "@/hooks/useTokens";
+import { chainID } from "@/lib/constants";
+import { NativeCurrency } from "@/lib/types/currency";
 import { getAddress } from "viem";
 
 export const celoConfig = {
@@ -21,13 +22,18 @@ export const celoConfig = {
     },
     numoenSubgraph:
       "https://api.thegraph.com/subgraphs/name/kyscott18/numoen-celo",
-
-    wrappedNative: WrappedNative[chainID.celo],
+    native: new NativeCurrency(
+      chainID.celo,
+      18,
+      "CELO",
+      "Celo Native Asset",
+      "https://assets.coingecko.com/coins/images/11090/small/InjXBNx9_400x400.jpg?1674707499",
+    ),
 
     specialtyMarkets: [
       {
-        base: WrappedNative[chainID.celo],
-        quote: Stable[chainID.celo],
+        base: allTokens[chainID.celo]!["CELO"]!,
+        quote: allTokens[chainID.celo]!["cUSD"]!,
       },
     ],
   },

@@ -1,7 +1,7 @@
 import EarnCard from "./earnCard";
+import CurrencyAmountDisplay from "@/components/currencyAmountDisplay";
+import CurrencyIcon from "@/components/currencyIcon";
 import LoadingBox from "@/components/loadingBox";
-import TokenAmountDisplay from "@/components/tokenAmountDisplay";
-import TokenIcon from "@/components/tokenIcon";
 import type { Protocol } from "@/constants";
 import { useMostLiquidMarket } from "@/hooks/useExternalExchange";
 import { useLendgines } from "@/hooks/useLendgines";
@@ -34,27 +34,29 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
     base: token1,
   });
   const tvl = useMemo(() => {
-    if (!priceQuery.data || !lendginesQuery.data) return undefined;
+    if (!priceQuery.data || lendginesQuery.some((d) => !d.data))
+      return undefined;
     return lendgines.reduce((acc, cur, i) => {
       const { liquidity } = calculateEstimatedWithdrawAmount(
         cur,
-        lendginesQuery.data![i]!,
-        { size: lendginesQuery.data![i]!.totalPositionSize },
+        lendginesQuery[i]!.data!,
+        { size: lendginesQuery[i]!.data!.totalPositionSize },
         protocol,
       );
       const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
         cur,
-        lendginesQuery.data![i]!,
+        lendginesQuery[i]!.data!,
         liquidity,
       );
       const value = amount0.add(priceQuery.data.price.quote(amount1));
 
       return acc.add(value);
     }, CurrencyAmount.fromRawAmount(token0, 0));
-  }, [lendgines, lendginesQuery.data, priceQuery.data, protocol, token0]);
+  }, [lendgines, lendginesQuery, priceQuery.data, protocol, token0]);
 
   const bestAPR = useMemo(() => {
-    if (!priceQuery.data || !lendginesQuery.data) return undefined;
+    if (!priceQuery.data || lendginesQuery.some((d) => !d.data))
+      return undefined;
 
     return lendgines.reduce((acc, cur, i) => {
       const liquidity = CurrencyAmount.fromRawAmount(cur.lendgine, scale);
@@ -66,7 +68,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
 
       const { amount0, amount1 } = calculateEstimatedPairBurnAmount(
         cur,
-        lendginesQuery.data![i]!,
+        lendginesQuery[i]!.data!,
         liquidity,
       );
 
@@ -80,7 +82,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
 
       const accruedInfo = calculateAccrual(
         cur,
-        lendginesQuery.data![i]!,
+        lendginesQuery[i]!.data!,
         protocol,
       );
       const supplyRate = calculateSupplyRate({
@@ -89,7 +91,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
       }).multiply(new Percent(f.numerator, f.denominator));
       return supplyRate.greaterThan(acc) ? supplyRate : acc;
     }, new Percent(0));
-  }, [lendgines, lendginesQuery.data, protocol]);
+  }, [lendgines, lendginesQuery, priceQuery, protocol]);
 
   return (
     <EarnCard
@@ -108,8 +110,8 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
         </p>
       </div>
       <div className="relative left-[8px] top-[-32px] flex w-fit items-center rounded-lg bg-white p-2">
-        <TokenIcon tokenInfo={token0} size={48} />
-        <TokenIcon tokenInfo={token1} size={48} />
+        <CurrencyIcon currency={token0} size={48} />
+        <CurrencyIcon currency={token1} size={48} />
       </div>
 
       <div className="-mt-8 flex flex-col gap-4  p-4">
@@ -126,7 +128,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
           <p className="p5">TVL</p>
           <p className="p1">
             {tvl ? (
-              <TokenAmountDisplay amount={tvl} showSymbol />
+              <CurrencyAmountDisplay amount={tvl} showSymbol />
             ) : (
               <LoadingBox />
             )}
