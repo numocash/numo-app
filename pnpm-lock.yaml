@@ -26,8 +26,8 @@ dependencies:
     specifier: ^1.1.2
     version: 1.1.2(@types/react-dom@18.2.4)(@types/react@18.2.7)(react-dom@18.2.0)(react@18.2.0)
   '@rainbow-me/rainbowkit':
-    specifier: ^0.12.13
-    version: 0.12.13(@types/react@18.2.7)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.13)
+    specifier: ^0.12.14
+    version: 0.12.14(@types/react@18.2.7)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.13)
   '@sentry/nextjs':
     specifier: ^7.53.1
     version: 7.53.1(next@13.4.4)(react@18.2.0)
@@ -2819,11 +2819,11 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@rainbow-me/rainbowkit@0.12.13(@types/react@18.2.7)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.13):
-    resolution: {integrity: sha512-1rZ1j/bawW2HbV3Kh1gRX0Owel8E3RbFTi9ydLv59aHqMiHwGUmuxDOLKdhOPMHm9PgdoR7p0k+jH9fYvEAPYw==}
+  /@rainbow-me/rainbowkit@0.12.14(@types/react@18.2.7)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(wagmi@0.12.13):
+    resolution: {integrity: sha512-G7/uYl6TrDS7eiQauc5GEWQ09wCV91hs7xZqj3Af1wsLmbnJM2paUEMs0NI4rbvw0yiMkfoNYMZ2Wfl7NQLKaA==}
     engines: {node: '>=12.4'}
     peerDependencies:
-      ethers: '>=5.5.1'
+      ethers: '>=5.6.8'
       react: '>=17'
       react-dom: '>=17'
       wagmi: 0.12.x
