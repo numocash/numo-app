@@ -93,42 +93,46 @@ const TradeInner = ({
     return { selectedLongLendgine, selectedShortLendgine };
   }, [priceQuery, selectedMarket, lendgines]);
 
-  const tabs = {
+  const long = {
     deposit: {
       tab: "Long",
-      panel: (
+      panel: selectedLongLendgine ? (
         <MintOrBurn
           type="long"
           market={selectedMarket}
           lendgine={selectedLongLendgine}
         />
-      ),
+      ) : undefined,
     },
+  };
+
+  const short = {
     withdraw: {
       tab: "Short",
-      panel: (
+      panel: selectedShortLendgine ? (
         <MintOrBurn
           type="short"
           market={selectedMarket}
           lendgine={selectedShortLendgine}
         />
-      ),
+      ) : undefined,
     },
-  } as const;
+  };
 
+  const tabs = { ...long, ...short };
   return (
     <>
       <Head>
         <title>Numoen</title>
       </Head>
-      <div className="flex w-full max-w-3xl flex-col items-center gap-6 pt-24">
+      <div className="flex w-full max-w-3xl flex-col items-center gap-12 pt-20">
         <MarketSelection
           selectedMarket={selectedMarket}
           onSelect={setSelectedMarket}
           markets={markets}
         />
         <div className="flex w-full max-w-lg flex-col gap-2">
-          <Tab tabs={tabs} />
+          {tabs && <Tab tabs={tabs} />}
         </div>
       </div>
     </>

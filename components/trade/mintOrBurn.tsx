@@ -69,30 +69,31 @@ export default function MintOrBurn({
   );
 
   return (
-    <div className="flex w-full flex-col gap-6 pt-6 items-center">
-      <div className="rounded-xl border-2 border-gray-200 bg-white w-full">
-        <CurrencyAmountSelection
-          label="Input"
-          type="display"
-          selectedToken={token}
-          value={input}
-          onChange={setInput}
-          amount={balanceQuery.data}
-        />
+    <div className="flex w-full flex-col gap-12 items-center">
+      <div className="flex flex-col gap-2 w-full">
+        <div className="rounded-xl border-2 border-gray-200 bg-white w-full">
+          <CurrencyAmountSelection
+            label="Input"
+            type="display"
+            selectedToken={token}
+            value={input}
+            onChange={setInput}
+            amount={balanceQuery.data}
+          />
+        </div>
+        <AsyncButton
+          variant="primary"
+          className="p1 h-12 w-full"
+          disabled={!!disableReason}
+          onClick={async () => {
+            invariant(mint.data);
+            await Beet(mint.data);
+            setInput("");
+          }}
+        >
+          {disableReason ?? "Trade"}
+        </AsyncButton>
       </div>
-      <AsyncButton
-        variant="primary"
-        className="p1 h-12 w-full"
-        disabled={!!disableReason}
-        onClick={async () => {
-          invariant(mint.data);
-          await Beet(mint.data);
-          setInput("");
-        }}
-      >
-        {disableReason ?? "Trade"}
-      </AsyncButton>
-
       <Stats selectedLendgine={lendgine} />
       {type === "long" ? (
         <Returns market={market} long />

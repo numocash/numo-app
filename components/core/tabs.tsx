@@ -5,7 +5,7 @@ import { objectKeys } from "ts-extras";
 export default function Tab<T extends string>({
   tabs,
 }: {
-  tabs: { [key in T]: { tab: string; panel: React.ReactElement } };
+  tabs: { [key in T]: { tab: string; panel: React.ReactElement | undefined } };
 }) {
   return (
     <HeadlessTab.Group>
@@ -13,7 +13,7 @@ export default function Tab<T extends string>({
         className={"flex h-12 w-full items-center rounded-xl bg-gray-200 p-0.5"}
       >
         {objectKeys(tabs).map((t) => {
-          return (
+          return tabs[t as T].panel ? (
             <HeadlessTab
               key={t}
               className={(selected) =>
@@ -28,7 +28,7 @@ export default function Tab<T extends string>({
             >
               {tabs[t as T].tab}
             </HeadlessTab>
-          );
+          ) : undefined;
         })}
       </HeadlessTab.List>
       <HeadlessTab.Panels>
