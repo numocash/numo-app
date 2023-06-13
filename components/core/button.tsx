@@ -50,7 +50,7 @@ export default function Button({
         "transistion-transform active:scale-98 hover:bg-opacity-90",
         variant === "primary" && "bg-gray-1000 text-white",
         variant === "inverse" && "bg-white",
-        variant === "danger" && "bg-red-500 text-white",
+        variant === "danger" && "bg-red text-white",
         variant === "connect" && "bg-brand text-white",
         "disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-secondary",
         className,

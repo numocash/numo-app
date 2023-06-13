@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  transpilePackages: ["@visx/scale"],
+  experimental: { esmExternals: "loose" },
   images: {
     remotePatterns: [
       {
@@ -21,13 +23,8 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/trade",
-        destination: "/earn",
-        permanent: false,
-      },
-      {
         source: "/trade/details",
-        destination: "/earn",
+        destination: "/trade",
         permanent: false,
       },
       {

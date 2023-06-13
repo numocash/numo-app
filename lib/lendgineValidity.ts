@@ -68,3 +68,6 @@ const isEqualToMarket = (
 ) =>
   (market.base.equals(token0) && market.quote.equals(token1)) ||
   (market.base.equals(token1) && market.quote.equals(token0));
+
+export const marketEqual = (marketA: Market, marketB: Market) =>
+  marketA.quote.equals(marketB.quote) && marketA.base.equals(marketB.base);

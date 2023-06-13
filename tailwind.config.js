@@ -28,6 +28,8 @@ module.exports = {
       colors: {
         gray,
         brand: "#0E76FD",
+        green: "#22c509",
+        red: "#ef4444",
       },
       textColor,
     },

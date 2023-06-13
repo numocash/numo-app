@@ -1,8 +1,8 @@
 import { uniswapV2PairABI } from "../abis/uniswapV2Pair";
 import { uniswapV3PoolABI } from "../abis/uniswapV3Pool";
 import { useEnvironment } from "../contexts/environment";
-import type { UniswapV2Pool } from "../graphql/uniswapV2";
-import type { UniswapV3Pool } from "../graphql/uniswapV3";
+import { UniswapV2Pool, parsePriceHistoryHourV2 } from "../graphql/uniswapV2";
+import { UniswapV3Pool, parsePriceHistoryHourV3 } from "../graphql/uniswapV3";
 import { Q192, feeTiers } from "../graphql/uniswapV3";
 import type { Market } from "../lib/types/market";
 import {
@@ -16,6 +16,14 @@ import { useContractRead } from "./internal/useContractRead";
 import { useContractReads } from "./internal/useContractReads";
 import { externalRefetchInterval } from "./internal/utils";
 import { getBalanceRead } from "./useBalance";
+import { useChain } from "./useChain";
+import { useClient } from "./useClient";
+import {
+  PriceHistoryHourV2Document,
+  PriceHistoryHourV2Query,
+} from "@/gql/uniswapV2/graphql";
+import { PriceHistoryHourV3Document } from "@/gql/uniswapV3/graphql";
+import { useQuery } from "@tanstack/react-query";
 import { CurrencyAmount, Fraction, Price } from "@uniswap/sdk-core";
 import JSBI from "jsbi";
 import { chunk } from "lodash";
@@ -147,6 +155,63 @@ export const useMostLiquidMarket = (market: HookArg<Market>) => {
     v3PriceQuery.isError,
     v3PriceQuery.isLoading,
   ]);
+};
+
+export const usePriceHistory = (
+  market: HookArg<Market>,
+  externalExchange: HookArg<UniswapV2Pool | UniswapV3Pool>,
+) => {
+  const client = useClient();
+  const chain = useChain();
+  const environment = useEnvironment();
+
+  return useQuery(
+    ["price history", externalExchange, market, chain],
+    async () => {
+      invariant(externalExchange && market);
+
+      const sortedTokens = sortTokens([market.base, market.quote]);
+      const pairAddress = isV3(externalExchange)
+        ? (calcV3Address(
+            sortedTokens,
+            externalExchange.feeTier,
+            environment.interface.uniswapV3.factoryAddress,
+            environment.interface.uniswapV3.pairInitCodeHash,
+          ) as Address)
+        : (calcV2Address(
+            sortedTokens,
+            environment.interface.uniswapV2.factoryAddress,
+            environment.interface.uniswapV2.pairInitCodeHash,
+          ) as Address);
+
+      const variables = {
+        id: pairAddress.toLowerCase(),
+        amount: 24 * 7,
+      };
+
+      return isV3(externalExchange)
+        ? await client.uniswapV3.request(PriceHistoryHourV3Document, variables)
+        : await client.uniswapV2.request(PriceHistoryHourV2Document, variables);
+    },
+    {
+      select: (data) => {
+        const isV2 = (t: typeof data): t is PriceHistoryHourV2Query => {
+          return "pair" in t;
+        };
+
+        return isV2(data)
+          ? data.pair
+            ? parsePriceHistoryHourV2(data)
+            : undefined
+          : data.pool
+          ? parsePriceHistoryHourV3(data)
+          : undefined;
+      },
+      staleTime: Infinity,
+      refetchInterval: 10 * 60_000,
+      enabled: !!externalExchange && !!market,
+    },
+  );
 };
 
 const useV2Price = (market: HookArg<Market>) => {

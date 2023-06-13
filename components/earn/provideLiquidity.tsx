@@ -118,7 +118,7 @@ export default function ProvideLiquidity({ lendgines, protocol }: Props) {
         </h2>
         <div className="flex flex-col ">
           <p className="p5">Max APR</p>
-          <p className="p1 text-green-500">
+          <p className="p1 text-green">
             {bestAPR ? formatPercent(bestAPR) : <LoadingBox />}
           </p>
         </div>

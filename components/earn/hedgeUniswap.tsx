@@ -131,7 +131,7 @@ export default function HedgeUniswap({ lendgines, market }: Props) {
         </h2>
         <div className="flex flex-col ">
           <p className="p5">Funding APR</p>
-          <p className="p1 text-green-500 ">
+          <p className="p1 text-green ">
             {borrowRate ? formatPercent(borrowRate) : <LoadingBox />}
           </p>
         </div>

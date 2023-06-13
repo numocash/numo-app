@@ -57,9 +57,9 @@ export const nextHighestLendgine = <L extends Lendgine>(
   const price = "price" in props ? props.price : props.lendgine.bound;
 
   return sortedLendgines.reduce(
-    (acc: Lendgine | null, cur) =>
-      acc === null && cur.bound.greaterThan(price) ? cur : acc,
-    null,
+    (acc: Lendgine | undefined, cur) =>
+      acc === undefined && cur.bound.greaterThan(price) ? cur : acc,
+    undefined,
   );
 };
 
@@ -82,9 +82,9 @@ export const nextLowestLendgine = <L extends Lendgine>(
   const price = "lendgine" in props ? props.lendgine.bound : props.price;
 
   return sortedLendgines.reduce(
-    (acc: Lendgine | null, cur) =>
-      acc === null && cur.bound.lessThan(price) ? cur : acc,
-    null,
+    (acc: Lendgine | undefined, cur) =>
+      acc === undefined && cur.bound.lessThan(price) ? cur : acc,
+    undefined,
   );
 };
 
