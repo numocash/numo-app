@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -88,10 +88,10 @@ dependencies:
     version: 3.0.0(react@18.2.0)
   '@wagmi/core':
     specifier: ^0.10.11
-    version: 0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.0.4)
+    version: 0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.1.6)
   abitype:
     specifier: ^0.8.6
-    version: 0.8.6(typescript@5.0.4)
+    version: 0.8.6(typescript@5.1.6)
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.24)
@@ -150,8 +150,8 @@ dependencies:
     specifier: ^0.11.0
     version: 0.11.0
   typescript:
-    specifier: 5.0.4
-    version: 5.0.4
+    specifier: 5.1.6
+    version: 5.1.6
   unstated-next:
     specifier: ^1.1.0
     version: 1.1.0
@@ -160,7 +160,7 @@ dependencies:
     version: 9.0.4(react@18.2.0)
   wagmi:
     specifier: ^0.12.13
-    version: 0.12.13(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.4)
+    version: 0.12.13(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)
 
 devDependencies:
   '@babel/core':
@@ -2871,7 +2871,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-remove-scroll: 2.5.4(@types/react@18.2.7)(react@18.2.0)
-      wagmi: 0.12.13(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.4)
+      wagmi: 0.12.13(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -3904,7 +3904,7 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@wagmi/chains@0.2.22(typescript@5.0.4):
+  /@wagmi/chains@0.2.22(typescript@5.1.6):
     resolution: {integrity: sha512-TdiOzJT6TO1JrztRNjTA5Quz+UmQlbvWFG8N41u9tta0boHA1JCAzGGvU6KuIcOmJfRJkKOUIt67wlbopCpVHg==}
     peerDependencies:
       typescript: '>=4.9.4'
@@ -3912,10 +3912,10 @@ packages:
       typescript:
         optional: true
     dependencies:
-      typescript: 5.0.4
+      typescript: 5.1.6
     dev: false
 
-  /@wagmi/connectors@0.3.19(@wagmi/core@0.10.11)(ethers@5.7.2)(react@18.2.0)(typescript@5.0.4):
+  /@wagmi/connectors@0.3.19(@wagmi/core@0.10.11)(ethers@5.7.2)(react@18.2.0)(typescript@5.1.6):
     resolution: {integrity: sha512-1EnVdNjP5dAfWoW8dlUDZS+Lva8MYabWK+vwzSUBeSyJcAslXInoiHLb+cz9p8oAAqXspcPLRX3XPErYav23gA==}
     peerDependencies:
       '@wagmi/core': '>=0.9.x'
@@ -3931,14 +3931,14 @@ packages:
       '@ledgerhq/connect-kit-loader': 1.0.2
       '@safe-global/safe-apps-provider': 0.15.2
       '@safe-global/safe-apps-sdk': 7.11.0
-      '@wagmi/core': 0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.0.4)
+      '@wagmi/core': 0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.1.6)
       '@walletconnect/ethereum-provider': 2.7.2(@web3modal/standalone@2.3.7)
       '@walletconnect/legacy-provider': 2.0.0
       '@web3modal/standalone': 2.3.7(react@18.2.0)
-      abitype: 0.3.0(typescript@5.0.4)
+      abitype: 0.3.0(typescript@5.1.6)
       ethers: 5.7.2
       eventemitter3: 4.0.7
-      typescript: 5.0.4
+      typescript: 5.1.6
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
       - bufferutil
@@ -3951,7 +3951,7 @@ packages:
       - zod
     dev: false
 
-  /@wagmi/core@0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.0.4):
+  /@wagmi/core@0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.1.6):
     resolution: {integrity: sha512-WOmG2RG65U6i+p09/aFztFSLPCeC+CYnkPh+OXrxQ8Q3m829983sH7xUTRbFAl561lRevUHmB+XS/na+Oj2bYQ==}
     peerDependencies:
       ethers: '>=5.5.1 <6'
@@ -3960,12 +3960,12 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@wagmi/chains': 0.2.22(typescript@5.0.4)
-      '@wagmi/connectors': 0.3.19(@wagmi/core@0.10.11)(ethers@5.7.2)(react@18.2.0)(typescript@5.0.4)
-      abitype: 0.3.0(typescript@5.0.4)
+      '@wagmi/chains': 0.2.22(typescript@5.1.6)
+      '@wagmi/connectors': 0.3.19(@wagmi/core@0.10.11)(ethers@5.7.2)(react@18.2.0)(typescript@5.1.6)
+      abitype: 0.3.0(typescript@5.1.6)
       ethers: 5.7.2
       eventemitter3: 4.0.7
-      typescript: 5.0.4
+      typescript: 5.1.6
       zustand: 4.3.8(react@18.2.0)
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
@@ -4413,7 +4413,7 @@ packages:
       through: 2.3.8
     dev: false
 
-  /abitype@0.3.0(typescript@5.0.4):
+  /abitype@0.3.0(typescript@5.1.6):
     resolution: {integrity: sha512-0YokyAV4hKMcy97Pl+6QgZBlBdZJN2llslOs7kiFY+cu7kMlVXDBpxMExfv0krzBCQt2t7hNovpQ3y/zvEm18A==}
     engines: {pnpm: '>=7'}
     peerDependencies:
@@ -4423,10 +4423,10 @@ packages:
       zod:
         optional: true
     dependencies:
-      typescript: 5.0.4
+      typescript: 5.1.6
     dev: false
 
-  /abitype@0.8.6(typescript@5.0.4):
+  /abitype@0.8.6(typescript@5.1.6):
     resolution: {integrity: sha512-UuyzfXWbZXHdxwqqzEsNvKn7heZkHgwVzHHXjOclbBSSFr3KKY9yyMJkQHaaU/yhbl2lr933nlFVgVWbdz5cnw==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -4435,7 +4435,7 @@ packages:
       zod:
         optional: true
     dependencies:
-      typescript: 5.0.4
+      typescript: 5.1.6
     dev: false
 
   /abort-controller@3.0.0:
@@ -6174,10 +6174,10 @@ packages:
       hardhat: ^2.0.0
     dependencies:
       chokidar: 3.5.3
-      hardhat: 2.14.1(typescript@5.0.4)
+      hardhat: 2.14.1(typescript@5.1.6)
     dev: false
 
-  /hardhat@2.14.1(typescript@5.0.4):
+  /hardhat@2.14.1(typescript@5.1.6):
     resolution: {integrity: sha512-H3Qp/UKyQGmPDDBSfMoSyH18rRnac90rsb0LNer+sKe6at6rxLe4D5j+M+1icqZQF02iLPjNRwc/PA8OPf757A==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -6237,7 +6237,7 @@ packages:
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.10
       tsort: 0.0.1
-      typescript: 5.0.4
+      typescript: 5.1.6
       undici: 5.22.1
       uuid: 8.3.2
       ws: 7.5.9
@@ -8649,9 +8649,9 @@ packages:
       is-typedarray: 1.0.0
     dev: false
 
-  /typescript@5.0.4:
-    resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
-    engines: {node: '>=12.20'}
+  /typescript@5.1.6:
+    resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
+    engines: {node: '>=14.17'}
     hasBin: true
     dev: false
 
@@ -8940,7 +8940,7 @@ packages:
       - terser
     dev: true
 
-  /wagmi@0.12.13(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.0.4):
+  /wagmi@0.12.13(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6):
     resolution: {integrity: sha512-1J+F68MztodPUo2OIFImiC3OoZD4gdryxTidfwQz9LJawXdBNmAOFvq0LQClrrqgFk0Gd3EoLo/MKGiEn2RsMg==}
     peerDependencies:
       ethers: '>=5.5.1 <6'
@@ -8953,11 +8953,11 @@ packages:
       '@tanstack/query-sync-storage-persister': 4.29.5
       '@tanstack/react-query': 4.29.7(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-query-persist-client': 4.29.5(@tanstack/react-query@4.29.7)
-      '@wagmi/core': 0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.0.4)
-      abitype: 0.3.0(typescript@5.0.4)
+      '@wagmi/core': 0.10.11(ethers@5.7.2)(react@18.2.0)(typescript@5.1.6)
+      abitype: 0.3.0(typescript@5.1.6)
       ethers: 5.7.2
       react: 18.2.0
-      typescript: 5.0.4
+      typescript: 5.1.6
       use-sync-external-store: 1.2.0(react@18.2.0)
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
