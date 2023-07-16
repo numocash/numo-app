@@ -23,7 +23,7 @@
     "@radix-ui/react-slider": "^1.1.2",
     "@rainbow-me/rainbowkit": "^0.12.13",
     "@sentry/nextjs": "^7.53.1",
-    "@tanstack/react-query": "^4.29.7",
+    "@tanstack/react-query": "^4.29.25",
     "@tanstack/react-query-devtools": "^4.29.12",
     "@types/node": "20.2.5",
     "@types/react": "18.2.7",
